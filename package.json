@@ -1,0 +1,25 @@
+{
+  "name": "audio-buffer-utils",
+  "version": "0.0.0",
+  "description": "Utility functions for working with Web Audio API Buffers",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/jaz303/audio-buffer-utils.git"
+  },
+  "keywords": [
+    "web",
+    "audio",
+    "api",
+    "buffer"
+  ],
+  "author": "Jason Frame <jason@onehackoranother.com> (http://jasonframe.co.uk)",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jaz303/audio-buffer-utils/issues"
+  },
+  "homepage": "https://github.com/jaz303/audio-buffer-utils"
+}
