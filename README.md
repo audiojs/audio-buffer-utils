@@ -22,12 +22,16 @@ Creates a new buffer with the same characteristics as `buffer`, fills it with a 
 
 #### `utils.reverse(buffer)`
 
-Reverse `buffer`. Modifies the buffer in-place.
+Reverse `buffer`; `buffer` is modified in-place.
 
 #### `utils.invert(buffer)`
 
-Invert `buffer`. Modifies the buffer in-place.
+Invert `buffer`; `buffer` is modified in-place.
 
 #### `utils.zero(buffer)`
 
-Zero all of `buffer`'s channel data. Modifies the buffer in-place.
+Zero all of `buffer`'s channel data; `buffer` is modified in-place.
+
+#### `utils.noise(buffer)`
+
+Fill `buffer` with random data; `buffer` is modified in-place.
