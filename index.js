@@ -2,6 +2,7 @@ exports.clone   = clone;
 exports.reverse = reverse;
 exports.invert  = invert;
 exports.zero    = zero;
+exports.noise   = noise;
 
 function clone(inBuffer) {
     
@@ -41,5 +42,13 @@ function zero(buffer) {
         var d = buffer.getChannelData(i),
             l = buffer.length;
         while (l--) d[l] = 0;
+    }
+}
+
+function noise(buffer) {
+    for (var i = 0, c = buffer.numberOfChannels; i < c; ++i) {
+        var d = buffer.getChannelData(i),
+            l = buffer.length;
+        while (l--) d[l] = (Math.random() * 2) - 1;
     }
 }
