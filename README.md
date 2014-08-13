@@ -4,9 +4,11 @@ Simple utility functions for working with Web Audio API's Buffers.
 
 ## Install
 
+Using npm/browserify:
+
 	$ npm install audio-buffer-utils
 
-Use browserify!
+Or grab a UMD module from `build` directory.
 
 ## Require
 
