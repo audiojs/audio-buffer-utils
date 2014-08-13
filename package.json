@@ -1,6 +1,6 @@
 {
   "name": "audio-buffer-utils",
-  "version": "0.0.2",
+  "version": "0.1.0",
   "description": "Utility functions for working with Web Audio API Buffers",
   "main": "index.js",
   "scripts": {
