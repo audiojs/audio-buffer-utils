@@ -64,11 +64,13 @@ test('noise', function () {
 
 test('fill', function () {
 	var a = AudioBuffer([1,2,3,4]);
-	a.fill(1);
+	util.fill(a, 1);
 
-	assert.deepEqual(a.toArray(), [1,1,1,1]);
+	assert.deepEqual(a.getChannelData(0), [1,1]);
+	assert.deepEqual(a.getChannelData(1), [1,1]);
 
-	a.fill(function (channel, offset) { return channel + offset });
+	util.fill(a, function (sample, channel, offset) { return channel + offset });
 
-	assert.deepEqual(a.toArray(), [0,1,1,2]);
+	assert.deepEqual(a.getChannelData(0), [0,1]);
+	assert.deepEqual(a.getChannelData(1), [1,2]);
 });

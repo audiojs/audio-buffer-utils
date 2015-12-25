@@ -12,7 +12,8 @@ module.exports = {
     invert: invert,
     zero: zero,
     noise: noise,
-    equal: equal
+    equal: equal,
+    fill: fill
 };
 
 
@@ -33,6 +34,8 @@ function reverse (buffer) {
         var d = buffer.getChannelData(i);
         Array.prototype.reverse.call(d);
     }
+
+    return buffer;
 }
 
 
@@ -40,11 +43,7 @@ function reverse (buffer) {
  * Invert amplitude of samples in each channel
  */
 function invert (buffer) {
-    for (var i = 0, c = buffer.numberOfChannels; i < c; ++i) {
-        var d = buffer.getChannelData(i),
-            l = buffer.length;
-        while (l--) d[l] = -d[l];
-    }
+    return fill(buffer, function (sample) { return -sample; });
 }
 
 
@@ -52,11 +51,7 @@ function invert (buffer) {
  * Fill with zeros
  */
 function zero (buffer) {
-    for (var i = 0, c = buffer.numberOfChannels; i < c; ++i) {
-        var d = buffer.getChannelData(i),
-            l = buffer.length;
-        while (l--) d[l] = 0;
-    }
+    return fill(buffer, 0);
 }
 
 
@@ -64,11 +59,7 @@ function zero (buffer) {
  * Fill with white noise
  */
 function noise (buffer) {
-    for (var i = 0, c = buffer.numberOfChannels; i < c; ++i) {
-        var d = buffer.getChannelData(i),
-            l = buffer.length;
-        while (l--) d[l] = (Math.random() * 2) - 1;
-    }
+    return fill(buffer, function (sample) { return Math.random() * 2 - 1; });
 }
 
 
@@ -95,12 +86,20 @@ function equal (bufferA, bufferB) {
  * Generic fill
  */
 function fill (buffer, fn) {
-     if (!(fn instanceof Function)) {
-        var value = fn;
-        fn = function (sample, channel, offset) { return value; }
+    var isFn = fn instanceof Function;
+
+    for (var channel = 0, c = buffer.numberOfChannels; channel < c; ++channel) {
+        var data = buffer.getChannelData(channel),
+            l = buffer.length;
+        if (isFn) {
+            for (var i = 0; i < l; i++) {
+                data[i] = fn.call(buffer, data[i], channel, i, data);
+            }
+        }
+        else while (l--) data[l] = fn;
     }
 
-    ndfill(this.data, fn);
+    return buffer;
 }
 
 
