@@ -2,31 +2,26 @@
  * @module  audio-buffer-utils
  */
 
-exports.clone   = clone;
-exports.reverse = reverse;
-exports.invert  = invert;
-exports.zero    = zero;
-exports.noise   = noise;
+
+var AudioBuffer = require('audio-buffer');
+
+
+module.exports = {
+    clone: clone,
+    reverse: reverse,
+    invert: invert,
+    zero: zero,
+    noise: noise,
+    equal: equal
+};
 
 
 /**
  * Create clone of a buffer
  */
 function clone (inBuffer) {
-    var outBuffer = inBuffer.context.createBuffer(
-        inBuffer.numberOfChannels,
-        inBuffer.length,
-        inBuffer.sampleRate
-    );
-
-    for (var i = 0, c = inBuffer.numberOfChannels; i < c; ++i) {
-        var od = outBuffer.getChannelData(i),
-            id = inBuffer.getChannelData(i);
-        od.set(id, 0);
-    }
-
-    return outBuffer;
-
+    //NOTE: default implementation didn’t work, as buffers do not have context param
+    return new AudioBuffer(inBuffer);
 }
 
 
@@ -78,6 +73,25 @@ function noise (buffer) {
 
 
 /**
+ * Test whether two buffers are the same
+ */
+function equal (bufferA, bufferB) {
+    if (bufferA.length !== bufferB.length || bufferA.numberOfChannels !== bufferB.numberOfChannels) return false;
+
+    for (var channel = 0; channel < bufferA.numberOfChannels; channel++) {
+        var dataA = bufferA.getChannelData(channel);
+        var dataB = bufferB.getChannelData(channel);
+
+        for (var i = 0; i < dataA.length; i++) {
+            if (dataA[i] !== dataB[i]) return false;
+        }
+    }
+
+    return true;
+}
+
+
+/**
  * Generic fill
  */
 function fill (buffer, fn) {
@@ -102,6 +116,7 @@ function slice (buffer, start, end) {
  * Return new buffer, mapped by a function
  */
 function map (buffer, fn) {
+    //WISHES: itd be nice to be able to mix channels, apply effects (basically operator processors)
     xxx
 }
 
@@ -199,4 +214,20 @@ function trim (buffer, level) {
  */
 function loudness (buffer) {
     xxx
+}
+
+
+/**
+ * Mix current buffer with the other one
+ */
+function mix (buffer, bufferB) {
+   xxx
+}
+
+
+/**
+ * Size of a buffer, in megabytes
+ */
+function size (buffer) {
+
 }

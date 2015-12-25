@@ -1,10 +1,11 @@
 {
   "name": "audio-buffer-utils",
   "version": "0.1.0",
-  "description": "Utility functions for working with AudioBuffers",
+  "description": "Utility functions for AudioBuffers",
   "main": "index.js",
   "scripts": {
-    "test": "mocha"
+    "test": "mocha",
+    "test:browser": "beefy test.js"
   },
   "repository": {
     "type": "git",
@@ -28,6 +29,7 @@
   },
   "homepage": "https://github.com/jaz303/audio-buffer-utils",
   "devDependencies": {
-    "uglify-js": "^2.4.15"
+    "audio-buffer": "^2.1.0",
+    "mocha": "^2.3.4"
   }
 }

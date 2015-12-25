@@ -28,6 +28,9 @@ utils.zero(buffer);
 //Fill `buffer` with random data; `buffer` is modified in-place.
 utils.noise(buffer);
 
+//Test whether the content of two buffers is the same
+utils.equal(bufferA, bufferB);
+
 //Fill `buffer` with provided value or function.
 utils.fill(buffer, function (sample, channel, idx) {
 	return sample / 2;
