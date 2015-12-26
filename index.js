@@ -22,7 +22,8 @@ module.exports = {
     rotate: rotate,
     shift: shift,
     reduce: reduce,
-    normalize: normalize
+    normalize: normalize,
+    trim: trim
 };
 
 
@@ -334,7 +335,45 @@ function normalize (buffer, start, end) {
  * Trim sound (remove zeros from the beginning and the end)
  */
 function trim (buffer, level) {
-    xxx
+    return trimLeft(trimRight(buffer, level), level);
+}
+
+function trimLeft (buffer, level) {
+    if (level == null) level = 0;
+
+    var start = buffer.length;
+
+    for (var channel = 0, c = buffer.numberOfChannels; channel < c; channel++) {
+        var data = buffer.getChannelData(channel);
+        for (var i = 0; i < data.length; i++) {
+            if (i > start) break;
+            if (data[i] > level) {
+                start = i;
+                break;
+            }
+        }
+    }
+
+    return slice(buffer, start);
+}
+
+function trimRight (buffer, level) {
+    if (level == null) level = 0;
+
+    var end = 0;
+
+    for (var channel = 0, c = buffer.numberOfChannels; channel < c; channel++) {
+        var data = buffer.getChannelData(channel);
+        for (var i = data.length; i--;) {
+            if (i < end) break;
+            if (data[i] > level) {
+                end = i + 1;
+                break;
+            }
+        }
+    }
+
+    return slice(buffer, 0, end);
 }
 
 

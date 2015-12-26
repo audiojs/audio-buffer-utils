@@ -239,3 +239,20 @@ test('normalize', function () {
 
 	assert.deepEqual(a.getChannelData(1), [-0.5, 1, 1]);
 });
+
+
+test('trim', function () {
+	//trim both
+	var a = AudioBuffer([0,0,1,0,0,2,3,0]);
+	var b = util.trim(a);
+
+	assert.deepEqual(b.getChannelData(0), [0,1]);
+	assert.deepEqual(b.getChannelData(1), [2,3]);
+
+	//no trim
+	var a = AudioBuffer([1,0,1,0,0,2,3,1]);
+	var b = util.trim(a);
+
+	assert.deepEqual(b.getChannelData(0), [1,0,1,0]);
+	assert.deepEqual(b.getChannelData(1), [0,2,3,1]);
+});
