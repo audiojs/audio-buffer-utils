@@ -294,13 +294,19 @@ function ifft (buffer) {
 /**
  * Reduce buffer to a single metric, e. g. average, max, min, volume etc
  */
-function reduce (buffer, fn, value) {
+function reduce (buffer, fn, value, start, end) {
+    if (start == null) start = 0;
+    else if (start < 0) start += buffer.length;
+    if (end == null) end = buffer.length;
+
     if (value == null) value = 0;
 
-    for (var channel = 0; channel < buffer.numberOfChannels; channel++) {
-        value = buffer.getChannelData(channel).reduce(function (prev, curr, idx, data) {
-            return fn.call(buffer, prev, curr, channel, idx, data);
-        }, value);
+    for (var channel = 0, c = buffer.numberOfChannels; channel < c; channel++) {
+        var data = buffer.getChannelData(channel),
+            l = buffer.length;
+        for (var i = start; i < end; i++) {
+            value = fn.call(buffer, value, data[i], channel, i, data);
+        }
     }
 
     return value;
@@ -311,16 +317,16 @@ function reduce (buffer, fn, value) {
  * Normalize buffer by the maximum value,
  * limit values by the -1..1 range
  */
-function normalize (buffer) {
+function normalize (buffer, start, end) {
     var max = reduce(buffer, function (prev, curr) {
         return Math.max(Math.abs(prev), Math.abs(curr));
-    }, 0);
+    }, 0, start, end);
 
     var amp = 1 / Math.min(max, 1);
 
     return fill(buffer, function (value) {
         return Math.min(value * amp, 1);
-    });
+    }, start, end);
 }
 
 

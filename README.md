@@ -35,7 +35,7 @@ utils.equal(bufferA, bufferB, ...);
 //Fill `buffer` with provided function or value. Pass optional `start` and `end` indexes.
 utils.fill(buffer, value|function (sample, channel, idx) {
 	return sample / 2;
-} [, start = 0[, end = this.length]]);
+}, start?, end?);
 
 //Create a new buffer by mapping the samples of the current one.
 utils.map(buffer, function (sample, channel, idx) {
@@ -66,8 +66,8 @@ utils.reduce(buffer, function (previousValue, currendValue, channel, idx, channe
 	return previousValue + currentValue;
 }, startValue?);
 
-//Normalize signal by the max value. Modifiers buffer in place.
-utils.normalize(buffer);
+//Normalize buffer by the max value, limit to the -1..+1 range. Modifiers buffer in place.
+utils.normalize(buffer, start?, end?);
 ```
 
 
