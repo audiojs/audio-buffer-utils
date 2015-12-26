@@ -37,6 +37,14 @@ test('clone', function () {
 	assert.notEqual(buf1, buf2);
 });
 
+test('clone - backing arrays are not shared between buffers', function () {
+	var buf1 = new AudioBuffer([0, 1, 2, 3, 4]);
+	var buf2 = util.clone(buf1);
+
+	buf2.getChannelData(0)[0] = 100;
+	assert.equal(0, buf1.getChannelData(0)[0]);
+});
+
 
 test('reverse', function () {
 	var buf1 = new AudioBuffer([1, 0, -1, 0]);
