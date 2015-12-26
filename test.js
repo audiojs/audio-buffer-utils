@@ -35,6 +35,10 @@ test('clone', function () {
 
 	assert(util.equal(buf1, buf2));
 	assert.notEqual(buf1, buf2);
+
+	buf2.getChannelData(0)[1] = 0.5;
+	assert.deepEqual(buf1.getChannelData(0), [1, 0]);
+	assert.deepEqual(buf2.getChannelData(0), [1, 0.5]);
 });
 
 test('clone - backing arrays are not shared between buffers', function () {
