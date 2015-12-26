@@ -59,24 +59,24 @@ function reverse (buffer) {
 /**
  * Invert amplitude of samples in each channel
  */
-function invert (buffer) {
-    return fill(buffer, function (sample) { return -sample; });
+function invert (buffer, start, end) {
+    return fill(buffer, function (sample) { return -sample; }, start, end);
 }
 
 
 /**
  * Fill with zeros
  */
-function zero (buffer) {
-    return fill(buffer, 0);
+function zero (buffer, start, end) {
+    return fill(buffer, 0, start, end);
 }
 
 
 /**
  * Fill with white noise
  */
-function noise (buffer) {
-    return fill(buffer, function (sample) { return Math.random() * 2 - 1; });
+function noise (buffer, start, end) {
+    return fill(buffer, function (sample) { return Math.random() * 2 - 1; }, start, end);
 }
 
 
