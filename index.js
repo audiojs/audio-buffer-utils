@@ -68,6 +68,14 @@ function noise (buffer) {
  * Test whether two buffers are the same
  */
 function equal (bufferA, bufferB) {
+    //walk by all the arguments
+    if (arguments.length > 2) {
+        for (var i = 0, l = arguments.length - 1; i < l; i++) {
+            if (!equal(arguments[i], arguments[i + 1])) return false;
+        }
+        return true;
+    }
+
     if (bufferA.length !== bufferB.length || bufferA.numberOfChannels !== bufferB.numberOfChannels) return false;
 
     for (var channel = 0; channel < bufferA.numberOfChannels; channel++) {
@@ -135,10 +143,34 @@ function map (buffer, fn) {
 
 
 /**
- * Concat buffer with other buffer
+ * Concat buffer with other buffer(s)
  */
-function concat (buffer, other, third, etc) {
-    xxx
+function concat (bufferA, bufferB) {
+    //walk by all the arguments
+    if (arguments.length > 2) {
+        var result = arguments[i];
+        for (var i = 1, l = arguments.length; i < l; i++) {
+            result = concat(result, arguments[i]);
+        }
+        return result;
+    }
+
+    var data = [];
+    var channels = Math.max(bufferA.numberOfChannels, bufferB.numberOfChannels);
+    var length = bufferA.length + bufferB.length;
+
+    //FIXME: there might be required more thoughtful resampling, but now I'm lazy sry :(
+    var sampleRate = Math.max(bufferA.sampleRate, bufferB.sampleRate);
+
+    for (var channel = 0; channel < channels; channel++) {
+        var channelData = new Float32Array(length);
+        var aData = bufferA.getChannelData(channel);
+        channelData.set(aData);
+        channelData.set(bufferB.getChannelData(channel), aData.length);
+        data.push(channelData);
+    }
+
+    return new AudioBuffer(channels, data, sampleRate);
 }
 
 

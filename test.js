@@ -9,11 +9,14 @@ test('equal', function () {
 	var buf2 = new AudioBuffer([1, 0, -1, 0]);
 	var buf3 = new AudioBuffer([1, 0, 1, 0]);
 	var buf4 = new AudioBuffer([1, 0, 1, 0, 1]); //the last sample is lost
+	var buf5 = new AudioBuffer([1, 0, 1, 0]);
 
 	assert(util.equal(buf1, buf2));
 	assert(!util.equal(buf1, buf3));
 	assert(!util.equal(buf1, buf4));
 	assert(util.equal(buf3, buf4));
+	assert(util.equal(buf3, buf4, buf5));
+	assert(!util.equal(buf4, buf5, buf3, buf1));
 });
 
 
@@ -100,4 +103,17 @@ test('map', function () {
 	assert(!util.equal(a, b));
 	assert.deepEqual(b.getChannelData(0), [1,2]);
 	assert.deepEqual(b.getChannelData(1), [2,3]);
+});
+
+
+test('concat', function () {
+	var a = AudioBuffer([1,1,1,1]);
+	var b = AudioBuffer(3, 2);
+	var c = AudioBuffer(1, [-1, -1], 22050); //handle this!
+
+	var d = util.concat(a, b, c);
+
+	assert.deepEqual(d.getChannelData(0), [1,1,0,0,-1,-1]);
+	assert.deepEqual(d.getChannelData(1), [1,1,0,0,0,0]);
+	assert.deepEqual(d.getChannelData(2), [0,0,0,0,0,0]);
 });

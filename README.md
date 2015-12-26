@@ -28,8 +28,8 @@ utils.zero(buffer);
 //Fill `buffer` with random data; `buffer` is modified in-place.
 utils.noise(buffer);
 
-//Test whether the content of two buffers is the same
-utils.equal(bufferA, bufferB);
+//Test whether the content of N buffers is the same
+utils.equal(bufferA, bufferB, ...);
 
 //Fill `buffer` with provided value or function.
 utils.fill(buffer, function (sample, channel, idx) {
@@ -45,6 +45,8 @@ utils.map(buffer, function (sample, channel, idx) {
 utils.slice(buffer, start?, end?);
 
 //Create a new buffer by concatting passed buffers.
+//Channels are extended to the buffer with maximum number, and filled with zeros.
+//Sample rate is changed to the maximum of the buffers
 utils.concat(buffer1, buffer2, buffer3, ...);
 
 //Change the duration of the buffer, cutting the signal or filling with zeros
