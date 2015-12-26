@@ -50,8 +50,11 @@ utils.concat(buffer1, buffer2, buffer3, ...);
 //Use to change duration as well.
 utils.resize(buffer, length);
 
-//Shift signal by offet in (optionally) circular fashion
-utils.shift(buffer, offset, circular?);
+//Shift signal by the offet, filling with zeros. `buffer` is modified in-place.
+utils.shift(buffer, offset);
+
+//Shift signal by offet in circular fashion. `buffer` is modified in-place.
+utils.rotate(buffer, offset);
 
 //Change sample rate (by sinc interpolating).
 utils.resample(buffer, sampleRate);

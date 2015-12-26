@@ -140,3 +140,16 @@ test('resize', function () {
 	a = util.resize(a, 2);
 	assert.deepEqual(a.getChannelData(0), [1,1]);
 });
+
+
+test('rotate', function () {
+	var a = AudioBuffer(1, [0,0,1,1,0,0,-1,-1]);
+
+	util.rotate(a, 2);
+
+	assert.deepEqual(a.getChannelData(0), [-1,-1,0,0,1,1,0,0]);
+
+	util.rotate(a, -5);
+
+	assert.deepEqual(a.getChannelData(0), [1,0,0,-1,-1,0,0,1])
+});

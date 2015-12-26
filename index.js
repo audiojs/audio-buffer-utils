@@ -17,7 +17,8 @@ module.exports = {
     slice: slice,
     map: map,
     concat: concat,
-    resize: resize
+    resize: resize,
+    rotate: rotate
 };
 
 
@@ -211,10 +212,26 @@ function resample (buffer, sampleRate) {
 
 
 /**
- * Shift content of the buffer
+ * Return buffer, pointing to the current one
  */
-function shift (buffer, offset, circular) {
+function sub (buffer, start, end) {
     xxx
+}
+
+
+/**
+ * Shift content of the buffer in circular fashion
+ */
+function rotate (buffer, offset) {
+    for (var channel = 0; channel < buffer.numberOfChannels; channel++) {
+        var cData = buffer.getChannelData(channel);
+        var srcData = cData.slice();
+        for (var i = 0, l = cData.length, idx; i < l; i++) {
+            idx = (offset + (offset + i < 0 ? l + i : i )) % l;
+            cData[idx] = srcData[i];
+        }
+    }
+    return buffer;
 }
 
 
