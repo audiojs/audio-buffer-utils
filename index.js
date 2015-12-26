@@ -14,6 +14,7 @@ module.exports = {
     zero: zero,
     noise: noise,
     equal: equal,
+    transform: transform,
     fill: fill,
     slice: slice,
     map: map,
@@ -57,7 +58,7 @@ function reverse (buffer) {
  * Invert amplitude of samples in each channel
  */
 function invert (buffer) {
-    return fill(buffer, function (sample) { return -sample; });
+    return transform(buffer, function (sample) { return -sample; });
 }
 
 
@@ -73,7 +74,7 @@ function zero (buffer) {
  * Fill with white noise
  */
 function noise (buffer) {
-    return fill(buffer, function (sample) { return Math.random() * 2 - 1; });
+    return transform(buffer, function (sample) { return Math.random() * 2 - 1; });
 }
 
 
@@ -103,22 +104,29 @@ function equal (bufferA, bufferB) {
     return true;
 }
 
+/**
+ * In-place transform
+ */
+function transform (buffer, fn) {
+    for (var channel = 0, c = buffer.numberOfChannels; channel < c; ++channel) {
+        var data = buffer.getChannelData(channel),
+            l = buffer.length;
+        for (var i = 0; i < l; i++) {
+            data[i] = fn.call(buffer, data[i], channel, i, data);
+        }
+    }
+
+    return buffer;
+}
 
 /**
  * Generic fill
  */
-function fill (buffer, fn) {
-    var isFn = fn instanceof Function;
-
+function fill (buffer, value) {
     for (var channel = 0, c = buffer.numberOfChannels; channel < c; ++channel) {
         var data = buffer.getChannelData(channel),
             l = buffer.length;
-        if (isFn) {
-            for (var i = 0; i < l; i++) {
-                data[i] = fn.call(buffer, data[i], channel, i, data);
-            }
-        }
-        else while (l--) data[l] = fn;
+        while (l--) data[l] = value;
     }
 
     return buffer;
@@ -139,7 +147,7 @@ function slice (buffer, start, end) {
 
 /**
  * Return new buffer, mapped by a function.
- * Similar to fill, but keeps initial buffer untouched
+ * Similar to transform, but keeps initial buffer untouched
  */
 function map (buffer, fn) {
     var data = [];

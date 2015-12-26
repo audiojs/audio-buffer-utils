@@ -32,10 +32,13 @@ utils.noise(buffer);
 //Test whether the content of N buffers is the same.
 utils.equal(bufferA, bufferB, ...);
 
-//Fill `buffer` with provided value or function.
-utils.fill(buffer, function (sample, channel, idx) {
+//Transform `buffer` in-place using provided function.
+utils.transform(buffer, function (sample, channel, idx) {
 	return sample / 2;
 });
+
+//Fill `buffer` with provided value.
+utils.fill(buffer, 3);
 
 //Create a new buffer by mapping the samples of the current one.
 utils.map(buffer, function (sample, channel, idx) {
