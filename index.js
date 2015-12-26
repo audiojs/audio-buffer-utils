@@ -18,7 +18,8 @@ module.exports = {
     map: map,
     concat: concat,
     resize: resize,
-    rotate: rotate
+    rotate: rotate,
+    shift: shift
 };
 
 
@@ -229,6 +230,27 @@ function rotate (buffer, offset) {
         for (var i = 0, l = cData.length, idx; i < l; i++) {
             idx = (offset + (offset + i < 0 ? l + i : i )) % l;
             cData[idx] = srcData[i];
+        }
+    }
+    return buffer;
+}
+
+
+/**
+ * Shift content of the buffer
+ */
+function shift (buffer, offset) {
+    for (var channel = 0; channel < buffer.numberOfChannels; channel++) {
+        var cData = buffer.getChannelData(channel);
+        if (offset > 0) {
+            for (var i = cData.length - offset; i--;) {
+                cData[i + offset] = cData[i];
+            }
+        }
+        else {
+            for (var i = -offset, l = cData.length - offset; i < l; i++) {
+                cData[i + offset] = cData[i] || 0;
+            }
         }
     }
     return buffer;
