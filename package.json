@@ -29,7 +29,9 @@
   },
   "homepage": "https://github.com/jaz303/audio-buffer-utils",
   "devDependencies": {
-    "audio-buffer": "^2.1.0",
     "mocha": "^2.3.4"
+  },
+  "dependencies": {
+    "audio-buffer": "^2.1.2"
   }
 }

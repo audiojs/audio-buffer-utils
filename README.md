@@ -1,14 +1,10 @@
 Utility functions for Audio Buffers.
 
 
-## Install
+## Usage
 
-Using npm/browserify:
+`$ npm install audio-buffer-util`
 
-$ npm install audio-buffer-util
-
-
-## Require
 
 ```js
 var utils = require('audio-buffer-util');
@@ -28,7 +24,7 @@ utils.zero(buffer);
 //Fill `buffer` with random data; `buffer` is modified in-place.
 utils.noise(buffer);
 
-//Test whether the content of N buffers is the same
+//Test whether the content of N buffers is the same.
 utils.equal(bufferA, bufferB, ...);
 
 //Fill `buffer` with provided value or function.
@@ -46,11 +42,13 @@ utils.slice(buffer, start?, end?);
 
 //Create a new buffer by concatting passed buffers.
 //Channels are extended to the buffer with maximum number, and filled with zeros.
-//Sample rate is changed to the maximum of the buffers
+//Sample rate is changed to the maximum of the buffers.
 utils.concat(buffer1, buffer2, buffer3, ...);
 
-//Change the duration of the buffer, cutting the signal or filling with zeros
-utils.duration(buffer, duration);
+//Return new buffer based on the passed one, with shortened/extended length.
+//Initial data is whether sliced or filled with zeros.
+//Use to change duration as well.
+utils.resize(buffer, length);
 
 //Shift signal by offet in (optionally) circular fashion
 utils.shift(buffer, offset, circular?);
@@ -71,5 +69,5 @@ utils.channels(buffer, channelsNumber, upmix);
 
 ## Related
 
-> [audio-buffer](https://github.com/audio-lab/buffer) — audio data container, both for node/WebAudio.<br/>
+> [audio-buffer](https://github.com/audio-lab/buffer) — audio data container, both for node/browser.<br/>
 > [pcm-util](https://github.com/audio-lab/pcm-util) — utils for low-level pcm buffers, like audio formats etc.<br/>

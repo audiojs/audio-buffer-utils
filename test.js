@@ -80,7 +80,7 @@ test('fill', function () {
 
 
 test('slice', function () {
-	var a = new AudioBuffer([1,2,3,4,5,6]);
+	var a = new AudioBuffer(3, [1,2,3,4,5,6,7,8,9]);
 
 	var b = util.slice(a, 1);
 	assert.deepEqual(b.getChannelData(0), [2,3]);
@@ -89,11 +89,12 @@ test('slice', function () {
 	var c = util.slice(a, 1, 2);
 	assert.deepEqual(c.getChannelData(0), [2]);
 	assert.deepEqual(c.getChannelData(1), [5]);
+	assert.deepEqual(c.numberOfChannels, 3);
 });
 
 
 test('map', function () {
-	var a = AudioBuffer([1, 1, 1, 1]);
+	var a = AudioBuffer(3, [1, 1, 1, 1, 1, 1]);
 
 	var b = util.map(a, function (sample, channel, offset) {
 		return sample + channel + offset
@@ -103,6 +104,7 @@ test('map', function () {
 	assert(!util.equal(a, b));
 	assert.deepEqual(b.getChannelData(0), [1,2]);
 	assert.deepEqual(b.getChannelData(1), [2,3]);
+	assert.deepEqual(b.numberOfChannels, 3);
 });
 
 
@@ -124,4 +126,17 @@ test('concat', function () {
 	assert.deepEqual(d.getChannelData(0), [1,1,0,0,-1,-1]);
 	assert.deepEqual(d.getChannelData(1), [1,1,0,0,0,0]);
 	assert.deepEqual(d.getChannelData(2), [0,0,0,0,0,0]);
+});
+
+
+test('resize', function () {
+	var a = AudioBuffer(1, [1,1,1,1,1], 44100);
+
+	//set too big
+	a = util.resize(a, 10);
+	assert.deepEqual(a.getChannelData(0), [1,1,1,1,1,0,0,0,0,0]);
+
+	//set too small
+	a = util.resize(a, 2);
+	assert.deepEqual(a.getChannelData(0), [1,1]);
 });

@@ -16,7 +16,8 @@ module.exports = {
     fill: fill,
     slice: slice,
     map: map,
-    concat: concat
+    concat: concat,
+    resize: resize
 };
 
 
@@ -121,7 +122,7 @@ function slice (buffer, start, end) {
     for (var channel = 0; channel < buffer.numberOfChannels; channel++) {
         data.push(buffer.getChannelData(channel).slice(start, end));
     }
-    return new AudioBuffer(buffer.channels, data, buffer.sampleRate);
+    return new AudioBuffer(buffer.numberOfChannels, data, buffer.sampleRate);
 }
 
 
@@ -139,7 +140,7 @@ function map (buffer, fn) {
         }));
     }
 
-    return new AudioBuffer(buffer.channels, data, buffer.sampleRate);
+    return new AudioBuffer(buffer.numberOfChannels, data, buffer.sampleRate);
 }
 
 
@@ -182,6 +183,16 @@ function concat (bufferA, bufferB) {
 
 
 /**
+ * Change the length of the buffer, by trimming or filling with zeros
+ */
+function resize (buffer, length) {
+    if (length < buffer.length) return slice(buffer, 0, length);
+
+    return concat(buffer, new AudioBuffer(length - buffer.length));
+}
+
+
+/**
  * Change channels number and upmix/downmix
  */
 function channels (buffer, number, upmix) {
@@ -189,12 +200,6 @@ function channels (buffer, number, upmix) {
 }
 
 
-/**
- * Change the duration of the buffer, by trimming or filling with zeros
- */
-function duration (buffer, dur) {
-    xxx
-}
 
 
 /**
