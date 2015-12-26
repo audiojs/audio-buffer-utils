@@ -19,6 +19,15 @@ test('equal', function () {
 	assert(!util.equal(buf4, buf5, buf3, buf1));
 });
 
+test('compatible', function () {
+	var buf1 = new AudioBuffer([0, 1, 2, 3]);
+	var buf2 = util.compatible(buf1);
+
+	assert.equal(buf1.length, buf2.length);
+	assert.equal(buf1.numberOfChannels, buf2.numberOfChannels);
+	assert.equal(buf1.sampleRate, buf2.sampleRate);
+});
+
 
 test('clone', function () {
 	var buf1 = new AudioBuffer([1, 0, -1, 0]);
