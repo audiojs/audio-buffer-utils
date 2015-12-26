@@ -14,7 +14,8 @@ module.exports = {
     noise: noise,
     equal: equal,
     fill: fill,
-    slice: slice
+    slice: slice,
+    map: map
 };
 
 
@@ -119,9 +120,17 @@ function slice (buffer, start, end) {
  * Return new buffer, mapped by a function.
  * Similar to fill, but keeps initial buffer untouched
  */
+//WISH: itd be nice to be able to mix channels, apply effects (basically operator processors)
 function map (buffer, fn) {
-    //WISHES: itd be nice to be able to mix channels, apply effects (basically operator processors)
-    xxx
+    var data = [];
+
+    for (var channel = 0; channel < buffer.numberOfChannels; channel++) {
+        data.push(buffer.getChannelData(channel).map(function (value, idx) {
+            return fn.call(buffer, value, channel, idx, data);
+        }));
+    }
+
+    return new AudioBuffer(buffer.channels, data, buffer.sampleRate);
 }
 
 

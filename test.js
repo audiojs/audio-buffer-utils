@@ -87,3 +87,17 @@ test('slice', function () {
 	assert.deepEqual(c.getChannelData(0), [2]);
 	assert.deepEqual(c.getChannelData(1), [5]);
 });
+
+
+test('map', function () {
+	var a = AudioBuffer([1, 1, 1, 1]);
+
+	var b = util.map(a, function (sample, channel, offset) {
+		return sample + channel + offset
+	});
+
+	assert.notEqual(a, b);
+	assert(!util.equal(a, b));
+	assert.deepEqual(b.getChannelData(0), [1,2]);
+	assert.deepEqual(b.getChannelData(1), [2,3]);
+});
