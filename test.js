@@ -111,6 +111,14 @@ test('concat', function () {
 	var b = AudioBuffer(3, 2);
 	var c = AudioBuffer(1, [-1, -1], 22050); //handle this!
 
+	var d = util.concat(a, c);
+	assert.deepEqual(d.getChannelData(0), [1,1,-1,-1]);
+	assert.deepEqual(d.getChannelData(1), [1,1,0,0]);
+
+	var d = util.concat(c, a);
+	assert.deepEqual(d.getChannelData(0), [-1,-1,1,1]);
+	assert.deepEqual(d.getChannelData(1), [0,0,1,1]);
+
 	var d = util.concat(a, b, c);
 
 	assert.deepEqual(d.getChannelData(0), [1,1,0,0,-1,-1]);

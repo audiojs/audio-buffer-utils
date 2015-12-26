@@ -15,7 +15,8 @@ module.exports = {
     equal: equal,
     fill: fill,
     slice: slice,
-    map: map
+    map: map,
+    concat: concat
 };
 
 
@@ -148,7 +149,7 @@ function map (buffer, fn) {
 function concat (bufferA, bufferB) {
     //walk by all the arguments
     if (arguments.length > 2) {
-        var result = arguments[i];
+        var result = bufferA;
         for (var i = 1, l = arguments.length; i < l; i++) {
             result = concat(result, arguments[i]);
         }
@@ -164,9 +165,15 @@ function concat (bufferA, bufferB) {
 
     for (var channel = 0; channel < channels; channel++) {
         var channelData = new Float32Array(length);
-        var aData = bufferA.getChannelData(channel);
-        channelData.set(aData);
-        channelData.set(bufferB.getChannelData(channel), aData.length);
+
+        if (channel < bufferA.numberOfChannels) {
+            channelData.set(bufferA.getChannelData(channel));
+        }
+
+        if (channel < bufferB.numberOfChannels) {
+            channelData.set(bufferB.getChannelData(channel), bufferA.length);
+        }
+
         data.push(channelData);
     }
 
