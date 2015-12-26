@@ -69,7 +69,7 @@ utils.reduce(buffer, function (previousValue, currendValue, channel, idx, channe
 //Normalize buffer by the max value, limit to the -1..+1 range. Modifiers buffer in place.
 utils.normalize(buffer, start?, end?);
 
-//Create buffer with trimmed sound from the beginning/end, by the threshold.
+//Create buffer with trimmed zeros from the beginning/end, by the threshold.
 utils.trim(buffer, limit?);
 ```
 
