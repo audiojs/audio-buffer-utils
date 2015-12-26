@@ -118,10 +118,10 @@ function fill (buffer, value, start, end) {
     if (end == null) end = buffer.length;
 
     if (!(value instanceof Function)) {
-        fn = function () {return value;};
+        var fn = function () {return value;};
     }
     else {
-        fn = value;
+        var fn = value;
     }
 
     for (var channel = 0, c = buffer.numberOfChannels; channel < c; channel++) {
