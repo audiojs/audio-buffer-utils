@@ -14,7 +14,6 @@ module.exports = {
     zero: zero,
     noise: noise,
     equal: equal,
-    transform: transform,
     fill: fill,
     slice: slice,
     map: map,
@@ -25,6 +24,7 @@ module.exports = {
     reduce: reduce,
     normalize: normalize
 };
+
 
 /**
  * Create a buffer with the same characteristics as inBuffer, without copying
@@ -60,7 +60,7 @@ function reverse (buffer) {
  * Invert amplitude of samples in each channel
  */
 function invert (buffer) {
-    return transform(buffer, function (sample) { return -sample; });
+    return fill(buffer, function (sample) { return -sample; });
 }
 
 
@@ -76,7 +76,7 @@ function zero (buffer) {
  * Fill with white noise
  */
 function noise (buffer) {
-    return transform(buffer, function (sample) { return Math.random() * 2 - 1; });
+    return fill(buffer, function (sample) { return Math.random() * 2 - 1; });
 }
 
 
@@ -106,29 +106,28 @@ function equal (bufferA, bufferB) {
     return true;
 }
 
+
 /**
- * In-place transform
+ * Generic in-place fill/transform
  */
-function transform (buffer, fn) {
+function fill (buffer, value, start, end) {
+    if (start == null) start = 0;
+    else if (start < 0) start += buffer.length;
+    if (end == null) end = buffer.length;
+
+    if (!(value instanceof Function)) {
+        fn = function () {return value;};
+    }
+    else {
+        fn = value;
+    }
+
     for (var channel = 0, c = buffer.numberOfChannels; channel < c; channel++) {
         var data = buffer.getChannelData(channel),
             l = buffer.length;
-        for (var i = 0; i < l; i++) {
+        for (var i = start; i < end; i++) {
             data[i] = fn.call(buffer, data[i], channel, i, data);
         }
-    }
-
-    return buffer;
-}
-
-/**
- * Generic fill
- */
-function fill (buffer, value) {
-    for (var channel = 0, c = buffer.numberOfChannels; channel < c; ++channel) {
-        var data = buffer.getChannelData(channel),
-            l = buffer.length;
-        while (l--) data[l] = value;
     }
 
     return buffer;
@@ -319,7 +318,7 @@ function normalize (buffer) {
 
     var amp = 1 / Math.min(max, 1);
 
-    return transform(buffer, function (value) {
+    return fill(buffer, function (value) {
         return Math.min(value * amp, 1);
     });
 }

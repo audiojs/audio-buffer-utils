@@ -32,13 +32,10 @@ utils.noise(buffer);
 //Test whether the content of N buffers is the same.
 utils.equal(bufferA, bufferB, ...);
 
-//Transform `buffer` in-place using provided function.
-utils.transform(buffer, function (sample, channel, idx) {
+//Fill `buffer` with provided function or value. Pass optional `start` and `end` indexes.
+utils.fill(buffer, value|function (sample, channel, idx) {
 	return sample / 2;
-});
-
-//Fill `buffer` with provided value.
-utils.fill(buffer, 3);
+} [, start = 0[, end = this.length]]);
 
 //Create a new buffer by mapping the samples of the current one.
 utils.map(buffer, function (sample, channel, idx) {
@@ -67,7 +64,7 @@ utils.rotate(buffer, offset);
 //Fold buffer into a single value. Useful to generate metrics, like loudness, average, etc.
 utils.reduce(buffer, function (previousValue, currendValue, channel, idx, channelData) {
 	return previousValue + currentValue;
-}, startWith?);
+}, startValue?);
 
 //Normalize signal by the max value. Modifiers buffer in place.
 utils.normalize(buffer);

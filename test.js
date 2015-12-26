@@ -86,21 +86,21 @@ test('noise', function () {
 });
 
 
-test('transform', function () {
+test('fill with function', function () {
 	var a = new AudioBuffer([1,2,3,4]);
-	util.transform(a, function (sample, channel, offset) { return channel + offset });
+	util.fill(a, function (sample, channel, offset) { return channel + offset });
 
 	assert.deepEqual(a.getChannelData(0), [0,1]);
 	assert.deepEqual(a.getChannelData(1), [1,2]);
 });
 
 
-test('fill', function () {
+test('fill with value', function () {
 	var a = new AudioBuffer([1,2,3,4]);
-	util.fill(a, 1);
+	util.fill(a, 1, 1, 3);
 
 	assert.deepEqual(a.getChannelData(0), [1,1]);
-	assert.deepEqual(a.getChannelData(1), [1,1]);
+	assert.deepEqual(a.getChannelData(1), [3,1]);
 });
 
 
