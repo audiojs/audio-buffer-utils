@@ -69,7 +69,8 @@ utils.reduce(buffer, function (previousValue, currendValue, channel, idx, channe
 	return previousValue + currentValue;
 }, startWith?);
 
-//Normalize am
+//Normalize signal by the max value. Modifiers buffer in place.
+utils.normalize(buffer);
 ```
 
 
