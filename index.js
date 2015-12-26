@@ -21,7 +21,9 @@ module.exports = {
     concat: concat,
     resize: resize,
     rotate: rotate,
-    shift: shift
+    shift: shift,
+    reduce: reduce,
+    normalize: normalize
 };
 
 /**
@@ -293,16 +295,33 @@ function ifft (buffer) {
 /**
  * Reduce buffer to a single metric, e. g. average, max, min, volume etc
  */
-function reduce (buffer, fn) {
-    xxx
+function reduce (buffer, fn, value) {
+    if (value == null) value = 0;
+
+    for (var channel = 0; channel < buffer.numberOfChannels; channel++) {
+        value = buffer.getChannelData(channel).reduce(function (prev, curr, idx, data) {
+            return fn.call(buffer, prev, curr, channel, idx, data);
+        }, value);
+    }
+
+    return value;
 }
 
 
 /**
- * Normalize buffer by the maximum value
+ * Normalize buffer by the maximum value,
+ * limit values by the -1..1 range
  */
 function normalize (buffer) {
-    xxx
+    var max = reduce(buffer, function (prev, curr) {
+        return Math.max(Math.abs(prev), Math.abs(curr));
+    }, 0);
+
+    var amp = 1 / max;
+
+    return fill(buffer, function (value) {
+        return value * amp;
+    });
 }
 
 

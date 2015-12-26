@@ -63,6 +63,11 @@ utils.shift(buffer, offset);
 
 //Shift signal in the time domain by `offset` samples, in circular fashion. `buffer` is modified in-place.
 utils.rotate(buffer, offset);
+
+//Fold buffer into a single value. Useful to generate metrics, like loudness, average, etc.
+utils.reduce(buffer, function (previousValue, currendValue, channel, idx, channelData) {
+	return previousValue + currentValue;
+}, startWith?);
 ```
 
 

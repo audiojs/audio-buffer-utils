@@ -209,6 +209,7 @@ test('rotate (-ve)', function() {
 	assert.deepEqual(a.getChannelData(0), [1,0,0,-1,-1,0,0,1])
 });
 
+
 test('shift (+ve)', function () {
 	var a = AudioBuffer(1, [0,0,1,1,0,0,-1,-1]);
 	util.shift(a, 2);
@@ -219,4 +220,13 @@ test('shift (-ve)', function () {
 	var a = AudioBuffer(1, [0,0,1,1,0,0,-1,-1]);
 	util.shift(a, -3);
 	assert.deepEqual(a.getChannelData(0), [1,0,0,-1,-1,0,0,0])
+});
+
+
+test('normalize', function () {
+	var a = AudioBuffer(1, [0, 0.1, 0, -0.2]);
+
+	util.normalize(a);
+
+	assert.deepEqual(a.getChannelData(0), [0, 0.5, 0, -1]);
 });
