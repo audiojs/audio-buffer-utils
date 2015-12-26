@@ -142,28 +142,26 @@ test('resize', function () {
 });
 
 
-test('rotate', function () {
+test('rotate (+ve)', function () {
 	var a = AudioBuffer(1, [0,0,1,1,0,0,-1,-1]);
-
 	util.rotate(a, 2);
-
 	assert.deepEqual(a.getChannelData(0), [-1,-1,0,0,1,1,0,0]);
+});
 
-	util.rotate(a, -5);
-
+test('rotate (-ve)', function() {
+	var a = AudioBuffer(1, [0,0,1,1,0,0,-1,-1]);
+	util.rotate(a, -3);
 	assert.deepEqual(a.getChannelData(0), [1,0,0,-1,-1,0,0,1])
 });
 
-
-
-test('shift', function () {
+test('shift (+ve)', function () {
 	var a = AudioBuffer(1, [0,0,1,1,0,0,-1,-1]);
-
 	util.shift(a, 2);
-
 	assert.deepEqual(a.getChannelData(0), [0,0,0,0,1,1,0,0]);
+});
 
-	util.shift(a, -5);
-
-	assert.deepEqual(a.getChannelData(0), [1,0,0,0,0,0,0,0])
+test('shift (-ve)', function () {
+	var a = AudioBuffer(1, [0,0,1,1,0,0,-1,-1]);
+	util.shift(a, -3);
+	assert.deepEqual(a.getChannelData(0), [1,0,0,-1,-1,0,0,0])
 });
