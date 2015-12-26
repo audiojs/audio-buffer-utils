@@ -74,3 +74,16 @@ test('fill', function () {
 	assert.deepEqual(a.getChannelData(0), [0,1]);
 	assert.deepEqual(a.getChannelData(1), [1,2]);
 });
+
+
+test('slice', function () {
+	var a = new AudioBuffer([1,2,3,4,5,6]);
+
+	var b = util.slice(a, 1);
+	assert.deepEqual(b.getChannelData(0), [2,3]);
+	assert.deepEqual(b.getChannelData(1), [5,6]);
+
+	var c = util.slice(a, 1, 2);
+	assert.deepEqual(c.getChannelData(0), [2]);
+	assert.deepEqual(c.getChannelData(1), [5]);
+});

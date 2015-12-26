@@ -13,7 +13,8 @@ module.exports = {
     zero: zero,
     noise: noise,
     equal: equal,
-    fill: fill
+    fill: fill,
+    slice: slice
 };
 
 
@@ -21,7 +22,6 @@ module.exports = {
  * Create clone of a buffer
  */
 function clone (inBuffer) {
-    //NOTE: default implementation didn’t work, as buffers do not have context param
     return new AudioBuffer(inBuffer);
 }
 
@@ -107,12 +107,17 @@ function fill (buffer, fn) {
  * Return sliced buffer
  */
 function slice (buffer, start, end) {
-    xxx
+    var data = [];
+    for (var channel = 0; channel < buffer.numberOfChannels; channel++) {
+        data.push(buffer.getChannelData(channel).slice(start, end));
+    }
+    return new AudioBuffer(buffer.channels, data, buffer.sampleRate);
 }
 
 
 /**
- * Return new buffer, mapped by a function
+ * Return new buffer, mapped by a function.
+ * Similar to fill, but keeps initial buffer untouched
  */
 function map (buffer, fn) {
     //WISHES: itd be nice to be able to mix channels, apply effects (basically operator processors)

@@ -36,13 +36,13 @@ utils.fill(buffer, function (sample, channel, idx) {
 	return sample / 2;
 });
 
-//Create a new buffer by mapping the current one.
+//Create a new buffer by mapping the samples of the current one.
 utils.map(buffer, function (sample, channel, idx) {
 	return sample / 2;
 });
 
 //Create a new buffer by slicing the current one.
-utils.slice(buffer, start, end?);
+utils.slice(buffer, start?, end?);
 
 //Create a new buffer by concatting passed buffers.
 utils.concat(buffer1, buffer2, buffer3, ...);
