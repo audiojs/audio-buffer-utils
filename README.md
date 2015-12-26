@@ -51,10 +51,10 @@ utils.concat(buffer1, buffer2, buffer3, ...);
 //Useful to change duration: `util.resize(buffer, duration * buffer.sampleRate);`
 utils.resize(buffer, length);
 
-//Shift signal by the `offet`, filling with zeros. `buffer` is modified in-place.
+//Shift signal by the `offset`, filling with zeros. `buffer` is modified in-place.
 utils.shift(buffer, offset);
 
-//Shift signal by the `offet` in circular fashion. `buffer` is modified in-place.
+//Shift signal by the `offset` in circular fashion. `buffer` is modified in-place.
 utils.rotate(buffer, offset);
 ```
 
