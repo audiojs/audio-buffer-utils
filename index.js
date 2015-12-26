@@ -194,31 +194,6 @@ function resize (buffer, length) {
 }
 
 
-/**
- * Change channels number and upmix/downmix
- */
-function channels (buffer, number, upmix) {
-    xxx
-}
-
-
-
-
-/**
- * Change sample rate
- */
-function resample (buffer, sampleRate) {
-    xxx
-}
-
-
-/**
- * Return buffer, pointing to the current one
- */
-function sub (buffer, start, end) {
-    xxx
-}
-
 
 /**
  * Shift content of the buffer in circular fashion
@@ -257,10 +232,37 @@ function shift (buffer, offset) {
 }
 
 
+
+/**
+ * Change sample rate
+ */
+function resample (buffer, sampleRate) {
+    xxx
+}
+
+
+/**
+ * Return buffer, pointing to the current one
+ */
+function sub (buffer, start, end) {
+    xxx
+}
+
+
 /**
  * Stretch or slow down the signal by the factor
  */
 function scale (buffer, factor) {
+    xxx
+}
+
+
+/**
+ * Change map of channels.
+ * Pass an optional flag to upmix/downmix according to the rules
+ * https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API/Basic_concepts_behind_Web_Audio_API#Up-mixing_and_down-mixing
+ */
+function remap (buffer, chanels, remix) {
     xxx
 }
 
@@ -325,5 +327,5 @@ function mix (buffer, bufferB) {
  * Size of a buffer, in megabytes
  */
 function size (buffer) {
-
+    xxx
 }

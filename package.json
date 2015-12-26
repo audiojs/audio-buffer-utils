@@ -5,8 +5,9 @@
   "main": "index.js",
   "scripts": {
     "test": "mocha",
-    "test:browser": "beefy test.js"
+    "test:browser": "beefy --index=test.html test.js"
   },
+  "files": ["index.js"],
   "repository": {
     "type": "git",
     "url": "git://github.com/jaz303/audio-buffer-utils.git"
