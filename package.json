@@ -1,11 +1,13 @@
 {
   "name": "audio-buffer-utils",
   "version": "0.1.0",
-  "description": "Utility functions for working with Web Audio API Buffers",
+  "description": "Utility functions for AudioBuffers",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha",
+    "test:browser": "beefy --index=test.html test.js"
   },
+  "files": ["index.js"],
   "repository": {
     "type": "git",
     "url": "git://github.com/jaz303/audio-buffer-utils.git"
@@ -14,15 +16,23 @@
     "web",
     "audio",
     "api",
-    "buffer"
+    "buffer",
+    "web audio",
+    "audio-buffer"
   ],
   "author": "Jason Frame <jason@onehackoranother.com> (http://jasonframe.co.uk)",
+  "contributors": [
+    "Dmitry Yvanow <dfcreative@gmail.com>"
+  ],
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/jaz303/audio-buffer-utils/issues"
   },
   "homepage": "https://github.com/jaz303/audio-buffer-utils",
   "devDependencies": {
-    "uglify-js": "^2.4.15"
+    "mocha": "^2.3.4"
+  },
+  "dependencies": {
+    "audio-buffer": "^2.1.2"
   }
 }
