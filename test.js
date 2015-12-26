@@ -120,7 +120,7 @@ test('slice', function () {
 
 test.skip('subbuffer', function () {
 	//NOTE: in web-audio-API two audiobuffers cannot share the same memory
-	//as far .buffer property if typedarrays cannot be overridden
+	//as far `.buffer` property of typedarrays cannot be overridden
 
 	var a = new AudioBuffer(3, [1,2,3,4,5,6,7,8,9]);
 
