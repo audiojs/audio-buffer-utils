@@ -36,7 +36,7 @@ function makeCompatible (inBuffer) {
  * Create clone of a buffer
  */
 function clone (inBuffer) {
-    return new AudioBuffer(inBuffer);
+    return slice(inBuffer);
 }
 
 
@@ -245,14 +245,6 @@ function shift (buffer, offset) {
  * Change sample rate
  */
 function resample (buffer, sampleRate) {
-    xxx
-}
-
-
-/**
- * Return buffer, pointing to the current one
- */
-function sub (buffer, start, end) {
     xxx
 }
 

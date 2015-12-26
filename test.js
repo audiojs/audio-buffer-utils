@@ -111,6 +111,32 @@ test('slice', function () {
 	assert.deepEqual(c.getChannelData(0), [2]);
 	assert.deepEqual(c.getChannelData(1), [5]);
 	assert.deepEqual(c.numberOfChannels, 3);
+
+	b.getChannelData(0)[0] = 1;
+	assert.deepEqual(b.getChannelData(0), [1,3]);
+	assert.deepEqual(a.getChannelData(0), [1, 2, 3]);
+});
+
+
+test.skip('subbuffer', function () {
+	//NOTE: in web-audio-API two audiobuffers cannot share the same memory
+	//as far .buffer property if typedarrays cannot be overridden
+
+	var a = new AudioBuffer(3, [1,2,3,4,5,6,7,8,9]);
+
+	var b = util.subbuffer(a, 1);
+	assert.deepEqual(b.getChannelData(0), [2,3]);
+	assert.deepEqual(b.getChannelData(1), [5,6]);
+
+	var c = util.subbuffer(a, 1, 2);
+	assert.deepEqual(c.getChannelData(0), [2]);
+	assert.deepEqual(c.getChannelData(1), [5]);
+	assert.deepEqual(c.numberOfChannels, 3);
+
+	b.getChannelData(0)[0] = 1;
+	assert.deepEqual(b.getChannelData(0), [1,3]);
+	assert.deepEqual(a.getChannelData(0), [1, 1, 3]);
+	assert.deepEqual(c.getChannelData(0), [1]);
 });
 
 
