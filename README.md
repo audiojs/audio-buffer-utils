@@ -10,6 +10,10 @@ Utility functions for Audio Buffers.
 var utils = require('audio-buffer-utils');
 
 //Create a new buffer with the same characteristics as `buffer`,
+//contents are undefined.
+utils.makeCompatible(buffer);
+
+//Create a new buffer with the same characteristics as `buffer`,
 //fill it with a copy of `buffer`'s data, and return it.
 utils.clone(buffer);
 
