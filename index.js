@@ -23,7 +23,8 @@ module.exports = {
     shift: shift,
     reduce: reduce,
     normalize: normalize,
-    trim: trim
+    trim: trim,
+    size: size
 };
 
 
@@ -343,6 +344,7 @@ function trimLeft (buffer, level) {
 
     var start = buffer.length;
 
+    //FIXME: replace with indexOF
     for (var channel = 0, c = buffer.numberOfChannels; channel < c; channel++) {
         var data = buffer.getChannelData(channel);
         for (var i = 0; i < data.length; i++) {
@@ -362,6 +364,7 @@ function trimRight (buffer, level) {
 
     var end = 0;
 
+    //FIXME: replace with lastIndexOf
     for (var channel = 0, c = buffer.numberOfChannels; channel < c; channel++) {
         var data = buffer.getChannelData(channel);
         for (var i = data.length; i--;) {
@@ -398,5 +401,5 @@ function mix (buffer, bufferB) {
  * Size of a buffer, in megabytes
  */
 function size (buffer) {
-    xxx
+    return buffer.numberOfChannels * buffer.getChannelData(0).byteLength;
 }

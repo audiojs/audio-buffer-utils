@@ -2,6 +2,7 @@ var test = it;
 var util = require('./');
 var assert = require('assert');
 var AudioBuffer = require('audio-buffer');
+var isBrowser = require('is-browser');
 
 
 test('equal', function () {
@@ -255,4 +256,17 @@ test('trim', function () {
 
 	assert.deepEqual(b.getChannelData(0), [1,0,1,0]);
 	assert.deepEqual(b.getChannelData(1), [0,2,3,1]);
+});
+
+
+test('size', function () {
+	var a = AudioBuffer(200);
+	assert.equal(util.size(a), 200 * 2 * 4);
+
+	if (!isBrowser && typeof Float64Array !== 'undefined') {
+		AudioBuffer.FloatArray = Float64Array;
+		var b = AudioBuffer(3, 200, 5000);
+		assert.equal(util.size(b), 3 * 200 * 8 );
+		AudioBuffer.FloatArray = Float32Array;
+	}
 });

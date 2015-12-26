@@ -7,7 +7,9 @@
     "test": "mocha",
     "test:browser": "beefy --index=test.html test.js"
   },
-  "files": ["index.js"],
+  "files": [
+    "index.js"
+  ],
   "repository": {
     "type": "git",
     "url": "git://github.com/jaz303/audio-buffer-utils.git"
@@ -30,6 +32,7 @@
   },
   "homepage": "https://github.com/jaz303/audio-buffer-utils",
   "devDependencies": {
+    "is-browser": "^2.0.1",
     "mocha": "^2.3.4"
   },
   "dependencies": {
