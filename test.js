@@ -98,7 +98,7 @@ test('transform', function () {
 test('fill', function () {
 	var a = new AudioBuffer([1,2,3,4]);
 	util.fill(a, 1);
-	
+
 	assert.deepEqual(a.getChannelData(0), [1,1]);
 	assert.deepEqual(a.getChannelData(1), [1,1]);
 });
@@ -229,4 +229,13 @@ test('normalize', function () {
 	util.normalize(a);
 
 	assert.deepEqual(a.getChannelData(0), [0, 0.5, 0, -1]);
+
+	//too big value
+	//FIXME: too large values are interpreted as 1, but maybe we need deamplifying instead
+	//for example, biquad-filters may return values > 1, then we do not want to clip values
+	var a = AudioBuffer(2, [0, 0.1, 0, -0.5, 999, 2]);
+
+	util.normalize(a);
+
+	assert.deepEqual(a.getChannelData(1), [-0.5, 1, 1]);
 });

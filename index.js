@@ -110,7 +110,7 @@ function equal (bufferA, bufferB) {
  * In-place transform
  */
 function transform (buffer, fn) {
-    for (var channel = 0, c = buffer.numberOfChannels; channel < c; ++channel) {
+    for (var channel = 0, c = buffer.numberOfChannels; channel < c; channel++) {
         var data = buffer.getChannelData(channel),
             l = buffer.length;
         for (var i = 0; i < l; i++) {
@@ -317,10 +317,10 @@ function normalize (buffer) {
         return Math.max(Math.abs(prev), Math.abs(curr));
     }, 0);
 
-    var amp = 1 / max;
+    var amp = 1 / Math.min(max, 1);
 
-    return fill(buffer, function (value) {
-        return value * amp;
+    return transform(buffer, function (value) {
+        return Math.min(value * amp, 1);
     });
 }
 

@@ -68,6 +68,8 @@ utils.rotate(buffer, offset);
 utils.reduce(buffer, function (previousValue, currendValue, channel, idx, channelData) {
 	return previousValue + currentValue;
 }, startWith?);
+
+//Normalize am
 ```
 
 
