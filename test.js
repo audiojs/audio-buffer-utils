@@ -126,6 +126,10 @@ test('map', function () {
 	assert.deepEqual(b.getChannelData(0), [1,2]);
 	assert.deepEqual(b.getChannelData(1), [2,3]);
 	assert.deepEqual(b.numberOfChannels, 3);
+
+	b.getChannelData(0)[0] = 0;
+	assert.deepEqual(a.getChannelData(0), [1,1]);
+	assert.deepEqual(b.getChannelData(0), [0,2]);
 });
 
 

@@ -141,7 +141,6 @@ function slice (buffer, start, end) {
  * Return new buffer, mapped by a function.
  * Similar to fill, but keeps initial buffer untouched
  */
-//WISH: itd be nice to be able to mix channels, apply effects (basically operator processors)
 function map (buffer, fn) {
     var data = [];
 
