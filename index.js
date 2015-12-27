@@ -24,6 +24,7 @@ module.exports = {
     reduce: reduce,
     normalize: normalize,
     trim: trim,
+    mix: mix,
     size: size
 };
 
@@ -116,6 +117,7 @@ function fill (buffer, value, start, end) {
     if (start == null) start = 0;
     else if (start < 0) start += buffer.length;
     if (end == null) end = buffer.length;
+    else if (end < 0) end += buffer.length;
 
     if (!(value instanceof Function)) {
         var fn = function () {return value;};
@@ -253,14 +255,6 @@ function shift (buffer, offset) {
 
 
 /**
- * Stretch or slow down the signal by the factor
- */
-function scale (buffer, factor) {
-    xxx
-}
-
-
-/**
  * Change map of channels.
  * Pass an optional flag to upmix/downmix according to the rules
  * https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API/Basic_concepts_behind_Web_Audio_API#Up-mixing_and_down-mixing
@@ -277,6 +271,7 @@ function reduce (buffer, fn, value, start, end) {
     if (start == null) start = 0;
     else if (start < 0) start += buffer.length;
     if (end == null) end = buffer.length;
+    else if (end < 0) end += buffer.length;
 
     if (value == null) value = 0;
 
@@ -367,15 +362,35 @@ function loudness (buffer) {
 
 
 /**
- * Mix current buffer with the other one
+ * Mix current buffer with the other one.
+ * The reason to modify bufferA instead of returning the new buffer
+ * is reduced amount of calculations and flexibility.
+ * If required, the cloning can be done before mixing, which will be the same.
  */
-function mix (buffer, bufferB) {
-   xxx
+function mix (bufferA, bufferB, weight, offset) {
+    if (weight == null) weight = 0.5;
+    var fn = weight instanceof Function ? weight : function (a, b) {
+        return a * (1 - weight) + b * weight;
+    };
+
+    if (offset == null) offset = 0;
+    else if (offset < 0) offset += bufferA.length;
+
+    for (var channel = 0; channel < bufferA.numberOfChannels; channel++) {
+        var aData = bufferA.getChannelData(channel);
+        var bData = bufferB.getChannelData(channel);
+
+        for (var i = offset, j = 0; i < bufferA.length && j < bufferB.length; i++, j++) {
+            aData[i] = fn.call(bufferA, aData[i], bData[j], channel, j);
+        }
+    }
+
+    return bufferA;
 }
 
 
 /**
- * Size of a buffer, in megabytes
+ * Size of a buffer, in bytes
  */
 function size (buffer) {
     return buffer.numberOfChannels * buffer.getChannelData(0).byteLength;

@@ -70,7 +70,10 @@ utils.reduce(buffer, function (previousValue, currendValue, channel, idx, channe
 utils.normalize(buffer, start?, end?);
 
 //Create buffer with trimmed zeros from the beginning/end, by the threshold.
-utils.trim(buffer, limit?);
+utils.trim(buffer, threshold?);
+
+//Mix second buffer into the first one. Pass optional weight value or mixing function.
+util.mix(bufferA, bufferB, ratio|fn(valA, valB, channel, idx)?, offset?);
 
 //Return buffer size, in bytes. Use pretty-bytes package to format bytes to a string, if needed.
 utils.size(buffer);
@@ -81,3 +84,4 @@ utils.size(buffer);
 
 > [audio-buffer](https://github.com/audio-lab/buffer) — audio data container, both for node/browser.<br/>
 > [pcm-util](https://github.com/audio-lab/pcm-util) — utils for low-level pcm buffers, like audio formats etc.<br/>
+> [scijs](https://github.com/scijs) — DSP utils, like fft, resample, scale etc.

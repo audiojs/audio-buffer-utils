@@ -274,9 +274,31 @@ test('size', function () {
 
 test.skip('resample', function () {
 	//NOTE: for resampling use https://github.com/scijs/ndarray-resample
+	//or similar.
 
 	var a = AudioBuffer(1, [0, 0.5, 1, 0.5, 0, -0.5, -1, -0.5, 0], 44100);
 	var b = util.resample(a, 3000);
 
 	assert.deepEqual(b.getChannelData(0), [])
+});
+
+
+test('mix', function () {
+	var a = AudioBuffer(2, [0,1,0,1]);
+	var b = AudioBuffer(2, [0.5, 0.5, -0.5, -0.5]);
+
+	//simple mix
+	util.mix(a, b);
+	assert.deepEqual(a.getChannelData(0), [0.25, 0.75]);
+	assert.deepEqual(a.getChannelData(1), [-0.25, 0.25]);
+
+	//fn mix
+	var a = AudioBuffer(2, [0, 1, 0, 1, 0, 1]);
+	var b = AudioBuffer(2, [1, 1, 1, 1]);
+	util.mix(a, b, function (v1, v2) {
+		return v1 + v2;
+	}, 1);
+
+	assert.deepEqual(a.getChannelData(0), [0, 2, 1]);
+	assert.deepEqual(a.getChannelData(1), [1, 1, 2]);
 });
