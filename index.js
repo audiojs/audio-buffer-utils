@@ -255,16 +255,6 @@ function shift (buffer, offset) {
 
 
 /**
- * Change map of channels.
- * Pass an optional flag to upmix/downmix according to the rules
- * https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API/Basic_concepts_behind_Web_Audio_API#Up-mixing_and_down-mixing
- */
-function remap (buffer, chanels, remix) {
-    xxx
-}
-
-
-/**
  * Reduce buffer to a single metric, e. g. average, max, min, volume etc
  */
 function reduce (buffer, fn, value, start, end) {
@@ -349,15 +339,6 @@ function trimRight (buffer, level) {
     }
 
     return slice(buffer, 0, end);
-}
-
-
-/**
- * Get the loudness of the buffer, acc to the spec
- * https://tech.ebu.ch/docs/r/r128.pdf
- */
-function loudness (buffer) {
-    xxx
 }
 
 
