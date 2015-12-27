@@ -72,7 +72,7 @@ utils.normalize(buffer, start?, end?);
 //Create buffer with trimmed zeros from the beginning/end, by the threshold.
 utils.trim(buffer, limit?);
 
-//Return buffer size, in bytes. Use pretty-bytes package to format bytes to string, if needed.
+//Return buffer size, in bytes. Use pretty-bytes package to format bytes to a string, if needed.
 utils.size(buffer);
 ```
 

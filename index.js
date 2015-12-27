@@ -253,14 +253,6 @@ function shift (buffer, offset) {
 
 
 /**
- * Change sample rate
- */
-function resample (buffer, sampleRate) {
-    xxx
-}
-
-
-/**
  * Stretch or slow down the signal by the factor
  */
 function scale (buffer, factor) {
@@ -274,21 +266,6 @@ function scale (buffer, factor) {
  * https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API/Basic_concepts_behind_Web_Audio_API#Up-mixing_and_down-mixing
  */
 function remap (buffer, chanels, remix) {
-    xxx
-}
-
-
-/**
- * Get frequencies content of the buffer
- */
-function fft (buffer) {
-    xxx
-}
-
-/**
- * Get buffer from frequencies content
- */
-function ifft (buffer) {
     xxx
 }
 

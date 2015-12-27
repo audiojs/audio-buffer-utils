@@ -270,3 +270,13 @@ test('size', function () {
 		AudioBuffer.FloatArray = Float32Array;
 	}
 });
+
+
+test.skip('resample', function () {
+	//NOTE: for resampling use https://github.com/scijs/ndarray-resample
+
+	var a = AudioBuffer(1, [0, 0.5, 1, 0.5, 0, -0.5, -1, -0.5, 0], 44100);
+	var b = util.resample(a, 3000);
+
+	assert.deepEqual(b.getChannelData(0), [])
+});
