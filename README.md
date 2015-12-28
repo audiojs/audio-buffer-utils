@@ -3,7 +3,7 @@ Utility functions for Audio Buffers.
 
 ## Usage
 
-`$ npm install audio-buffer-utils`
+[`$ npm install audio-buffer-utils`](https://npmjs.org/package/audio-buffer-utils)
 
 
 ```js
