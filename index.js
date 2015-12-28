@@ -7,7 +7,7 @@ var AudioBuffer = require('audio-buffer');
 
 
 module.exports = {
-    makeCompatible: makeCompatible,
+    shallow: shallow,
     clone: clone,
     reverse: reverse,
     invert: invert,
@@ -35,7 +35,7 @@ module.exports = {
  * Create a buffer with the same characteristics as inBuffer, without copying
  * the data. Contents of resulting buffer are undefined.
  */
-function makeCompatible (inBuffer) {
+function shallow (inBuffer) {
     return new AudioBuffer(inBuffer.numberOfChannels, inBuffer.length, inBuffer.sampleRate);
 }
 
