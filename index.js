@@ -24,6 +24,8 @@ module.exports = {
     reduce: reduce,
     normalize: normalize,
     trim: trim,
+    trimStart: trimStart,
+    trimEnd: trimEnd,
     mix: mix,
     size: size
 };
@@ -298,47 +300,57 @@ function normalize (buffer, start, end) {
  * Trim sound (remove zeros from the beginning and the end)
  */
 function trim (buffer, level) {
-    return trimLeft(trimRight(buffer, level), level);
+    return trimInternal(buffer, level, true, true);
 }
 
-function trimLeft (buffer, level) {
-    if (level == null) level = 0;
-
-    var start = buffer.length;
-
-    //FIXME: replace with indexOF
-    for (var channel = 0, c = buffer.numberOfChannels; channel < c; channel++) {
-        var data = buffer.getChannelData(channel);
-        for (var i = 0; i < data.length; i++) {
-            if (i > start) break;
-            if (data[i] > level) {
-                start = i;
-                break;
-            }
-        }
-    }
-
-    return slice(buffer, start);
+function trimStart (buffer, level) {
+    return trimInternal(buffer, level, true, false);
 }
 
-function trimRight (buffer, level) {
-    if (level == null) level = 0;
+function trimEnd (buffer, level) {
+    return trimInternal(buffer, level, false, true);
+}
 
-    var end = 0;
+function trimInternal(buffer, level, trimLeft, trimRight) {
+    level = (level == null) ? 0 : Math.abs(level);
 
-    //FIXME: replace with lastIndexOf
-    for (var channel = 0, c = buffer.numberOfChannels; channel < c; channel++) {
-        var data = buffer.getChannelData(channel);
-        for (var i = data.length; i--;) {
-            if (i < end) break;
-            if (data[i] > level) {
-                end = i + 1;
-                break;
+    var start, end;
+
+    if (trimLeft) {
+        start = buffer.length;
+        //FIXME: replace with indexOF
+        for (var channel = 0, c = buffer.numberOfChannels; channel < c; channel++) {
+            var data = buffer.getChannelData(channel);
+            for (var i = 0; i < data.length; i++) {
+                if (i > start) break;
+                if (Math.abs(data[i]) > level) {
+                    start = i;
+                    break;
+                }
             }
         }
+    } else {
+        start = 0;
     }
 
-    return slice(buffer, 0, end);
+    if (trimRight) {
+        end = 0;
+        //FIXME: replace with lastIndexOf
+        for (var channel = 0, c = buffer.numberOfChannels; channel < c; channel++) {
+            var data = buffer.getChannelData(channel);
+            for (var i = data.length - 1; i >= 0; i--) {
+                if (i < end) break;
+                if (Math.abs(data[i]) > level) {
+                    end = i + 1;
+                    break;
+                }
+            }
+        }
+    } else {
+        end = buffer.length;
+    }
+
+    return slice(buffer, start, end);
 }
 
 
