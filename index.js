@@ -345,8 +345,6 @@ function normalize (buffer, start, end) {
  * Trim sound (remove zeros from the beginning and the end)
  */
 function trim (buffer, level) {
-    validate(buffer);
-
     return trimInternal(buffer, level, true, true);
 }
 
@@ -359,6 +357,8 @@ function trimEnd (buffer, level) {
 }
 
 function trimInternal(buffer, level, trimLeft, trimRight) {
+    validate(buffer);
+
     level = (level == null) ? 0 : Math.abs(level);
 
     var start, end;
