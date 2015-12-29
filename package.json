@@ -36,6 +36,7 @@
     "mocha": "^2.3.4"
   },
   "dependencies": {
-    "audio-buffer": "^2.1.2"
+    "audio-buffer": "^2.1.2",
+    "is-audio-buffer": "^1.0.0"
   }
 }
