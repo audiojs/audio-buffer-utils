@@ -36,7 +36,7 @@ module.exports = {
  * Assert argument is AudioBuffer, throw error otherwise.
  */
 function validate (buffer) {
-    if (!isAudioBuffer(buffer)) throw new Error('Argument should be AudioBuffer instance.');
+    if (!isAudioBuffer(buffer)) throw new Error('Argument should be an AudioBuffer instance.');
 }
 
 
@@ -46,6 +46,7 @@ function validate (buffer) {
  */
 function shallow (buffer) {
     validate(buffer);
+
     return new AudioBuffer(buffer.numberOfChannels, buffer.length, buffer.sampleRate);
 }
 
@@ -55,6 +56,7 @@ function shallow (buffer) {
  */
 function clone (buffer) {
     validate(buffer);
+
     return slice(buffer);
 }
 
@@ -64,6 +66,7 @@ function clone (buffer) {
  */
 function reverse (buffer) {
     validate(buffer);
+
     for (var i = 0, c = buffer.numberOfChannels; i < c; ++i) {
         var d = buffer.getChannelData(i);
         Array.prototype.reverse.call(d);
@@ -78,6 +81,7 @@ function reverse (buffer) {
  */
 function invert (buffer, start, end) {
     validate(buffer);
+
     return fill(buffer, function (sample) { return -sample; }, start, end);
 }
 
@@ -87,6 +91,7 @@ function invert (buffer, start, end) {
  */
 function zero (buffer, start, end) {
     validate(buffer);
+
     return fill(buffer, 0, start, end);
 }
 
@@ -96,6 +101,7 @@ function zero (buffer, start, end) {
  */
 function noise (buffer, start, end) {
     validate(buffer);
+
     return fill(buffer, function (sample) { return Math.random() * 2 - 1; }, start, end);
 }
 
@@ -431,5 +437,6 @@ function mix (bufferA, bufferB, weight, offset) {
  */
 function size (buffer) {
     validate(buffer);
+
     return buffer.numberOfChannels * buffer.getChannelData(0).byteLength;
 }
