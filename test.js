@@ -18,6 +18,10 @@ test('equal', function () {
 	assert(util.equal(buf3, buf4));
 	assert(util.equal(buf3, buf4, buf5));
 	assert(!util.equal(buf4, buf5, buf3, buf1));
+
+	assert.throws(function () {
+		util.equal(buf1, new Float32Array(1));
+	});
 });
 
 test('shallow', function () {
@@ -27,6 +31,10 @@ test('shallow', function () {
 	assert.equal(buf1.length, buf2.length);
 	assert.equal(buf1.numberOfChannels, buf2.numberOfChannels);
 	assert.equal(buf1.sampleRate, buf2.sampleRate);
+
+	assert.throws(function () {
+		util.shallow(new Float32Array(1));
+	});
 });
 
 
@@ -40,6 +48,10 @@ test('clone', function () {
 	buf2.getChannelData(0)[1] = 0.5;
 	assert.deepEqual(buf1.getChannelData(0), [1, 0]);
 	assert.deepEqual(buf2.getChannelData(0), [1, 0.5]);
+
+	assert.throws(function () {
+		util.clone({});
+	});
 });
 
 test('clone - backing arrays are not shared between buffers', function () {
@@ -57,6 +69,10 @@ test('reverse', function () {
 
 	assert.deepEqual(buf1.getChannelData(0), [0, 1]);
 	assert.deepEqual(buf1.getChannelData(1), [0, -1]);
+
+	assert.throws(function () {
+		util.reverse([1,2,3]);
+	});
 });
 
 
@@ -66,6 +82,10 @@ test('invert', function () {
 
 	assert.deepEqual(buf1.getChannelData(0), [-1, -0.5]);
 	assert.deepEqual(buf1.getChannelData(1), [1, 0]);
+
+	assert.throws(function () {
+		util.invert(new Float32Array([1,2,3]));
+	});
 });
 
 
@@ -75,6 +95,10 @@ test('zero', function () {
 
 	assert.deepEqual(buf1.getChannelData(0), [0, 0]);
 	assert.deepEqual(buf1.getChannelData(1), [0, 0]);
+
+	assert.throws(function () {
+		util.invert(buf1.getChannelData(0));
+	});
 });
 
 
@@ -84,6 +108,10 @@ test('noise', function () {
 
 	assert.notDeepEqual(buf1.getChannelData(0), [0, 0]);
 	assert.notDeepEqual(buf1.getChannelData(1), [0, 0]);
+
+	assert.throws(function () {
+		util.noise(buf1.getChannelData(0));
+	});
 });
 
 
@@ -93,6 +121,10 @@ test('fill with function', function () {
 
 	assert.deepEqual(a.getChannelData(0), [0,1]);
 	assert.deepEqual(a.getChannelData(1), [1,2]);
+
+	assert.throws(function () {
+		util.fill([1,2,3], function () {});
+	});
 });
 
 
@@ -102,6 +134,10 @@ test('fill with value', function () {
 
 	assert.deepEqual(a.getChannelData(0), [1,1]);
 	assert.deepEqual(a.getChannelData(1), [3,1]);
+
+	assert.throws(function () {
+		util.fill(a.getChannelData(1), 1);
+	});
 });
 
 
@@ -120,12 +156,17 @@ test('slice', function () {
 	b.getChannelData(0)[0] = 1;
 	assert.deepEqual(b.getChannelData(0), [1,3]);
 	assert.deepEqual(a.getChannelData(0), [1, 2, 3]);
+
+	assert.throws(function () {
+		util.slice([1,2,3,4], 1, 2);
+	});
 });
 
 
 test.skip('subbuffer', function () {
 	//NOTE: in web-audio-API two audiobuffers cannot share the same memory
 	//as far `.buffer` property of typedarrays cannot be overridden
+	//and typedarrays are created by WebAudioBuffer innerly
 
 	var a = new AudioBuffer(3, [1,2,3,4,5,6,7,8,9]);
 
@@ -161,6 +202,10 @@ test('map', function () {
 	b.getChannelData(0)[0] = 0;
 	assert.deepEqual(a.getChannelData(0), [1,1]);
 	assert.deepEqual(b.getChannelData(0), [0,2]);
+
+	assert.throws(function () {
+		util.map([1,2,3,4], function () {});
+	});
 });
 
 
@@ -182,6 +227,10 @@ test('concat', function () {
 	assert.deepEqual(d.getChannelData(0), [1,1,0,0,-1,-1]);
 	assert.deepEqual(d.getChannelData(1), [1,1,0,0,0,0]);
 	assert.deepEqual(d.getChannelData(2), [0,0,0,0,0,0]);
+
+	assert.throws(function () {
+		util.concat([1,2,3,4], [5,6]);
+	});
 });
 
 
@@ -195,6 +244,10 @@ test('resize', function () {
 	//set too small
 	a = util.resize(a, 2);
 	assert.deepEqual(a.getChannelData(0), [1,1]);
+
+	assert.throws(function () {
+		util.resize('123', 2);
+	});
 });
 
 
@@ -202,12 +255,20 @@ test('rotate (+ve)', function () {
 	var a = AudioBuffer(1, [0,0,1,1,0,0,-1,-1]);
 	util.rotate(a, 2);
 	assert.deepEqual(a.getChannelData(0), [-1,-1,0,0,1,1,0,0]);
+
+	assert.throws(function () {
+		util.rotate([1,2,3], 2);
+	});
 });
 
 test('rotate (-ve)', function() {
 	var a = AudioBuffer(1, [0,0,1,1,0,0,-1,-1]);
 	util.rotate(a, -3);
-	assert.deepEqual(a.getChannelData(0), [1,0,0,-1,-1,0,0,1])
+	assert.deepEqual(a.getChannelData(0), [1,0,0,-1,-1,0,0,1]);
+
+	assert.throws(function () {
+		util.rotate([1,2,3], -2);
+	});
 });
 
 
@@ -215,12 +276,20 @@ test('shift (+ve)', function () {
 	var a = AudioBuffer(1, [0,0,1,1,0,0,-1,-1]);
 	util.shift(a, 2);
 	assert.deepEqual(a.getChannelData(0), [0,0,0,0,1,1,0,0]);
+
+	assert.throws(function () {
+		util.shift([1,2,3], 2);
+	});
 });
 
 test('shift (-ve)', function () {
 	var a = AudioBuffer(1, [0,0,1,1,0,0,-1,-1]);
 	util.shift(a, -3);
-	assert.deepEqual(a.getChannelData(0), [1,0,0,-1,-1,0,0,0])
+	assert.deepEqual(a.getChannelData(0), [1,0,0,-1,-1,0,0,0]);
+
+	assert.throws(function () {
+		util.shift([1,2,3], -2);
+	});
 });
 
 
@@ -239,6 +308,10 @@ test('normalize', function () {
 	util.normalize(a);
 
 	assert.deepEqual(a.getChannelData(1), [-0.5, 1, 1]);
+
+	assert.throws(function () {
+		util.normalize(new Float32Array([0, 0.1, 0.2]));
+	});
 });
 
 
@@ -256,6 +329,10 @@ test('trim', function () {
 
 	assert.deepEqual(b.getChannelData(0), [1,0,1,0]);
 	assert.deepEqual(b.getChannelData(1), [0,2,3,1]);
+
+	assert.throws(function () {
+		util.normalize(new Float32Array([0, 0.1, 0.2]));
+	});
 });
 
 
@@ -269,6 +346,10 @@ test('size', function () {
 		assert.equal(util.size(b), 3 * 200 * 8 );
 		AudioBuffer.FloatArray = Float32Array;
 	}
+
+	assert.throws(function () {
+		util.size();
+	});
 });
 
 
@@ -279,7 +360,7 @@ test.skip('resample', function () {
 	var a = AudioBuffer(1, [0, 0.5, 1, 0.5, 0, -0.5, -1, -0.5, 0], 44100);
 	var b = util.resample(a, 3000);
 
-	assert.deepEqual(b.getChannelData(0), [])
+	assert.deepEqual(b.getChannelData(0), []);
 });
 
 
@@ -301,4 +382,8 @@ test('mix', function () {
 
 	assert.deepEqual(a.getChannelData(0), [0, 2, 1]);
 	assert.deepEqual(a.getChannelData(1), [1, 1, 2]);
+
+	assert.throws(function () {
+		util.mix([1,2,3], [4,5,6], 0.1);
+	});
 });

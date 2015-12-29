@@ -4,6 +4,7 @@
 
 
 var AudioBuffer = require('audio-buffer');
+var isAudioBuffer = require('is-audio-buffer');
 
 
 module.exports = {
@@ -32,19 +33,31 @@ module.exports = {
 
 
 /**
+ * Assert argument is AudioBuffer, throw error otherwise.
+ */
+function validate (buffer) {
+    if (!isAudioBuffer(buffer)) throw new Error('Argument should be an AudioBuffer instance.');
+}
+
+
+/**
  * Create a buffer with the same characteristics as inBuffer, without copying
  * the data. Contents of resulting buffer are undefined.
  */
-function shallow (inBuffer) {
-    return new AudioBuffer(inBuffer.numberOfChannels, inBuffer.length, inBuffer.sampleRate);
+function shallow (buffer) {
+    validate(buffer);
+
+    return new AudioBuffer(buffer.numberOfChannels, buffer.length, buffer.sampleRate);
 }
 
 
 /**
  * Create clone of a buffer
  */
-function clone (inBuffer) {
-    return slice(inBuffer);
+function clone (buffer) {
+    validate(buffer);
+
+    return slice(buffer);
 }
 
 
@@ -52,6 +65,8 @@ function clone (inBuffer) {
  * Reverse samples in each channel
  */
 function reverse (buffer) {
+    validate(buffer);
+
     for (var i = 0, c = buffer.numberOfChannels; i < c; ++i) {
         var d = buffer.getChannelData(i);
         Array.prototype.reverse.call(d);
@@ -65,6 +80,8 @@ function reverse (buffer) {
  * Invert amplitude of samples in each channel
  */
 function invert (buffer, start, end) {
+    validate(buffer);
+
     return fill(buffer, function (sample) { return -sample; }, start, end);
 }
 
@@ -73,6 +90,8 @@ function invert (buffer, start, end) {
  * Fill with zeros
  */
 function zero (buffer, start, end) {
+    validate(buffer);
+
     return fill(buffer, 0, start, end);
 }
 
@@ -81,6 +100,8 @@ function zero (buffer, start, end) {
  * Fill with white noise
  */
 function noise (buffer, start, end) {
+    validate(buffer);
+
     return fill(buffer, function (sample) { return Math.random() * 2 - 1; }, start, end);
 }
 
@@ -96,6 +117,9 @@ function equal (bufferA, bufferB) {
         }
         return true;
     }
+
+    validate(bufferA);
+    validate(bufferB);
 
     if (bufferA.length !== bufferB.length || bufferA.numberOfChannels !== bufferB.numberOfChannels) return false;
 
@@ -116,6 +140,8 @@ function equal (bufferA, bufferB) {
  * Generic in-place fill/transform
  */
 function fill (buffer, value, start, end) {
+    validate(buffer);
+
     if (start == null) start = 0;
     else if (start < 0) start += buffer.length;
     if (end == null) end = buffer.length;
@@ -144,6 +170,8 @@ function fill (buffer, value, start, end) {
  * Return sliced buffer
  */
 function slice (buffer, start, end) {
+    validate(buffer);
+
     var data = [];
     for (var channel = 0; channel < buffer.numberOfChannels; channel++) {
         data.push(buffer.getChannelData(channel).slice(start, end));
@@ -157,6 +185,8 @@ function slice (buffer, start, end) {
  * Similar to transform, but keeps initial buffer untouched
  */
 function map (buffer, fn) {
+    validate(buffer);
+
     var data = [];
 
     for (var channel = 0; channel < buffer.numberOfChannels; channel++) {
@@ -181,6 +211,9 @@ function concat (bufferA, bufferB) {
         }
         return result;
     }
+
+    validate(bufferA);
+    validate(bufferB);
 
     var data = [];
     var channels = Math.max(bufferA.numberOfChannels, bufferB.numberOfChannels);
@@ -211,6 +244,8 @@ function concat (bufferA, bufferB) {
  * Change the length of the buffer, by trimming or filling with zeros
  */
 function resize (buffer, length) {
+    validate(buffer);
+
     if (length < buffer.length) return slice(buffer, 0, length);
 
     return concat(buffer, new AudioBuffer(length - buffer.length));
@@ -222,6 +257,8 @@ function resize (buffer, length) {
  * Shift content of the buffer in circular fashion
  */
 function rotate (buffer, offset) {
+    validate(buffer);
+
     for (var channel = 0; channel < buffer.numberOfChannels; channel++) {
         var cData = buffer.getChannelData(channel);
         var srcData = cData.slice();
@@ -230,6 +267,7 @@ function rotate (buffer, offset) {
             cData[idx] = srcData[i];
         }
     }
+
     return buffer;
 }
 
@@ -238,6 +276,8 @@ function rotate (buffer, offset) {
  * Shift content of the buffer
  */
 function shift (buffer, offset) {
+    validate(buffer);
+
     for (var channel = 0; channel < buffer.numberOfChannels; channel++) {
         var cData = buffer.getChannelData(channel);
         if (offset > 0) {
@@ -251,6 +291,7 @@ function shift (buffer, offset) {
             }
         }
     }
+
     return buffer;
 }
 
@@ -260,6 +301,8 @@ function shift (buffer, offset) {
  * Reduce buffer to a single metric, e. g. average, max, min, volume etc
  */
 function reduce (buffer, fn, value, start, end) {
+    validate(buffer);
+
     if (start == null) start = 0;
     else if (start < 0) start += buffer.length;
     if (end == null) end = buffer.length;
@@ -284,6 +327,8 @@ function reduce (buffer, fn, value, start, end) {
  * limit values by the -1..1 range
  */
 function normalize (buffer, start, end) {
+    validate(buffer);
+
     var max = reduce(buffer, function (prev, curr) {
         return Math.max(Math.abs(prev), Math.abs(curr));
     }, 0, start, end);
@@ -300,6 +345,8 @@ function normalize (buffer, start, end) {
  * Trim sound (remove zeros from the beginning and the end)
  */
 function trim (buffer, level) {
+    validate(buffer);
+
     return trimInternal(buffer, level, true, true);
 }
 
@@ -361,6 +408,9 @@ function trimInternal(buffer, level, trimLeft, trimRight) {
  * If required, the cloning can be done before mixing, which will be the same.
  */
 function mix (bufferA, bufferB, weight, offset) {
+    validate(bufferA);
+    validate(bufferB);
+
     if (weight == null) weight = 0.5;
     var fn = weight instanceof Function ? weight : function (a, b) {
         return a * (1 - weight) + b * weight;
@@ -386,5 +436,7 @@ function mix (bufferA, bufferB, weight, offset) {
  * Size of a buffer, in bytes
  */
 function size (buffer) {
+    validate(buffer);
+
     return buffer.numberOfChannels * buffer.getChannelData(0).byteLength;
 }
