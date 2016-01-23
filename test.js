@@ -4,6 +4,31 @@ var assert = require('assert');
 var AudioBuffer = require('audio-buffer');
 var isBrowser = require('is-browser');
 
+test('from', function () {
+	var buf1 = util.from();
+	assert.equal(buf1.length, 1);
+	assert.equal(buf1.numberOfChannels, 2);
+
+	var buf2 = util.from([[0,1], [0,1], [1,0]]);
+	assert.deepEqual(buf2.getChannelData(2), [1, 0]);
+
+	var buf3 = util.from([new Float32Array([0,1]), new Float32Array([0,1]), new Float32Array([1,0])]);
+	assert.deepEqual(buf3.getChannelData(2), [1, 0]);
+
+	var buf4 = util.from(2, 5, 44100);
+	assert.deepEqual(buf4.getChannelData(0), [0,0,0,0,0]);
+
+	var buf5 = util.from(buf4);
+	assert.notEqual(buf4, buf5);
+	assert.notEqual(buf4.getChannelData(0), buf5.getChannelData(0));
+	assert.deepEqual(buf5.getChannelData(0), [0,0,0,0,0]);
+
+	var buf6 = util.from([1,0,0,1]);
+	assert.deepEqual(buf6.getChannelData(1), [0,1]);
+
+	var buf7 = util.from(1, [1,0,0,1]);
+	assert.deepEqual(buf7.getChannelData(0), [1,0,0,1]);
+});
 
 test('equal', function () {
 	var buf1 = new AudioBuffer([1, 0, -1, 0]);
@@ -60,6 +85,10 @@ test('clone - backing arrays are not shared between buffers', function () {
 
 	buf2.getChannelData(0)[0] = 100;
 	assert.equal(0, buf1.getChannelData(0)[0]);
+});
+
+test.skip('clone - target buffer as a second argument', function () {
+	// var buf1 = util.
 });
 
 
