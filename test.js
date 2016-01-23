@@ -4,29 +4,29 @@ var assert = require('assert');
 var AudioBuffer = require('audio-buffer');
 var isBrowser = require('is-browser');
 
-test('from', function () {
-	var buf1 = util.from();
+test('create', function () {
+	var buf1 = util.create();
 	assert.equal(buf1.length, 1);
 	assert.equal(buf1.numberOfChannels, 2);
 
-	var buf2 = util.from([[0,1], [0,1], [1,0]]);
+	var buf2 = util.create([[0,1], [0,1], [1,0]]);
 	assert.deepEqual(buf2.getChannelData(2), [1, 0]);
 
-	var buf3 = util.from([new Float32Array([0,1]), new Float32Array([0,1]), new Float32Array([1,0])]);
+	var buf3 = util.create([new Float32Array([0,1]), new Float32Array([0,1]), new Float32Array([1,0])]);
 	assert.deepEqual(buf3.getChannelData(2), [1, 0]);
 
-	var buf4 = util.from(2, 5, 44100);
+	var buf4 = util.create(2, 5, 44100);
 	assert.deepEqual(buf4.getChannelData(0), [0,0,0,0,0]);
 
-	var buf5 = util.from(buf4);
+	var buf5 = util.create(buf4);
 	assert.notEqual(buf4, buf5);
 	assert.notEqual(buf4.getChannelData(0), buf5.getChannelData(0));
 	assert.deepEqual(buf5.getChannelData(0), [0,0,0,0,0]);
 
-	var buf6 = util.from([1,0,0,1]);
+	var buf6 = util.create([1,0,0,1]);
 	assert.deepEqual(buf6.getChannelData(1), [0,1]);
 
-	var buf7 = util.from(1, [1,0,0,1]);
+	var buf7 = util.create(1, [1,0,0,1]);
 	assert.deepEqual(buf7.getChannelData(0), [1,0,0,1]);
 });
 

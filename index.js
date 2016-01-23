@@ -8,7 +8,8 @@ var isAudioBuffer = require('is-audio-buffer');
 
 
 module.exports = {
-    from: from,
+    create: create,
+    copy: copy,
     shallow: shallow,
     clone: clone,
     reverse: reverse,
@@ -36,8 +37,16 @@ module.exports = {
 /**
  * Create buffer from any argument
  */
-function from (a, b, c) {
+function create (a, b, c) {
     return new AudioBuffer(a, b, c);
+}
+
+
+/**
+ * Copy data from buffer A to buffer B
+ */
+function copy (from, to) {
+
 }
 
 
@@ -56,7 +65,7 @@ function validate (buffer) {
 function shallow (buffer) {
     validate(buffer);
 
-    return from(buffer.numberOfChannels, buffer.length, buffer.sampleRate);
+    return create(buffer.numberOfChannels, buffer.length, buffer.sampleRate);
 }
 
 
@@ -185,7 +194,7 @@ function slice (buffer, start, end) {
     for (var channel = 0; channel < buffer.numberOfChannels; channel++) {
         data.push(buffer.getChannelData(channel).slice(start, end));
     }
-    return from(buffer.numberOfChannels, data, buffer.sampleRate);
+    return create(buffer.numberOfChannels, data, buffer.sampleRate);
 }
 
 
@@ -204,7 +213,7 @@ function map (buffer, fn) {
         }));
     }
 
-    return from(buffer.numberOfChannels, data, buffer.sampleRate);
+    return create(buffer.numberOfChannels, data, buffer.sampleRate);
 }
 
 
@@ -245,7 +254,7 @@ function concat (bufferA, bufferB) {
         data.push(channelData);
     }
 
-    return from(channels, data, sampleRate);
+    return create(channels, data, sampleRate);
 }
 
 
@@ -257,7 +266,7 @@ function resize (buffer, length) {
 
     if (length < buffer.length) return slice(buffer, 0, length);
 
-    return concat(buffer, from(length - buffer.length));
+    return concat(buffer, create(length - buffer.length));
 }
 
 

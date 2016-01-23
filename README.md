@@ -9,6 +9,10 @@ Utility functions for Audio Buffers.
 ```js
 var utils = require('audio-buffer-utils');
 
+//Create a new buffer from any argument.
+//Data can be a length, an array with channels' data, an other buffer or plain array.
+utils.create(channels?, data, sampleRate?);
+
 //Create a new buffer with the same characteristics as `buffer`,
 //contents are undefined.
 utils.shallow(buffer);
