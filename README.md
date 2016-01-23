@@ -22,13 +22,13 @@ utils.shallow(buffer);
 utils.clone(buffer);
 
 //Copy the data from one buffer to another
-utils.copy(fromBuffer, toBuffer);
+utils.copy(fromBuffer, result);
 
-//Reverse `buffer`. Place data `toBuffer`, if any, otherwise modify `buffer` in-place.
-utils.reverse(buffer, toBuffer?);
+//Reverse `buffer`. Place data to `result` buffer, if any, otherwise modify `buffer` in-place.
+utils.reverse(buffer, result?);
 
-//Invert `buffer`. Place data `toBuffer`, if any, otherwise modify `buffer` in-place.
-utils.invert(buffer, toBuffer?);
+//Invert `buffer`. Place data to `result` buffer, if any, otherwise modify `buffer` in-place.
+utils.invert(buffer, result?);
 
 //Zero all of `buffer`'s channel data. `buffer` is modified in-place.
 utils.zero(buffer);
@@ -39,8 +39,10 @@ utils.noise(buffer);
 //Test whether the content of N buffers is the same.
 utils.equal(bufferA, bufferB, ...);
 
-//Fill `buffer` with provided function or value. Pass optional `start` and `end` indexes.
-utils.fill(buffer, value|function (sample, channel, idx) {
+//Fill `buffer` with provided function or value.
+//Place data to `result` buffer, if any, otherwise modify `buffer` in-place.
+//Pass optional `start` and `end` indexes.
+utils.fill(buffer, result?, value|function (sample, channel, idx) {
 	return sample / 2;
 }, start?, end?);
 
@@ -63,12 +65,12 @@ utils.concat(buffer1, buffer2, buffer3, ...);
 utils.resize(buffer, length);
 
 //Shift signal in the time domain by `offset` samples, filling with zeros.
-//Place data `toBuffer`, if any, otherwise modify `buffer` in-place.
-utils.shift(buffer, toBuffer?, offset);
+//Place data to `result` buffer, if any, otherwise modify `buffer` in-place.
+utils.shift(buffer, result?, offset);
 
 //Shift signal in the time domain by `offset` samples, in circular fashion.
-//Place data `toBuffer`, if any, otherwise modify `buffer` in-place.
-utils.rotate(buffer, toBuffer?, offset);
+//Place data to `result` buffer, if any, otherwise modify `buffer` in-place.
+utils.rotate(buffer, result?, offset);
 
 //Fold buffer into a single value. Useful to generate metrics, like loudness, average, etc.
 utils.reduce(buffer, function (previousValue, currendValue, channel, idx, channelData) {
@@ -76,8 +78,8 @@ utils.reduce(buffer, function (previousValue, currendValue, channel, idx, channe
 }, startValue?);
 
 //Normalize buffer by the max value, limit to the -1..+1 range.
-//Place data `toBuffer`, if any, otherwise modify `buffer` in-place.
-utils.normalize(buffer, toBuffer?, start?, end?);
+//Place data to `result` buffer, if any, otherwise modify `buffer` in-place.
+utils.normalize(buffer, result?, start?, end?);
 
 //Create buffer with trimmed zeros from the start and/or end, by the threshold.
 utils.trim(buffer, threshold?);

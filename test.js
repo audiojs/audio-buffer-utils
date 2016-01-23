@@ -103,10 +103,6 @@ test('clone - backing arrays are not shared between buffers', function () {
 	assert.equal(0, buf1.getChannelData(0)[0]);
 });
 
-test.skip('clone - target buffer as a second argument', function () {
-	// var buf1 = util.
-});
-
 
 test('reverse', function () {
 	var buf1 = new AudioBuffer([1, 0, -1, 0]);
@@ -136,6 +132,11 @@ test('invert', function () {
 	assert.throws(function () {
 		util.invert(new Float32Array([1,2,3]));
 	});
+
+	var buf2 = util.shallow(buf1);
+	util.invert(buf1, buf2);
+
+	assert.deepEqual(buf2.getChannelData(1), [-1, 0]);
 });
 
 
@@ -190,6 +191,17 @@ test('fill with value', function () {
 	});
 });
 
+test('fill to another buffer', function () {
+	var a = new AudioBuffer([1,2,3,4]);
+	var b = util.shallow(a);
+	util.fill(a, b, 1, 1, 3);
+
+	assert.deepEqual(a.getChannelData(0), [1,2]);
+	assert.deepEqual(a.getChannelData(1), [3,4]);
+
+	assert.deepEqual(b.getChannelData(0), [0,1]);
+	assert.deepEqual(b.getChannelData(1), [0,1]);
+});
 
 test('slice', function () {
 	var a = new AudioBuffer(3, [1,2,3,4,5,6,7,8,9]);

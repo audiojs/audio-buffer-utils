@@ -108,8 +108,7 @@ function reverse (buffer, target) {
     }
 
     for (var i = 0, c = target.numberOfChannels; i < c; ++i) {
-        var d = target.getChannelData(i);
-        Array.prototype.reverse.call(d);
+        target.getChannelData(i).reverse();
     }
 
     return target;
@@ -119,30 +118,24 @@ function reverse (buffer, target) {
 /**
  * Invert amplitude of samples in each channel
  */
-function invert (buffer, start, end) {
-    validate(buffer);
-
-    return fill(buffer, function (sample) { return -sample; }, start, end);
+function invert (buffer, target, start, end) {
+    return fill(buffer, target, function (sample) { return -sample; }, start, end);
 }
 
 
 /**
  * Fill with zeros
  */
-function zero (buffer, start, end) {
-    validate(buffer);
-
-    return fill(buffer, 0, start, end);
+function zero (buffer, target, start, end) {
+    return fill(buffer, target, 0, start, end);
 }
 
 
 /**
  * Fill with white noise
  */
-function noise (buffer, start, end) {
-    validate(buffer);
-
-    return fill(buffer, function (sample) { return Math.random() * 2 - 1; }, start, end);
+function noise (buffer, target, start, end) {
+    return fill(buffer, target, function (sample) { return Math.random() * 2 - 1; }, start, end);
 }
 
 
@@ -177,16 +170,44 @@ function equal (bufferA, bufferB) {
 
 
 /**
+ * A helper to return slicing offset
+ */
+function getStart (pos, len) {
+    if (pos == null) return 0;
+    return pos < 0 ? (len + (pos % len)) : Math.min(len, pos);
+}
+function getEnd (pos, len) {
+    if (pos == null) return len;
+    return pos < 0 ? (len + (pos % len)) : Math.min(len, pos);
+}
+
+
+/**
  * Generic in-place fill/transform
  */
-function fill (buffer, value, start, end) {
+function fill (buffer, target, value, start, end) {
     validate(buffer);
 
-    if (start == null) start = 0;
-    else if (start < 0) start += buffer.length;
-    if (end == null) end = buffer.length;
-    else if (end < 0) end += buffer.length;
+    //resolve optional target arg
+    if (!isAudioBuffer(target) && target != null) {
+        end = start;
+        start = value;
+        value = target;
+        target = null;
+    }
 
+    if (target) {
+        validate(target);
+    }
+    else {
+        target = buffer;
+    }
+
+    //resolve optional start/end args
+    start = getStart(start, buffer.length);
+    end = getEnd(end, buffer.length);
+
+    //resolve type of value
     if (!(value instanceof Function)) {
         var fn = function () {return value;};
     }
@@ -196,13 +217,14 @@ function fill (buffer, value, start, end) {
 
     for (var channel = 0, c = buffer.numberOfChannels; channel < c; channel++) {
         var data = buffer.getChannelData(channel),
+            targetData = target.getChannelData(channel),
             l = buffer.length;
         for (var i = start; i < end; i++) {
-            data[i] = fn.call(buffer, data[i], channel, i, data);
+            targetData[i] = fn.call(buffer, data[i], channel, i, data);
         }
     }
 
-    return buffer;
+    return target;
 }
 
 
@@ -211,6 +233,9 @@ function fill (buffer, value, start, end) {
  */
 function slice (buffer, start, end) {
     validate(buffer);
+
+    start = getStart(start, buffer.length);
+    end = getEnd(end, buffer.length);
 
     var data = [];
     for (var channel = 0; channel < buffer.numberOfChannels; channel++) {
@@ -343,10 +368,8 @@ function shift (buffer, offset) {
 function reduce (buffer, fn, value, start, end) {
     validate(buffer);
 
-    if (start == null) start = 0;
-    else if (start < 0) start += buffer.length;
-    if (end == null) end = buffer.length;
-    else if (end < 0) end += buffer.length;
+    start = getStart(start, buffer.length);
+    end = getEnd(end, buffer.length);
 
     if (value == null) value = 0;
 
@@ -366,8 +389,22 @@ function reduce (buffer, fn, value, start, end) {
  * Normalize buffer by the maximum value,
  * limit values by the -1..1 range
  */
-function normalize (buffer, start, end) {
+function normalize (buffer, target, start, end) {
     validate(buffer);
+
+    //resolve optional target arg
+    if (!isAudioBuffer(target)) {
+        end = start;
+        start = target;
+        target = null;
+    }
+
+    if (target) {
+        validate(target);
+    }
+    else {
+        target = buffer;
+    }
 
     var max = reduce(buffer, function (prev, curr) {
         return Math.max(Math.abs(prev), Math.abs(curr));
@@ -375,7 +412,7 @@ function normalize (buffer, start, end) {
 
     var amp = 1 / Math.min(max, 1);
 
-    return fill(buffer, function (value) {
+    return fill(buffer, target, function (value) {
         return Math.min(value * amp, 1);
     }, start, end);
 }
