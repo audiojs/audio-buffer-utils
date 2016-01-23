@@ -65,12 +65,12 @@ utils.concat(buffer1, buffer2, buffer3, ...);
 utils.resize(buffer, length);
 
 //Shift signal in the time domain by `offset` samples, filling with zeros.
-//Place data to `result` buffer, if any, otherwise modify `buffer` in-place.
-utils.shift(buffer, result?, offset);
+//Modify `buffer` in-place.
+utils.shift(buffer, offset);
 
 //Shift signal in the time domain by `offset` samples, in circular fashion.
-//Place data to `result` buffer, if any, otherwise modify `buffer` in-place.
-utils.rotate(buffer, result?, offset);
+//Modify `buffer` in-place.
+utils.rotate(buffer, offset);
 
 //Fold buffer into a single value. Useful to generate metrics, like loudness, average, etc.
 utils.reduce(buffer, function (previousValue, currendValue, channel, idx, channelData) {
