@@ -48,7 +48,8 @@ function create (a, b, c) {
  */
 function copy (from, to) {
     validate(from);
-    to = ensure(to, from);
+
+    if (!to) throw Error('Pass target buffer as a second argument.');
 
     for (var channel = 0; channel < from.numberOfChannels; channel++) {
         to.getChannelData(channel).set(from.getChannelData(channel));
@@ -65,21 +66,6 @@ function validate (buffer) {
     if (!isAudioBuffer(buffer)) throw new Error('Argument should be an AudioBuffer instance.');
 }
 
-
-/**
- * Validate buffer or create, if null
- */
-function ensure (target, source) {
-    if (target) {
-        validate(target);
-        //FIXME: mb required checking the equal numberOfInputs, sampleRate and length
-    }
-    else {
-        target = shallow(source);
-    }
-
-    return target;
-}
 
 
 /**
@@ -103,24 +89,30 @@ function shallow (buffer) {
  * Create clone of a buffer
  */
 function clone (buffer) {
-    validate(buffer);
-
-    return slice(buffer);
+    return copy(buffer, shallow(buffer));
 }
 
 
 /**
  * Reverse samples in each channel
  */
-function reverse (buffer) {
+function reverse (buffer, target) {
     validate(buffer);
 
-    for (var i = 0, c = buffer.numberOfChannels; i < c; ++i) {
-        var d = buffer.getChannelData(i);
+    if (target) {
+        validate(target);
+        copy(buffer, target);
+    }
+    else {
+        target = buffer;
+    }
+
+    for (var i = 0, c = target.numberOfChannels; i < c; ++i) {
+        var d = target.getChannelData(i);
         Array.prototype.reverse.call(d);
     }
 
-    return buffer;
+    return target;
 }
 
 

@@ -118,6 +118,11 @@ test('reverse', function () {
 	assert.throws(function () {
 		util.reverse([1,2,3]);
 	});
+
+	var buf2 = util.shallow(buf1);
+	util.reverse(buf1, buf2);
+
+	assert.deepEqual(buf2.getChannelData(1), [-1, 0]);
 });
 
 

@@ -24,11 +24,11 @@ utils.clone(buffer);
 //Copy the data from one buffer to another
 utils.copy(fromBuffer, toBuffer);
 
-//Reverse `buffer`. `buffer` is modified in-place.
-utils.reverse(buffer);
+//Reverse `buffer`. Place data `toBuffer`, if any, otherwise modify `buffer` in-place.
+utils.reverse(buffer, toBuffer?);
 
-//Invert `buffer`. `buffer` is modified in-place.
-utils.invert(buffer);
+//Invert `buffer`. Place data `toBuffer`, if any, otherwise modify `buffer` in-place.
+utils.invert(buffer, toBuffer?);
 
 //Zero all of `buffer`'s channel data. `buffer` is modified in-place.
 utils.zero(buffer);
@@ -62,19 +62,22 @@ utils.concat(buffer1, buffer2, buffer3, ...);
 //Useful to change duration: `util.resize(buffer, duration * buffer.sampleRate);`
 utils.resize(buffer, length);
 
-//Shift signal in the time domain by `offset` samples, filling with zeros. `buffer` is modified in-place.
-utils.shift(buffer, offset);
+//Shift signal in the time domain by `offset` samples, filling with zeros.
+//Place data `toBuffer`, if any, otherwise modify `buffer` in-place.
+utils.shift(buffer, toBuffer?, offset);
 
-//Shift signal in the time domain by `offset` samples, in circular fashion. `buffer` is modified in-place.
-utils.rotate(buffer, offset);
+//Shift signal in the time domain by `offset` samples, in circular fashion.
+//Place data `toBuffer`, if any, otherwise modify `buffer` in-place.
+utils.rotate(buffer, toBuffer?, offset);
 
 //Fold buffer into a single value. Useful to generate metrics, like loudness, average, etc.
 utils.reduce(buffer, function (previousValue, currendValue, channel, idx, channelData) {
 	return previousValue + currentValue;
 }, startValue?);
 
-//Normalize buffer by the max value, limit to the -1..+1 range. Modifiers buffer in place.
-utils.normalize(buffer, start?, end?);
+//Normalize buffer by the max value, limit to the -1..+1 range.
+//Place data `toBuffer`, if any, otherwise modify `buffer` in-place.
+utils.normalize(buffer, toBuffer?, start?, end?);
 
 //Create buffer with trimmed zeros from the start and/or end, by the threshold.
 utils.trim(buffer, threshold?);
