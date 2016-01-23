@@ -79,6 +79,22 @@ test('clone', function () {
 	});
 });
 
+
+test('copy', function () {
+	var buf1 = new AudioBuffer([1, 0, -1, 0]);
+	var buf2 = util.shallow(buf1);
+
+	util.copy(buf1, buf2);
+
+	assert(util.equal(buf1, buf2));
+	assert.notEqual(buf1, buf2);
+
+	buf2.getChannelData(0)[1] = 0.5;
+	assert.deepEqual(buf1.getChannelData(0), [1, 0]);
+	assert.deepEqual(buf2.getChannelData(0), [1, 0.5]);
+});
+
+
 test('clone - backing arrays are not shared between buffers', function () {
 	var buf1 = new AudioBuffer([0, 1, 2, 3, 4]);
 	var buf2 = util.clone(buf1);

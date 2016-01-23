@@ -5,6 +5,7 @@
 
 var AudioBuffer = require('audio-buffer');
 var isAudioBuffer = require('is-audio-buffer');
+var isBrowser = require('is-browser');
 
 
 module.exports = {
@@ -46,7 +47,14 @@ function create (a, b, c) {
  * Copy data from buffer A to buffer B
  */
 function copy (from, to) {
+    validate(from);
+    to = ensure(to, from);
 
+    for (var channel = 0; channel < from.numberOfChannels; channel++) {
+        to.getChannelData(channel).set(from.getChannelData(channel));
+    }
+
+    return to;
 }
 
 
@@ -59,11 +67,33 @@ function validate (buffer) {
 
 
 /**
+ * Validate buffer or create, if null
+ */
+function ensure (target, source) {
+    if (target) {
+        validate(target);
+        //FIXME: mb required checking the equal numberOfInputs, sampleRate and length
+    }
+    else {
+        target = shallow(source);
+    }
+
+    return target;
+}
+
+
+/**
  * Create a buffer with the same characteristics as inBuffer, without copying
  * the data. Contents of resulting buffer are undefined.
  */
 function shallow (buffer) {
     validate(buffer);
+
+    //workaround for faster browser creation
+    //avoid extra checks & copying inside of AudioBuffer class
+    if (isBrowser) {
+        return AudioBuffer.context.createBuffer(buffer.numberOfChannels, buffer.length, buffer.sampleRate);
+    }
 
     return create(buffer.numberOfChannels, buffer.length, buffer.sampleRate);
 }

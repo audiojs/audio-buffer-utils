@@ -21,6 +21,9 @@ utils.shallow(buffer);
 //fill it with a copy of `buffer`'s data, and return it.
 utils.clone(buffer);
 
+//Copy the data from one buffer to another
+utils.copy(fromBuffer, toBuffer);
+
 //Reverse `buffer`. `buffer` is modified in-place.
 utils.reverse(buffer);
 
