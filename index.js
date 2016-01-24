@@ -48,10 +48,9 @@ function create (a, b, c) {
  */
 function copy (from, to) {
     validate(from);
+    validate(to);
 
-    if (!to) throw Error('Pass target buffer as a second argument.');
-
-    for (var channel = 0; channel < from.numberOfChannels; channel++) {
+    for (var channel = 0, l = Math.min(from.numberOfChannels, to.numberOfChannels); channel < l; channel++) {
         to.getChannelData(channel).set(from.getChannelData(channel));
     }
 
