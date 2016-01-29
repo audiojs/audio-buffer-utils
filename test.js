@@ -449,3 +449,21 @@ test('mix', function () {
 		util.mix([1,2,3], [4,5,6], 0.1);
 	});
 });
+
+
+test('data', function () {
+	var b = util.create(3, [1,-1, 0.5, -1, 0, -0.5]);
+
+	var data = util.data(b);
+
+	assert.deepEqual(data[0], [1, -1]);
+	assert.deepEqual(data[1], [0.5, -1]);
+	assert.deepEqual(data[2], [0, -0.5]);
+
+	var src = [new Float32Array(2), new Float32Array(2), new Float32Array(2)];
+	var data = util.data(b, src);
+
+	assert.deepEqual(src[0], [1, -1]);
+	assert.deepEqual(src[1], [0.5, -1]);
+	assert.deepEqual(src[2], [0, -0.5]);
+});

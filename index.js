@@ -31,7 +31,8 @@ module.exports = {
     trimStart: trimStart,
     trimEnd: trimEnd,
     mix: mix,
-    size: size
+    size: size,
+    data: data
 };
 
 
@@ -515,4 +516,27 @@ function size (buffer) {
     validate(buffer);
 
     return buffer.numberOfChannels * buffer.getChannelData(0).byteLength;
+}
+
+
+/**
+ * Return array with buffer’s per-channel data
+ */
+function data (buffer, data) {
+    validate(buffer);
+
+    //ensure output data array, if not defined
+    data = data || [];
+
+    //transfer data per-channel
+    for (var channel = 0; channel < buffer.numberOfChannels; channel++) {
+        if (ArrayBuffer.isView(data[channel])) {
+            data[channel].set(buffer.getChannelData(channel));
+        }
+        else {
+            data[channel] = buffer.getChannelData(channel);
+        }
+    }
+
+    return data;
 }

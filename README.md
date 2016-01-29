@@ -91,6 +91,10 @@ util.mix(bufferA, bufferB, ratio|fn(valA, valB, channel, idx)?, offset?);
 
 //Return buffer size, in bytes. Use pretty-bytes package to format bytes to a string, if needed.
 utils.size(buffer);
+
+//Get channels' data in array. Pass existing array to transfer the data to it.
+//Useful in audio-workers to transfer buffer to output.
+utils.data(buffer, data?);
 ```
 
 
