@@ -5,9 +5,12 @@
 
 var AudioBuffer = require('audio-buffer');
 var isAudioBuffer = require('is-audio-buffer');
+var isBrowser = require('is-browser');
 
 
 module.exports = {
+    create: create,
+    copy: copy,
     shallow: shallow,
     clone: clone,
     reverse: reverse,
@@ -28,8 +31,32 @@ module.exports = {
     trimStart: trimStart,
     trimEnd: trimEnd,
     mix: mix,
-    size: size
+    size: size,
+    data: data
 };
+
+
+/**
+ * Create buffer from any argument
+ */
+function create (a, b, c) {
+    return new AudioBuffer(a, b, c);
+}
+
+
+/**
+ * Copy data from buffer A to buffer B
+ */
+function copy (from, to) {
+    validate(from);
+    validate(to);
+
+    for (var channel = 0, l = Math.min(from.numberOfChannels, to.numberOfChannels); channel < l; channel++) {
+        to.getChannelData(channel).set(from.getChannelData(channel));
+    }
+
+    return to;
+}
 
 
 /**
@@ -40,6 +67,7 @@ function validate (buffer) {
 }
 
 
+
 /**
  * Create a buffer with the same characteristics as inBuffer, without copying
  * the data. Contents of resulting buffer are undefined.
@@ -47,7 +75,13 @@ function validate (buffer) {
 function shallow (buffer) {
     validate(buffer);
 
-    return new AudioBuffer(buffer.numberOfChannels, buffer.length, buffer.sampleRate);
+    //workaround for faster browser creation
+    //avoid extra checks & copying inside of AudioBuffer class
+    if (isBrowser) {
+        return AudioBuffer.context.createBuffer(buffer.numberOfChannels, buffer.length, buffer.sampleRate);
+    }
+
+    return create(buffer.numberOfChannels, buffer.length, buffer.sampleRate);
 }
 
 
@@ -55,54 +89,53 @@ function shallow (buffer) {
  * Create clone of a buffer
  */
 function clone (buffer) {
-    validate(buffer);
-
-    return slice(buffer);
+    return copy(buffer, shallow(buffer));
 }
 
 
 /**
  * Reverse samples in each channel
  */
-function reverse (buffer) {
+function reverse (buffer, target) {
     validate(buffer);
 
-    for (var i = 0, c = buffer.numberOfChannels; i < c; ++i) {
-        var d = buffer.getChannelData(i);
-        Array.prototype.reverse.call(d);
+    if (target) {
+        validate(target);
+        copy(buffer, target);
+    }
+    else {
+        target = buffer;
     }
 
-    return buffer;
+    for (var i = 0, c = target.numberOfChannels; i < c; ++i) {
+        target.getChannelData(i).reverse();
+    }
+
+    return target;
 }
 
 
 /**
  * Invert amplitude of samples in each channel
  */
-function invert (buffer, start, end) {
-    validate(buffer);
-
-    return fill(buffer, function (sample) { return -sample; }, start, end);
+function invert (buffer, target, start, end) {
+    return fill(buffer, target, function (sample) { return -sample; }, start, end);
 }
 
 
 /**
  * Fill with zeros
  */
-function zero (buffer, start, end) {
-    validate(buffer);
-
-    return fill(buffer, 0, start, end);
+function zero (buffer, target, start, end) {
+    return fill(buffer, target, 0, start, end);
 }
 
 
 /**
  * Fill with white noise
  */
-function noise (buffer, start, end) {
-    validate(buffer);
-
-    return fill(buffer, function (sample) { return Math.random() * 2 - 1; }, start, end);
+function noise (buffer, target, start, end) {
+    return fill(buffer, target, function (sample) { return Math.random() * 2 - 1; }, start, end);
 }
 
 
@@ -137,16 +170,44 @@ function equal (bufferA, bufferB) {
 
 
 /**
+ * A helper to return slicing offset
+ */
+function getStart (pos, len) {
+    if (pos == null) return 0;
+    return pos < 0 ? (len + (pos % len)) : Math.min(len, pos);
+}
+function getEnd (pos, len) {
+    if (pos == null) return len;
+    return pos < 0 ? (len + (pos % len)) : Math.min(len, pos);
+}
+
+
+/**
  * Generic in-place fill/transform
  */
-function fill (buffer, value, start, end) {
+function fill (buffer, target, value, start, end) {
     validate(buffer);
 
-    if (start == null) start = 0;
-    else if (start < 0) start += buffer.length;
-    if (end == null) end = buffer.length;
-    else if (end < 0) end += buffer.length;
+    //resolve optional target arg
+    if (!isAudioBuffer(target) && target != null) {
+        end = start;
+        start = value;
+        value = target;
+        target = null;
+    }
 
+    if (target) {
+        validate(target);
+    }
+    else {
+        target = buffer;
+    }
+
+    //resolve optional start/end args
+    start = getStart(start, buffer.length);
+    end = getEnd(end, buffer.length);
+
+    //resolve type of value
     if (!(value instanceof Function)) {
         var fn = function () {return value;};
     }
@@ -156,13 +217,14 @@ function fill (buffer, value, start, end) {
 
     for (var channel = 0, c = buffer.numberOfChannels; channel < c; channel++) {
         var data = buffer.getChannelData(channel),
+            targetData = target.getChannelData(channel),
             l = buffer.length;
         for (var i = start; i < end; i++) {
-            data[i] = fn.call(buffer, data[i], channel, i, data);
+            targetData[i] = fn.call(buffer, data[i], channel, i, data);
         }
     }
 
-    return buffer;
+    return target;
 }
 
 
@@ -172,11 +234,14 @@ function fill (buffer, value, start, end) {
 function slice (buffer, start, end) {
     validate(buffer);
 
+    start = getStart(start, buffer.length);
+    end = getEnd(end, buffer.length);
+
     var data = [];
     for (var channel = 0; channel < buffer.numberOfChannels; channel++) {
         data.push(buffer.getChannelData(channel).slice(start, end));
     }
-    return new AudioBuffer(buffer.numberOfChannels, data, buffer.sampleRate);
+    return create(buffer.numberOfChannels, data, buffer.sampleRate);
 }
 
 
@@ -195,7 +260,7 @@ function map (buffer, fn) {
         }));
     }
 
-    return new AudioBuffer(buffer.numberOfChannels, data, buffer.sampleRate);
+    return create(buffer.numberOfChannels, data, buffer.sampleRate);
 }
 
 
@@ -236,7 +301,7 @@ function concat (bufferA, bufferB) {
         data.push(channelData);
     }
 
-    return new AudioBuffer(channels, data, sampleRate);
+    return create(channels, data, sampleRate);
 }
 
 
@@ -248,7 +313,7 @@ function resize (buffer, length) {
 
     if (length < buffer.length) return slice(buffer, 0, length);
 
-    return concat(buffer, new AudioBuffer(length - buffer.length));
+    return concat(buffer, create(length - buffer.length));
 }
 
 
@@ -303,10 +368,8 @@ function shift (buffer, offset) {
 function reduce (buffer, fn, value, start, end) {
     validate(buffer);
 
-    if (start == null) start = 0;
-    else if (start < 0) start += buffer.length;
-    if (end == null) end = buffer.length;
-    else if (end < 0) end += buffer.length;
+    start = getStart(start, buffer.length);
+    end = getEnd(end, buffer.length);
 
     if (value == null) value = 0;
 
@@ -326,8 +389,22 @@ function reduce (buffer, fn, value, start, end) {
  * Normalize buffer by the maximum value,
  * limit values by the -1..1 range
  */
-function normalize (buffer, start, end) {
+function normalize (buffer, target, start, end) {
     validate(buffer);
+
+    //resolve optional target arg
+    if (!isAudioBuffer(target)) {
+        end = start;
+        start = target;
+        target = null;
+    }
+
+    if (target) {
+        validate(target);
+    }
+    else {
+        target = buffer;
+    }
 
     var max = reduce(buffer, function (prev, curr) {
         return Math.max(Math.abs(prev), Math.abs(curr));
@@ -335,7 +412,7 @@ function normalize (buffer, start, end) {
 
     var amp = 1 / Math.min(max, 1);
 
-    return fill(buffer, function (value) {
+    return fill(buffer, target, function (value) {
         return Math.min(value * amp, 1);
     }, start, end);
 }
@@ -439,4 +516,27 @@ function size (buffer) {
     validate(buffer);
 
     return buffer.numberOfChannels * buffer.getChannelData(0).byteLength;
+}
+
+
+/**
+ * Return array with buffer’s per-channel data
+ */
+function data (buffer, data) {
+    validate(buffer);
+
+    //ensure output data array, if not defined
+    data = data || [];
+
+    //transfer data per-channel
+    for (var channel = 0; channel < buffer.numberOfChannels; channel++) {
+        if (ArrayBuffer.isView(data[channel])) {
+            data[channel].set(buffer.getChannelData(channel));
+        }
+        else {
+            data[channel] = buffer.getChannelData(channel);
+        }
+    }
+
+    return data;
 }

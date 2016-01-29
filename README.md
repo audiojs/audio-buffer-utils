@@ -9,6 +9,10 @@ Utility functions for Audio Buffers.
 ```js
 var utils = require('audio-buffer-utils');
 
+//Create a new buffer from any argument.
+//Data can be a length, an array with channels' data, an other buffer or plain array.
+utils.create(channels?, data, sampleRate?);
+
 //Create a new buffer with the same characteristics as `buffer`,
 //contents are undefined.
 utils.shallow(buffer);
@@ -17,11 +21,14 @@ utils.shallow(buffer);
 //fill it with a copy of `buffer`'s data, and return it.
 utils.clone(buffer);
 
-//Reverse `buffer`. `buffer` is modified in-place.
-utils.reverse(buffer);
+//Copy the data from one buffer to another
+utils.copy(fromBuffer, result);
 
-//Invert `buffer`. `buffer` is modified in-place.
-utils.invert(buffer);
+//Reverse `buffer`. Place data to `result` buffer, if any, otherwise modify `buffer` in-place.
+utils.reverse(buffer, result?);
+
+//Invert `buffer`. Place data to `result` buffer, if any, otherwise modify `buffer` in-place.
+utils.invert(buffer, result?);
 
 //Zero all of `buffer`'s channel data. `buffer` is modified in-place.
 utils.zero(buffer);
@@ -32,8 +39,10 @@ utils.noise(buffer);
 //Test whether the content of N buffers is the same.
 utils.equal(bufferA, bufferB, ...);
 
-//Fill `buffer` with provided function or value. Pass optional `start` and `end` indexes.
-utils.fill(buffer, value|function (sample, channel, idx) {
+//Fill `buffer` with provided function or value.
+//Place data to `result` buffer, if any, otherwise modify `buffer` in-place.
+//Pass optional `start` and `end` indexes.
+utils.fill(buffer, result?, value|function (sample, channel, idx) {
 	return sample / 2;
 }, start?, end?);
 
@@ -55,10 +64,12 @@ utils.concat(buffer1, buffer2, buffer3, ...);
 //Useful to change duration: `util.resize(buffer, duration * buffer.sampleRate);`
 utils.resize(buffer, length);
 
-//Shift signal in the time domain by `offset` samples, filling with zeros. `buffer` is modified in-place.
+//Shift signal in the time domain by `offset` samples, filling with zeros.
+//Modify `buffer` in-place.
 utils.shift(buffer, offset);
 
-//Shift signal in the time domain by `offset` samples, in circular fashion. `buffer` is modified in-place.
+//Shift signal in the time domain by `offset` samples, in circular fashion.
+//Modify `buffer` in-place.
 utils.rotate(buffer, offset);
 
 //Fold buffer into a single value. Useful to generate metrics, like loudness, average, etc.
@@ -66,8 +77,9 @@ utils.reduce(buffer, function (previousValue, currendValue, channel, idx, channe
 	return previousValue + currentValue;
 }, startValue?);
 
-//Normalize buffer by the max value, limit to the -1..+1 range. Modifiers buffer in place.
-utils.normalize(buffer, start?, end?);
+//Normalize buffer by the max value, limit to the -1..+1 range.
+//Place data to `result` buffer, if any, otherwise modify `buffer` in-place.
+utils.normalize(buffer, result?, start?, end?);
 
 //Create buffer with trimmed zeros from the start and/or end, by the threshold.
 utils.trim(buffer, threshold?);
@@ -79,6 +91,10 @@ util.mix(bufferA, bufferB, ratio|fn(valA, valB, channel, idx)?, offset?);
 
 //Return buffer size, in bytes. Use pretty-bytes package to format bytes to a string, if needed.
 utils.size(buffer);
+
+//Get channels' data in array. Pass existing array to transfer the data to it.
+//Useful in audio-workers to transfer buffer to output.
+utils.data(buffer, data?);
 ```
 
 
