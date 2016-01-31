@@ -92,6 +92,12 @@ test('copy', function () {
 	buf2.getChannelData(0)[1] = 0.5;
 	assert.deepEqual(buf1.getChannelData(0), [1, 0]);
 	assert.deepEqual(buf2.getChannelData(0), [1, 0.5]);
+
+	var buf3 = new AudioBuffer(8);
+	util.copy(buf2, buf3, 4);
+	assert.deepEqual(buf3.getChannelData(0), [0,0,0,0, 1, 0.5, 0, 0]);
+
+	// util.copy(buf3, buf2);
 });
 
 

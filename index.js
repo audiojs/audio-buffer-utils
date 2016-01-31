@@ -47,12 +47,14 @@ function create (a, b, c) {
 /**
  * Copy data from buffer A to buffer B
  */
-function copy (from, to) {
+function copy (from, to, offset) {
     validate(from);
     validate(to);
 
+    offset = offset || 0;
+
     for (var channel = 0, l = Math.min(from.numberOfChannels, to.numberOfChannels); channel < l; channel++) {
-        to.getChannelData(channel).set(from.getChannelData(channel));
+        to.getChannelData(channel).set(from.getChannelData(channel), offset);
     }
 
     return to;
