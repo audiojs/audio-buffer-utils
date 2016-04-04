@@ -31,10 +31,8 @@
     "url": "https://github.com/jaz303/audio-buffer-utils/issues"
   },
   "homepage": "https://github.com/jaz303/audio-buffer-utils",
-  "optionalDependencies": {
-    "beefy": "^2.1.5"
-  },
   "devDependencies": {
+    "beefy": "^2.1.5",
     "is-browser": "^2.0.1",
     "mocha": "^2.3.4"
   },
