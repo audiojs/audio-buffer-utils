@@ -23,6 +23,7 @@ module.exports = {
     map: map,
     concat: concat,
     resize: resize,
+    pad: pad,
     rotate: rotate,
     shift: shift,
     reduce: reduce,
@@ -316,6 +317,37 @@ function resize (buffer, length) {
     if (length < buffer.length) return slice(buffer, 0, length);
 
     return concat(buffer, create(length - buffer.length));
+}
+
+
+/**
+ * Pad buffer to required size
+ */
+function pad (a, b, value) {
+    var buffer, length;
+
+    if (typeof a === 'number') {
+        buffer = b;
+        length = a;
+    } else {
+        buffer = a;
+        length = b;
+    }
+
+    value = value || 0;
+
+    validate(buffer);
+
+    //no need to pad
+    if (length < buffer.length) return buffer;
+
+    //left-pad
+    if (buffer === b) {
+        return concat(fill(create(length - buffer.length), value), buffer);
+    }
+
+    //right-pad
+    return concat(buffer, fill(create(length - buffer.length), value));
 }
 
 

@@ -399,7 +399,35 @@ test('trim', function () {
 	assert.deepEqual(b.getChannelData(1), [0,2,3,1]);
 
 	assert.throws(function () {
-		util.normalize(new Float32Array([0, 0.1, 0.2]));
+		util.trim(new Float32Array([0, 0.1, 0.2]));
+	});
+});
+
+
+test('pad', function () {
+	//pad right
+	var a = AudioBuffer([0,1,2,3,4,5]);
+	var b = util.pad(a, 4);
+
+	assert.deepEqual(b.getChannelData(0), [0,1,2,0]);
+	assert.deepEqual(b.getChannelData(1), [3,4,5,0]);
+
+	//pad left
+	var a = AudioBuffer([0,1,2,3,4,5]);
+	var b = util.pad(4, a);
+
+	assert.deepEqual(b.getChannelData(0), [0,0,1,2]);
+	assert.deepEqual(b.getChannelData(1), [0,3,4,5]);
+
+	//pad value
+	var a = AudioBuffer([0,1,2,3,4,5]);
+	var b = util.pad(4, a, 0.5);
+
+	assert.deepEqual(b.getChannelData(0), [0.5,0,1,2]);
+	assert.deepEqual(b.getChannelData(1), [0.5,3,4,5]);
+
+	assert.throws(function () {
+		util.pad(new Float32Array([0, 0.1, 0.2]));
 	});
 });
 
