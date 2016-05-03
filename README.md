@@ -42,12 +42,12 @@ utils.equal(bufferA, bufferB, ...);
 //Fill `buffer` with provided function or value.
 //Place data to `result` buffer, if any, otherwise modify `buffer` in-place.
 //Pass optional `start` and `end` indexes.
-utils.fill(buffer, result?, value|function (sample, channel, idx) {
+utils.fill(buffer, result?, value|function (sample, idx, channel) {
 	return sample / 2;
 }, start?, end?);
 
 //Create a new buffer by mapping the samples of the current one.
-utils.map(buffer, function (sample, channel, idx) {
+utils.map(buffer, function (sample, idx, channel) {
 	return sample / 2;
 });
 
@@ -73,7 +73,7 @@ utils.shift(buffer, offset);
 utils.rotate(buffer, offset);
 
 //Fold buffer into a single value. Useful to generate metrics, like loudness, average, etc.
-utils.reduce(buffer, function (previousValue, currendValue, channel, idx, channelData) {
+utils.reduce(buffer, function (previousValue, currendValue, idx, channel, channelData) {
 	return previousValue + currentValue;
 }, startValue?);
 
@@ -87,7 +87,7 @@ utils.trimStart(buffer, threshold?);
 utils.trimEnd(buffer, threshold?)
 
 //Mix second buffer into the first one. Pass optional weight value or mixing function.
-util.mix(bufferA, bufferB, ratio|fn(valA, valB, channel, idx)?, offset?);
+util.mix(bufferA, bufferB, ratio|fn(valA, valB, idx, channel)?, offset?);
 
 //Return buffer size, in bytes. Use pretty-bytes package to format bytes to a string, if needed.
 utils.size(buffer);

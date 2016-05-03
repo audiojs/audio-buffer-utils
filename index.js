@@ -222,7 +222,7 @@ function fill (buffer, target, value, start, end) {
             targetData = target.getChannelData(channel),
             l = buffer.length;
         for (var i = start; i < end; i++) {
-            targetData[i] = fn.call(buffer, data[i], channel, i, data);
+            targetData[i] = fn.call(buffer, data[i], i, channel, data);
         }
     }
 
@@ -258,7 +258,7 @@ function map (buffer, fn) {
 
     for (var channel = 0; channel < buffer.numberOfChannels; channel++) {
         data.push(buffer.getChannelData(channel).map(function (value, idx) {
-            return fn.call(buffer, value, channel, idx, data);
+            return fn.call(buffer, value, idx, channel, data);
         }));
     }
 
@@ -379,7 +379,7 @@ function reduce (buffer, fn, value, start, end) {
         var data = buffer.getChannelData(channel),
             l = buffer.length;
         for (var i = start; i < end; i++) {
-            value = fn.call(buffer, value, data[i], channel, i, data);
+            value = fn.call(buffer, value, data[i], i, channel, data);
         }
     }
 
@@ -503,7 +503,7 @@ function mix (bufferA, bufferB, weight, offset) {
         var bData = bufferB.getChannelData(channel);
 
         for (var i = offset, j = 0; i < bufferA.length && j < bufferB.length; i++, j++) {
-            aData[i] = fn.call(bufferA, aData[i], bData[j], channel, j);
+            aData[i] = fn.call(bufferA, aData[i], bData[j], j, channel);
         }
     }
 
