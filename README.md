@@ -64,6 +64,10 @@ utils.concat(buffer1, buffer2, buffer3, ...);
 //Useful to change duration: `util.resize(buffer, duration * buffer.sampleRate);`
 utils.resize(buffer, length);
 
+//Right/left-pad buffer to the length, filling with value
+utils.pad(buffer, length, value?);
+utils.pad(length, buffer, value?);
+
 //Shift signal in the time domain by `offset` samples, filling with zeros.
 //Modify `buffer` in-place.
 utils.shift(buffer, offset);
