@@ -209,6 +209,16 @@ test('fill to another buffer', function () {
 	assert.deepEqual(b.getChannelData(1), [0,1]);
 });
 
+test('fill callback argument', function () {
+	var a = new AudioBuffer([1,2,3,4]);
+
+	//NOTE: such arguments are possible in case of `Through(util.noise)` etc.
+	util.fill(a, function () {}, function () { return 1; });
+
+	assert.deepEqual(a.getChannelData(0), [1,1]);
+	assert.deepEqual(a.getChannelData(1), [1,1]);
+});
+
 test('slice', function () {
 	var a = new AudioBuffer(3, [1,2,3,4,5,6,7,8,9]);
 

@@ -191,12 +191,18 @@ function getEnd (pos, len) {
 function fill (buffer, target, value, start, end) {
     validate(buffer);
 
-    //resolve optional target arg
+    //if target buffer is passed
     if (!isAudioBuffer(target) && target != null) {
-        end = start;
-        start = value;
-        value = target;
-        target = null;
+        //target is bad argument
+        if (typeof value == 'function') {
+            target = null;
+        }
+        else {
+            end = start;
+            start = value;
+            value = target;
+            target = null;
+        }
     }
 
     if (target) {
