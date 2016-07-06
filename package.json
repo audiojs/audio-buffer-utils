@@ -4,8 +4,8 @@
   "description": "Utility functions for AudioBuffers",
   "main": "index.js",
   "scripts": {
-    "test": "mocha",
-    "test:browser": "beefy --index=test.html test.js"
+    "test": "node test.js",
+    "test:browser": "budo test.js"
   },
   "files": [
     "index.js"
@@ -24,7 +24,7 @@
   ],
   "author": "Jason Frame <jason@onehackoranother.com> (http://jasonframe.co.uk)",
   "contributors": [
-    "Dmitry Yvanow <dfcreative@gmail.com>"
+    "Dmitry Yv <dfcreative@gmail.com>"
   ],
   "license": "ISC",
   "bugs": {
@@ -32,13 +32,13 @@
   },
   "homepage": "https://github.com/jaz303/audio-buffer-utils",
   "devDependencies": {
-    "beefy": "^2.1.5",
     "is-browser": "^2.0.1",
-    "mocha": "^2.3.4"
+    "tst": "^1.3.1"
   },
   "dependencies": {
     "audio-buffer": "^2.0.0",
     "is-audio-buffer": "^1.0.0",
-    "is-browser": "^2.0.1"
+    "is-browser": "^2.0.1",
+    "typedarray-methods": "^1.0.0"
   }
 }

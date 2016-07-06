@@ -1,8 +1,12 @@
-var test = it;
 var util = require('./');
 var assert = require('assert');
 var AudioBuffer = require('audio-buffer');
 var isBrowser = require('is-browser');
+
+// var test = require('tst');
+function test (a, b) {
+	return b && b()
+}
 
 test('create', function () {
 	var buf1 = util.create();
@@ -240,7 +244,7 @@ test('slice', function () {
 	});
 });
 
-
+/*
 test.skip('subbuffer', function () {
 	//NOTE: in web-audio-API two audiobuffers cannot share the same memory
 	//as far `.buffer` property of typedarrays cannot be overridden
@@ -262,7 +266,7 @@ test.skip('subbuffer', function () {
 	assert.deepEqual(a.getChannelData(0), [1, 1, 3]);
 	assert.deepEqual(c.getChannelData(0), [1]);
 });
-
+*/
 
 test('map', function () {
 	var a = AudioBuffer(3, [1, 1, 1, 1, 1, 1]);
@@ -443,14 +447,17 @@ test('pad', function () {
 
 
 test('size', function () {
-	var a = AudioBuffer(200);
-	assert.equal(util.size(a), 200 * 2 * 4);
-
-	if (!isBrowser && typeof Float64Array !== 'undefined') {
-		AudioBuffer.FloatArray = Float64Array;
-		var b = AudioBuffer(3, 200, 5000);
-		assert.equal(util.size(b), 3 * 200 * 8 );
+	if (!isBrowser) {
+		if (typeof Float64Array !== 'undefined') {
+			AudioBuffer.FloatArray = Float64Array;
+			var b = AudioBuffer(3, 200, 5000);
+			assert.equal(util.size(b), 3 * 200 * 8 );
+		}
 		AudioBuffer.FloatArray = Float32Array;
+	}
+	else {
+		var a = AudioBuffer(200);
+		assert.equal(util.size(a), 200 * 2 * 4);
 	}
 
 	assert.throws(function () {
@@ -458,7 +465,7 @@ test('size', function () {
 	});
 });
 
-
+/*
 test.skip('resample', function () {
 	//NOTE: for resampling use https://github.com/scijs/ndarray-resample
 	//or similar.
@@ -468,7 +475,7 @@ test.skip('resample', function () {
 
 	assert.deepEqual(b.getChannelData(0), []);
 });
-
+*/
 
 test('mix', function () {
 	var a = AudioBuffer(2, [0,1,0,1]);

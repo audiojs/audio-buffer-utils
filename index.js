@@ -2,7 +2,7 @@
  * @module  audio-buffer-utils
  */
 
-
+require('typedarray-methods');
 var AudioBuffer = require('audio-buffer');
 var isAudioBuffer = require('is-audio-buffer');
 var isBrowser = require('is-browser');
