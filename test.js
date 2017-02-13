@@ -414,12 +414,24 @@ test('shift (-ve)', function (t) {
 });
 
 
-test.only('normalize', function (t) {
-	var a = AudioBuffer(1, [0, 0.1, 0, -0.2]);
-
+test('normalize', function (t) {
+	var a = AudioBuffer(1, [0, 0.2, 0, -0.4]);
 	util.normalize(a);
+	assert.deepEqual(a.getChannelData(0), [0, .5, 0, -1]);
 
-	assert.deepEqual(a.getChannelData(0), [0, 0.5, 0, -1]);
+	var b = AudioBuffer(1, [0, 1, 0, -1]);
+	util.normalize(b);
+	assert.deepEqual(b.getChannelData(0), [0, 1, 0, -1]);
+
+	var c = AudioBuffer(1, [0, 5, 0, -5]);
+	util.normalize(c);
+	assert.deepEqual(c.getChannelData(0), [0, 1, 0, -1]);
+
+	//channels static
+	var c = AudioBuffer(2, [0, .25, 0, -.5]);
+	util.normalize(c);
+	assert.deepEqual(c.getChannelData(0), [0, .5]);
+	assert.deepEqual(c.getChannelData(1), [0, -1]);
 
 	//too big value
 	//FIXME: too large values are interpreted as 1, but maybe we need deamplifying instead
@@ -443,6 +455,7 @@ test('removeStatic', function (t) {
 
 	assert.almost(a.getChannelData(0), [-.1, .1])
 	assert.almost(a.getChannelData(1), [-.1, .1])
+	t.end()
 });
 
 

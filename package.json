@@ -38,6 +38,7 @@
   },
   "dependencies": {
     "audio-buffer": "^2.0.0",
+    "clamp": "^1.0.1",
     "is-audio-buffer": "^1.0.0",
     "is-browser": "^2.0.1",
     "negative-index": "^1.0.2",

@@ -97,8 +97,8 @@ Shift signal in the time domain by `offset` samples, in circular fashion.
 Modify `buffer` in-place.
 
 ### `utils.normalize(buffer, result?, start?, end?)`
-Normalize buffer by the max value, limit to -1..+1 range. Channels amplitudes ratio will be preserved.
-Place data to `result` buffer, if any, otherwise modify `buffer` in-place.
+Normalize buffer by the amplitude, bring to -1..+1 range. Channel amplitudes ratio will be preserved. You may want to remove static level beforehead, because normalization preserves zero static level.
+Places data to `result` buffer, if any, otherwise modifies `buffer` in-place.
 
 ### `utils.removeStatic(buffer, result?, start?, end?)`
 Remove DC (Direct Current) offset from the signal, i.e. remove static level, that is bring mean to zero. DC offset will be reduced for every channel independently.

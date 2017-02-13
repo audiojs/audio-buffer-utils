@@ -2,11 +2,12 @@
  * @module  audio-buffer-utils
  */
 
-require('typedarray-methods');
-const AudioBuffer = require('audio-buffer');
-const isAudioBuffer = require('is-audio-buffer');
-const isBrowser = require('is-browser');
+require('typedarray-methods')
+const AudioBuffer = require('audio-buffer')
+const isAudioBuffer = require('is-audio-buffer')
+const isBrowser = require('is-browser')
 const nidx = require('negative-index')
+const clamp = require('clamp')
 
 module.exports = {
 	create: create,
@@ -36,7 +37,7 @@ module.exports = {
 	mix: mix,
 	size: size,
 	data: data
-};
+}
 
 
 /**
@@ -408,8 +409,6 @@ function shift (buffer, offset) {
  * limit values by the -1..1 range
  */
 function normalize (buffer, target, start, end) {
-	validate(buffer);
-
 	//resolve optional target arg
 	if (!isAudioBuffer(target)) {
 		end = start;
@@ -417,21 +416,23 @@ function normalize (buffer, target, start, end) {
 		target = null;
 	}
 
-	if (target) {
-		validate(target);
+	start = start == null ? 0 : nidx(start, buffer.length);
+	end = end == null ? buffer.length : nidx(end, buffer.length);
+
+	//for every channel bring it to max-min amplitude range
+	let max = 0
+
+	for (let c = 0; c < buffer.numberOfChannels; c++) {
+		let data = buffer.getChannelData(c)
+		for (let i = start; i < end; i++) {
+			max = Math.max(Math.abs(data[i]), max)
+		}
 	}
-	else {
-		target = buffer;
-	}
 
-	let max = reduce(buffer, function (prev, curr) {
-		return Math.max(Math.abs(prev), Math.abs(curr));
-	}, 0, start, end);
+	let amp = Math.max(1 / max, 1)
 
-	let amp = 1 / Math.min(max, 1);
-
-	return fill(buffer, target, function (value) {
-		return value * amp;
+	return fill(buffer, target, function (value, i, ch) {
+		return clamp(value * amp, -1, 1)
 	}, start, end);
 }
 
