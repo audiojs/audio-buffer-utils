@@ -1,4 +1,4 @@
-# audio-buffer-utils [![Build Status](https://travis-ci.org/audiojs/audio-buffer-utils.svg?branch=master)](https://travis-ci.org/audiojs/audio-buffer-utils) [![stable](http://badges.github.io/stability-badges/dist/stable.svg)](http://github.com/badges/stability-badges)
+# audio-buffer-utils [![Build Status](https://travis-ci.org/audiojs/audio-buffer-utils.svg?branch=master)](https://travis-ci.org/audiojs/audio-buffer-utils) [![unstable](http://badges.github.io/stability-badges/dist/stable.svg)](http://github.com/badges/stability-badges)
 
 Utility functions for [_AudioBuffers_](https://github.com/audiojs/audio-buffer) in web-audio and node.
 
@@ -9,7 +9,7 @@ Utility functions for [_AudioBuffers_](https://github.com/audiojs/audio-buffer) 
 ### `const utils = require('audio-buffer-utils')`
 Get utils toolset.
 
-Data layout is horizontal, in that sample numbers are arranged horizontally, channels vertically, and function arguments convention is that sample index goes first and number of channel goes second.
+_AudioBuffer_ data layout is considered horizontal, in that sample numbers are arranged horizontally, channels vertically, and functions take sample index as the first and number of channel the second arguments.
 
 Sample values range from `-1` to `1`, but not limited to it.
 
