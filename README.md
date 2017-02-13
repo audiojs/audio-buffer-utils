@@ -142,6 +142,6 @@ Useful in audio-workers to transfer buffer to output.
 > [audio-buffer](https://github.com/audio-lab/buffer) — audio data container, both for node/browser.<br/>
 > [scijs](https://github.com/scijs) — DSP utils, like fft, resample, scale etc.
 
-# Credits
+## Credits
 
 Thanks to [**@jaz303**](https://github.com/jaz303/) for [the initial idea](https://github.com/jaz303/audio-buffer-utils) and collaboration.
