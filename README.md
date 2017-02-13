@@ -1,105 +1,97 @@
-Utility functions for Audio Buffers.
+# audio-buffer-utils [![Build Status](https://travis-ci.org/audiojs/audio-buffer-utils.svg?branch=master)](https://travis-ci.org/audiojs/audio-buffer-utils) [![stable](http://badges.github.io/stability-badges/dist/stable.svg)](http://github.com/badges/stability-badges)
 
+Utility functions for [_AudioBuffers_](https://github.com/audiojs/audio-buffer) in web-audio and node.
 
 ## Usage
 
-[`$ npm install audio-buffer-utils`](https://npmjs.org/package/audio-buffer-utils)
+[![npm install audio-buffer-utils](https://nodei.co/npm/audio-buffer-utils.png?mini=true)](https://npmjs.org/package/audio-buffer-utils/)
 
+### `var utils = require('audio-buffer-utils')`
 
-```js
-var utils = require('audio-buffer-utils');
+### utils.create(channels?, data, sampleRate?)
+Create a new buffer from any argument.
+Data can be a length, an array with channels' data, an other buffer or plain array.
 
-//Create a new buffer from any argument.
-//Data can be a length, an array with channels' data, an other buffer or plain array.
-utils.create(channels?, data, sampleRate?);
+### utils.shallow(buffer)
+Create a new buffer with the same characteristics as `buffer`,
+contents are undefined.
 
-//Create a new buffer with the same characteristics as `buffer`,
-//contents are undefined.
-utils.shallow(buffer);
+### utils.clone(buffer)
+Create a new buffer with the same characteristics as `buffer`,
+fill it with a copy of `buffer`'s data, and return it.
 
-//Create a new buffer with the same characteristics as `buffer`,
-//fill it with a copy of `buffer`'s data, and return it.
-utils.clone(buffer);
+### utils.copy(fromBuffer, result, offset?)
+Copy the data from one buffer to another, with optional offset
 
-//Copy the data from one buffer to another, with optional offset
-utils.copy(fromBuffer, result, offset?);
+### utils.reverse(buffer, result?)
+Reverse `buffer`. Place data to `result` buffer, if any, otherwise modify `buffer` in-place.
 
-//Reverse `buffer`. Place data to `result` buffer, if any, otherwise modify `buffer` in-place.
-utils.reverse(buffer, result?);
+### utils.invert(buffer, result?)
+Invert `buffer`. Place data to `result` buffer, if any, otherwise modify `buffer` in-place.
 
-//Invert `buffer`. Place data to `result` buffer, if any, otherwise modify `buffer` in-place.
-utils.invert(buffer, result?);
+### utils.zero(buffer)
+Zero all of `buffer`'s channel data. `buffer` is modified in-place.
 
-//Zero all of `buffer`'s channel data. `buffer` is modified in-place.
-utils.zero(buffer);
+### utils.noise(buffer)
+Fill `buffer` with random data. `buffer` is modified in-place.
 
-//Fill `buffer` with random data. `buffer` is modified in-place.
-utils.noise(buffer);
+### utils.equal(bufferA, bufferB, ...)
+Test whether the content of N buffers is the same.
 
-//Test whether the content of N buffers is the same.
-utils.equal(bufferA, bufferB, ...);
+### utils.fill(buffer, result?, value| (sample, idx, channel) => sample, start?, end?)
+Fill `buffer` with provided function or value.
+Place data to `result` buffer, if any, otherwise modify `buffer` in-place.
+Pass optional `start` and `end` indexes.
 
-//Fill `buffer` with provided function or value.
-//Place data to `result` buffer, if any, otherwise modify `buffer` in-place.
-//Pass optional `start` and `end` indexes.
-utils.fill(buffer, result?, value|function (sample, idx, channel) {
-	return sample / 2;
-}, start?, end?);
+### utils.map(buffer, function (sample, idx, channel) => newSample )
+Create a new buffer by mapping the samples of the current one.
 
-//Create a new buffer by mapping the samples of the current one.
-utils.map(buffer, function (sample, idx, channel) {
-	return sample / 2;
-});
+### utils.slice(buffer, start?, end?)
+Create a new buffer by slicing the current one.
 
-//Create a new buffer by slicing the current one.
-utils.slice(buffer, start?, end?);
+### utils.concat(buffer1, buffer2, buffer3, ...)
+Create a new buffer by concatting passed buffers.
+Channels are extended to the buffer with maximum number.
+Sample rate is changed to the maximum within the buffers.
 
-//Create a new buffer by concatting passed buffers.
-//Channels are extended to the buffer with maximum number.
-//Sample rate is changed to the maximum within the buffers.
-utils.concat(buffer1, buffer2, buffer3, ...);
+### utils.resize(buffer, length)
+Return new buffer based on the passed one, with shortened/extended length.
+Initial data is whether sliced or filled with zeros.
+Useful to change duration: `util.resize(buffer, duration * buffer.sampleRate)`
 
-//Return new buffer based on the passed one, with shortened/extended length.
-//Initial data is whether sliced or filled with zeros.
-//Useful to change duration: `util.resize(buffer, duration * buffer.sampleRate);`
-utils.resize(buffer, length);
+### utils.pad(buffer, length, value?)
+### utils.pad(length, buffer, value?)
+Right/left-pad buffer to the length, filling with value
 
-//Right/left-pad buffer to the length, filling with value
-utils.pad(buffer, length, value?);
-utils.pad(length, buffer, value?);
+### utils.shift(buffer, offset)
+Shift signal in the time domain by `offset` samples, filling with zeros.
+Modify `buffer` in-place.
 
-//Shift signal in the time domain by `offset` samples, filling with zeros.
-//Modify `buffer` in-place.
-utils.shift(buffer, offset);
+### utils.rotate(buffer, offset)
+Shift signal in the time domain by `offset` samples, in circular fashion.
+Modify `buffer` in-place.
 
-//Shift signal in the time domain by `offset` samples, in circular fashion.
-//Modify `buffer` in-place.
-utils.rotate(buffer, offset);
+### utils.reduce(buffer, (previousValue, currendValue, idx, channel, channelData) => sample, startValue?)
+Fold buffer into a single value. Useful to generate metrics, like loudness, average, etc.
 
-//Fold buffer into a single value. Useful to generate metrics, like loudness, average, etc.
-utils.reduce(buffer, function (previousValue, currendValue, idx, channel, channelData) {
-	return previousValue + currentValue;
-}, startValue?);
+### utils.normalize(buffer, result?, start?, end?)
+Normalize buffer by the max value, limit to the -1..+1 range.
+Place data to `result` buffer, if any, otherwise modify `buffer` in-place.
 
-//Normalize buffer by the max value, limit to the -1..+1 range.
-//Place data to `result` buffer, if any, otherwise modify `buffer` in-place.
-utils.normalize(buffer, result?, start?, end?);
+### utils.trim(buffer, threshold?)
+### utils.trimStart(buffer, threshold?)
+### utils.trimEnd(buffer, threshold?)
+Create buffer with trimmed zeros from the start and/or end, by the threshold.
 
-//Create buffer with trimmed zeros from the start and/or end, by the threshold.
-utils.trim(buffer, threshold?);
-utils.trimStart(buffer, threshold?);
-utils.trimEnd(buffer, threshold?)
+### utils.size(buffer)
+Mix second buffer into the first one. Pass optional weight value or mixing function.
+util.mix(bufferA, bufferB, ratio|fn(valA, valB, idx, channel)?, offset?)
 
-//Mix second buffer into the first one. Pass optional weight value or mixing function.
-util.mix(bufferA, bufferB, ratio|fn(valA, valB, idx, channel)?, offset?);
+Return buffer size, in bytes. Use pretty-bytes package to format bytes to a string, if needed.
 
-//Return buffer size, in bytes. Use pretty-bytes package to format bytes to a string, if needed.
-utils.size(buffer);
-
-//Get channels' data in array. Pass existing array to transfer the data to it.
-//Useful in audio-workers to transfer buffer to output.
-utils.data(buffer, data?);
-```
+### utils.data(buffer, data?)
+Get channels' data in array. Pass existing array to transfer the data to it.
+Useful in audio-workers to transfer buffer to output.
 
 
 ## Related
