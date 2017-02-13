@@ -2,13 +2,10 @@ var util = require('./');
 var assert = require('assert');
 var AudioBuffer = require('audio-buffer');
 var isBrowser = require('is-browser');
+var test = require('tape')
 
-// var test = require('tst');
-function test (a, b) {
-	return b && b()
-}
 
-test('create', function () {
+test('create', function (t) {
 	var buf1 = util.create();
 	assert.equal(buf1.length, 1);
 	assert.equal(buf1.numberOfChannels, 2);
@@ -32,9 +29,10 @@ test('create', function () {
 
 	var buf7 = util.create(1, [1,0,0,1]);
 	assert.deepEqual(buf7.getChannelData(0), [1,0,0,1]);
+	t.end()
 });
 
-test('equal', function () {
+test('equal', function (t) {
 	var buf1 = new AudioBuffer([1, 0, -1, 0]);
 	var buf2 = new AudioBuffer([1, 0, -1, 0]);
 	var buf3 = new AudioBuffer([1, 0, 1, 0]);
@@ -51,9 +49,10 @@ test('equal', function () {
 	assert.throws(function () {
 		util.equal(buf1, new Float32Array(1));
 	});
+	t.end()
 });
 
-test('shallow', function () {
+test('shallow', function (t) {
 	var buf1 = new AudioBuffer([0, 1, 2, 3]);
 	var buf2 = util.shallow(buf1);
 
@@ -64,10 +63,11 @@ test('shallow', function () {
 	assert.throws(function () {
 		util.shallow(new Float32Array(1));
 	});
+	t.end()
 });
 
 
-test('clone', function () {
+test('clone', function (t) {
 	var buf1 = new AudioBuffer([1, 0, -1, 0]);
 	var buf2 = util.clone(buf1);
 
@@ -81,10 +81,11 @@ test('clone', function () {
 	assert.throws(function () {
 		util.clone({});
 	});
+	t.end()
 });
 
 
-test('copy', function () {
+test('copy', function (t) {
 	var buf1 = new AudioBuffer([1, 0, -1, 0]);
 	var buf2 = util.shallow(buf1);
 
@@ -102,19 +103,21 @@ test('copy', function () {
 	assert.deepEqual(buf3.getChannelData(0), [0,0,0,0, 1, 0.5, 0, 0]);
 
 	// util.copy(buf3, buf2);
+	t.end()
 });
 
 
-test('clone - backing arrays are not shared between buffers', function () {
+test('clone - backing arrays are not shared between buffers', function (t) {
 	var buf1 = new AudioBuffer([0, 1, 2, 3, 4]);
 	var buf2 = util.clone(buf1);
 
 	buf2.getChannelData(0)[0] = 100;
 	assert.equal(0, buf1.getChannelData(0)[0]);
+	t.end()
 });
 
 
-test('reverse', function () {
+test('reverse', function (t) {
 	var buf1 = new AudioBuffer([1, 0, -1, 0]);
 	util.reverse(buf1);
 
@@ -129,10 +132,11 @@ test('reverse', function () {
 	util.reverse(buf1, buf2);
 
 	assert.deepEqual(buf2.getChannelData(1), [-1, 0]);
+	t.end()
 });
 
 
-test('invert', function () {
+test('invert', function (t) {
 	var buf1 = new AudioBuffer([1, 0.5, -1, 0]);
 	util.invert(buf1);
 
@@ -147,10 +151,11 @@ test('invert', function () {
 	util.invert(buf1, buf2);
 
 	assert.deepEqual(buf2.getChannelData(1), [-1, 0]);
+	t.end()
 });
 
 
-test('zero', function () {
+test('zero', function (t) {
 	var buf1 = new AudioBuffer([1, 0.5, -1, 0]);
 	util.zero(buf1);
 
@@ -160,10 +165,11 @@ test('zero', function () {
 	assert.throws(function () {
 		util.invert(buf1.getChannelData(0));
 	});
+	t.end()
 });
 
 
-test('noise', function () {
+test('noise', function (t) {
 	var buf1 = new AudioBuffer(4);
 	util.noise(buf1);
 
@@ -173,10 +179,11 @@ test('noise', function () {
 	assert.throws(function () {
 		util.noise(buf1.getChannelData(0));
 	});
+	t.end()
 });
 
 
-test('fill with function', function () {
+test('fill with function', function (t) {
 	var a = new AudioBuffer([1,2,3,4]);
 	util.fill(a, function (sample, channel, offset) { return channel + offset });
 
@@ -186,10 +193,11 @@ test('fill with function', function () {
 	assert.throws(function () {
 		util.fill([1,2,3], function () {});
 	});
+	t.end()
 });
 
 
-test('fill with value', function () {
+test('fill with value', function (t) {
 	var a = new AudioBuffer([1,2,3,4]);
 	util.fill(a, 1, 1, 3);
 
@@ -199,9 +207,10 @@ test('fill with value', function () {
 	assert.throws(function () {
 		util.fill(a.getChannelData(1), 1);
 	});
+	t.end()
 });
 
-test('fill to another buffer', function () {
+test('fill to another buffer', function (t) {
 	var a = new AudioBuffer([1,2,3,4]);
 	var b = util.shallow(a);
 	util.fill(a, b, 1, 1, 3);
@@ -211,9 +220,10 @@ test('fill to another buffer', function () {
 
 	assert.deepEqual(b.getChannelData(0), [0,1]);
 	assert.deepEqual(b.getChannelData(1), [0,1]);
+	t.end()
 });
 
-test('fill callback argument', function () {
+test('fill callback argument', function (t) {
 	var a = new AudioBuffer([1,2,3,4]);
 
 	//NOTE: such arguments are possible in case of `Through(util.noise)` etc.
@@ -221,9 +231,10 @@ test('fill callback argument', function () {
 
 	assert.deepEqual(a.getChannelData(0), [1,1]);
 	assert.deepEqual(a.getChannelData(1), [1,1]);
+	t.end()
 });
 
-test('slice', function () {
+test('slice', function (t) {
 	var a = new AudioBuffer(3, [1,2,3,4,5,6,7,8,9]);
 
 	var b = util.slice(a, 1);
@@ -242,6 +253,7 @@ test('slice', function () {
 	assert.throws(function () {
 		util.slice([1,2,3,4], 1, 2);
 	});
+	t.end()
 });
 
 /*
@@ -268,7 +280,7 @@ test.skip('subbuffer', function () {
 });
 */
 
-test('map', function () {
+test('map', function (t) {
 	var a = AudioBuffer(3, [1, 1, 1, 1, 1, 1]);
 
 	var b = util.map(a, function (sample, channel, offset) {
@@ -288,10 +300,11 @@ test('map', function () {
 	assert.throws(function () {
 		util.map([1,2,3,4], function () {});
 	});
+	t.end()
 });
 
 
-test('concat', function () {
+test('concat', function (t) {
 	var a = AudioBuffer([1,1,1,1]);
 	var b = AudioBuffer(3, 2);
 	var c = AudioBuffer(1, [-1, -1], 22050); //handle this!
@@ -313,10 +326,11 @@ test('concat', function () {
 	assert.throws(function () {
 		util.concat([1,2,3,4], [5,6]);
 	});
+	t.end()
 });
 
 
-test('resize', function () {
+test('resize', function (t) {
 	var a = AudioBuffer(1, [1,1,1,1,1], 44100);
 
 	//set too big
@@ -330,10 +344,11 @@ test('resize', function () {
 	assert.throws(function () {
 		util.resize('123', 2);
 	});
+	t.end()
 });
 
 
-test('rotate (+ve)', function () {
+test('rotate (+ve)', function (t) {
 	var a = AudioBuffer(1, [0,0,1,1,0,0,-1,-1]);
 	util.rotate(a, 2);
 	assert.deepEqual(a.getChannelData(0), [-1,-1,0,0,1,1,0,0]);
@@ -341,9 +356,10 @@ test('rotate (+ve)', function () {
 	assert.throws(function () {
 		util.rotate([1,2,3], 2);
 	});
+	t.end()
 });
 
-test('rotate (-ve)', function() {
+test('rotate (-ve)', function(t) {
 	var a = AudioBuffer(1, [0,0,1,1,0,0,-1,-1]);
 	util.rotate(a, -3);
 	assert.deepEqual(a.getChannelData(0), [1,0,0,-1,-1,0,0,1]);
@@ -351,10 +367,11 @@ test('rotate (-ve)', function() {
 	assert.throws(function () {
 		util.rotate([1,2,3], -2);
 	});
+	t.end()
 });
 
 
-test('shift (+ve)', function () {
+test('shift (+ve)', function (t) {
 	var a = AudioBuffer(1, [0,0,1,1,0,0,-1,-1]);
 	util.shift(a, 2);
 	assert.deepEqual(a.getChannelData(0), [0,0,0,0,1,1,0,0]);
@@ -362,9 +379,10 @@ test('shift (+ve)', function () {
 	assert.throws(function () {
 		util.shift([1,2,3], 2);
 	});
+	t.end()
 });
 
-test('shift (-ve)', function () {
+test('shift (-ve)', function (t) {
 	var a = AudioBuffer(1, [0,0,1,1,0,0,-1,-1]);
 	util.shift(a, -3);
 	assert.deepEqual(a.getChannelData(0), [1,0,0,-1,-1,0,0,0]);
@@ -372,10 +390,11 @@ test('shift (-ve)', function () {
 	assert.throws(function () {
 		util.shift([1,2,3], -2);
 	});
+	t.end()
 });
 
 
-test('normalize', function () {
+test('normalize', function (t) {
 	var a = AudioBuffer(1, [0, 0.1, 0, -0.2]);
 
 	util.normalize(a);
@@ -394,10 +413,11 @@ test('normalize', function () {
 	assert.throws(function () {
 		util.normalize(new Float32Array([0, 0.1, 0.2]));
 	});
+	t.end()
 });
 
 
-test('trim', function () {
+test('trim', function (t) {
 	//trim both
 	var a = AudioBuffer([0,0,1,0,0,2,3,0]);
 	var b = util.trim(a);
@@ -415,10 +435,11 @@ test('trim', function () {
 	assert.throws(function () {
 		util.trim(new Float32Array([0, 0.1, 0.2]));
 	});
+	t.end()
 });
 
 
-test('pad', function () {
+test.only('pad', function (t) {
 	//pad right
 	var a = AudioBuffer([0,1,2,3,4,5]);
 	var b = util.pad(a, 4);
@@ -443,10 +464,17 @@ test('pad', function () {
 	assert.throws(function () {
 		util.pad(new Float32Array([0, 0.1, 0.2]));
 	});
+
+	//pad conversion
+	var a = util.create(1, 1)
+	var b = util.pad(a, 10);
+	assert.equal(b.numberOfChannels, 1);
+
+	t.end()
 });
 
 
-test('size', function () {
+test('size', function (t) {
 	if (!isBrowser) {
 		if (typeof Float64Array !== 'undefined') {
 			AudioBuffer.FloatArray = Float64Array;
@@ -463,6 +491,7 @@ test('size', function () {
 	assert.throws(function () {
 		util.size();
 	});
+	t.end()
 });
 
 /*
@@ -477,7 +506,7 @@ test.skip('resample', function () {
 });
 */
 
-test('mix', function () {
+test('mix', function (t) {
 	var a = AudioBuffer(2, [0,1,0,1]);
 	var b = AudioBuffer(2, [0.5, 0.5, -0.5, -0.5]);
 
@@ -499,10 +528,11 @@ test('mix', function () {
 	assert.throws(function () {
 		util.mix([1,2,3], [4,5,6], 0.1);
 	});
+	t.end()
 });
 
 
-test('data', function () {
+test('data', function (t) {
 	var b = util.create(3, [1,-1, 0.5, -1, 0, -0.5]);
 
 	var data = util.data(b);
@@ -517,4 +547,5 @@ test('data', function () {
 	assert.deepEqual(src[0], [1, -1]);
 	assert.deepEqual(src[1], [0.5, -1]);
 	assert.deepEqual(src[2], [0, -0.5]);
+	t.end()
 });

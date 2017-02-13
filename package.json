@@ -39,6 +39,7 @@
     "audio-buffer": "^2.0.0",
     "is-audio-buffer": "^1.0.0",
     "is-browser": "^2.0.1",
+    "tape": "^4.6.3",
     "typedarray-methods": "^1.0.0"
   }
 }
