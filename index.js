@@ -2,6 +2,8 @@
  * @module  audio-buffer-utils
  */
 
+'use strict'
+
 require('typedarray-methods')
 const AudioBuffer = require('audio-buffer')
 const isAudioBuffer = require('is-audio-buffer')
@@ -210,9 +212,7 @@ function fill (buffer, target, value, start, end) {
 	//resolve type of value
 	if (!(value instanceof Function)) {
 		for (let channel = 0, c = buffer.numberOfChannels; channel < c; channel++) {
-			let data = buffer.getChannelData(channel),
-				targetData = target.getChannelData(channel),
-				l = buffer.length;
+			let targetData = target.getChannelData(channel);
 			for (let i = start; i < end; i++) {
 				targetData[i] = value
 			}
@@ -221,8 +221,7 @@ function fill (buffer, target, value, start, end) {
 	else {
 		for (let channel = 0, c = buffer.numberOfChannels; channel < c; channel++) {
 			let data = buffer.getChannelData(channel),
-				targetData = target.getChannelData(channel),
-				l = buffer.length;
+				targetData = target.getChannelData(channel);
 			for (let i = start; i < end; i++) {
 				targetData[i] = value.call(buffer, data[i], i, channel, data);
 			}
