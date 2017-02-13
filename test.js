@@ -447,14 +447,14 @@ test('trim', function (t) {
 test('pad', function (t) {
 	//pad right
 	var a = AudioBuffer([0,1,2,3,4,5]);
-	var b = util.pad(a, 4);
+	var b = util.padRight(a, 4);
 
 	assert.deepEqual(b.getChannelData(0), [0,1,2,0]);
 	assert.deepEqual(b.getChannelData(1), [3,4,5,0]);
 
 	//pad left
 	var a = AudioBuffer([0,1,2,3,4,5]);
-	var b = util.pad(4, a);
+	var b = util.padLeft(a, 4);
 
 	assert.deepEqual(b.getChannelData(0), [0,0,1,2]);
 	assert.deepEqual(b.getChannelData(1), [0,3,4,5]);

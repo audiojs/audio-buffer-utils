@@ -8,57 +8,23 @@ Utility functions for [_AudioBuffers_](https://github.com/audiojs/audio-buffer) 
 
 ### `const utils = require('audio-buffer-utils')`
 Get utils toolset.
-Data layout convention is horizontal:
 
-<table>
-  <tr>
-    <th>Channel #</th>
-    <th colspan="4">Sample #</th>
-  </tr>
-  <tr>
-    <td>0</td>
-    <td>0</td>
-    <td>1</td>
-    <td>2</td>
-    <td>...</td>
-    <td>`.length`</td>
-  </tr>
-  <tr>
-    <td>1</td>
-    <td>0</td>
-    <td>1</td>
-    <td>2</td>
-    <td>...</td>
-    <td>`.length`</td>
-  </tr>
-  <tr>
-    <td colspan="5">...</td>
-  </tr>
-  <tr>
-    <td>`.numberOfChannels`</td>
-    <td>0</td>
-    <td>1</td>
-    <td>2</td>
-    <td>...</td>
-    <td>`.length`</td>
-  </tr>
-</table>
+Data layout is horizontal, in that sample numbers are arranged horizontally, channels vertically, and function arguments convention is that sample index goes first and number of channel goes second.
 
-
-In that, arguments convention is: first goes sample index (x-coordinate) and then number of a channel (y-coordinate).
+Sample values range from `-1` to `1`, but not limited to it.
 
 ### `utils.create(data|length, channels = 2, sampleRate?)`
 Create a new buffer from any argument.
 Data can be a length, an array with channels' data, an other buffer or plain array.
 
 ```js
-//mono 100-samples buffer
-let a = utils.create(1, 100)
+//mono buffer with 100 samples
+let a = utils.create(100, 1)
 
-//stereo buffer with channels data
+//stereo buffer with predefined channels data
 let b = utils.create([Array(100).fill(0.5), Array(100).fill(0.4)])
 
-//minimal length buffer (1 sample)
+//minimal length buffer (1 sample, 2 channels)
 let c = utils.create()
 ```
 
@@ -86,12 +52,12 @@ Fill `buffer` with random data. `buffer` is modified in-place.
 ### `utils.equal(bufferA, bufferB, ...)`
 Test whether the content of N buffers is the same.
 
-### `utils.fill(buffer, result?, value|(sample, idx, channel) => sample, start?, end?)`
+### `utils.fill(buffer, result?, value|(sample, i, channel) => sample, start?, end?)`
 Fill `buffer` with provided function or value.
 Place data to `result` buffer, if any, otherwise modify `buffer` in-place.
 Pass optional `start` and `end` indexes.
 
-### `utils.map(buffer, (sample, idx, channel) => newSample )`
+### `utils.map(buffer, (sample, i, channel) => newSample )`
 Create a new buffer by mapping the samples of the current one.
 
 ### `utils.slice(buffer, start?, end?)`
@@ -108,6 +74,8 @@ Initial data is whether sliced or filled with zeros.
 Useful to change duration: `util.resize(buffer, duration * buffer.sampleRate)`
 
 ### `utils.pad(buffer, length, value?), utils.pad(length, buffer, value?)`
+### `utils.padLeft(buffer, length, value?)`
+### `utils.padRight(buffer, length, value?)`
 Right/left-pad buffer to the length, filling with value.
 
 ```js
@@ -128,7 +96,7 @@ Modify `buffer` in-place.
 Shift signal in the time domain by `offset` samples, in circular fashion.
 Modify `buffer` in-place.
 
-### `utils.reduce(buffer, (prev, curr, idx, channel, channelData) => sample, startValue?)`
+### `utils.reduce(buffer, (prev, curr, i, channel, channelData) => sample, startValue?)`
 Fold buffer into a single value. Useful to generate metrics, like loudness, average, etc.
 
 ### `utils.normalize(buffer, result?, start?, end?)`
@@ -136,15 +104,15 @@ Normalize buffer by the max value, limit to the -1..+1 range.
 Place data to `result` buffer, if any, otherwise modify `buffer` in-place.
 
 ### `utils.trim(buffer, threshold?)`
-### `utils.trimStart(buffer, threshold?)`
-### `utils.trimEnd(buffer, threshold?)`
+### `utils.trimLeft(buffer, threshold?)`
+### `utils.trimRight(buffer, threshold?)`
 Create buffer with trimmed zeros from the start and/or end, by the threshold.
 
-### `util.mix(bufferA, bufferB, ratio|(valA, valB, idx, channel) => {}?, offset?)`
+### `util.mix(bufferA, bufferB, ratio|(valA, valB, i, channel) => val?, offset?)`
 Mix second buffer into the first one. Pass optional weight value or mixing function.
 
 ### `utils.size(buffer)`
-Return buffer size, in bytes. Use pretty-bytes package to format bytes to a string, if needed.
+Return buffer size, in bytes. Use [pretty-bytes](https://npmjs.org/package/pretty-bytes) package to format bytes to a string, if needed.
 
 ### `utils.data(buffer, data?)`
 Get channels' data in array. Pass existing array to transfer the data to it.

@@ -24,13 +24,15 @@ module.exports = {
     concat: concat,
     resize: resize,
     pad: pad,
+    padLeft: padLeft,
+    padRight: padRight,
     rotate: rotate,
     shift: shift,
     reduce: reduce,
     normalize: normalize,
     trim: trim,
-    trimStart: trimStart,
-    trimEnd: trimEnd,
+    trimLeft: trimLeft,
+    trimRight: trimRight,
     mix: mix,
     size: size,
     data: data
@@ -355,6 +357,12 @@ function pad (a, b, value) {
     //right-pad
     return concat(buffer, fill(create(length - buffer.length, buffer.numberOfChannels), value));
 }
+function padLeft (data, len, value) {
+    return pad(len, data, value)
+}
+function padRight (data, len, value) {
+    return pad(data, len, value)
+}
 
 
 
@@ -465,11 +473,11 @@ function trim (buffer, level) {
     return trimInternal(buffer, level, true, true);
 }
 
-function trimStart (buffer, level) {
+function trimLeft (buffer, level) {
     return trimInternal(buffer, level, true, false);
 }
 
-function trimEnd (buffer, level) {
+function trimRight (buffer, level) {
     return trimInternal(buffer, level, false, true);
 }
 
