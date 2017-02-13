@@ -322,7 +322,7 @@ function resize (buffer, length) {
 
     if (length < buffer.length) return slice(buffer, 0, length);
 
-    return concat(buffer, create(length - buffer.length));
+    return concat(buffer, create(buffer.numberOfChannels, length - buffer.length));
 }
 
 
@@ -349,11 +349,11 @@ function pad (a, b, value) {
 
     //left-pad
     if (buffer === b) {
-        return concat(fill(create(length - buffer.length), value), buffer);
+        return concat(fill(create(buffer.numberOfChannels, length - buffer.length), value), buffer);
     }
 
     //right-pad
-    return concat(buffer, fill(create(length - buffer.length), value));
+    return concat(buffer, fill(create(buffer.numberOfChannels, length - buffer.length), value));
 }
 
 

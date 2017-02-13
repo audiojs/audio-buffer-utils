@@ -48,12 +48,12 @@ Fill `buffer` with random data. `buffer` is modified in-place.
 ### `utils.equal(bufferA, bufferB, ...)`
 Test whether the content of N buffers is the same.
 
-### `utils.fill(buffer, result?, value| (sample, idx, channel) => sample, start?, end?)`
+### `utils.fill(buffer, result?, value|(sample, idx, channel) => sample, start?, end?)`
 Fill `buffer` with provided function or value.
 Place data to `result` buffer, if any, otherwise modify `buffer` in-place.
 Pass optional `start` and `end` indexes.
 
-### `utils.map(buffer, function (sample, idx, channel) => newSample )`
+### `utils.map(buffer, (sample, idx, channel) => newSample )`
 Create a new buffer by mapping the samples of the current one.
 
 ### `utils.slice(buffer, start?, end?)`
@@ -81,7 +81,7 @@ Modify `buffer` in-place.
 Shift signal in the time domain by `offset` samples, in circular fashion.
 Modify `buffer` in-place.
 
-### `utils.reduce(buffer, (previousValue, currendValue, idx, channel, channelData) => sample, startValue?)`
+### `utils.reduce(buffer, (prev, curr, idx, channel, channelData) => sample, startValue?)`
 Fold buffer into a single value. Useful to generate metrics, like loudness, average, etc.
 
 ### `utils.normalize(buffer, result?, start?, end?)`

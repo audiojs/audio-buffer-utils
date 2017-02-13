@@ -439,7 +439,7 @@ test('trim', function (t) {
 });
 
 
-test.only('pad', function (t) {
+test('pad', function (t) {
 	//pad right
 	var a = AudioBuffer([0,1,2,3,4,5]);
 	var b = util.pad(a, 4);
