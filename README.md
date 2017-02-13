@@ -9,7 +9,7 @@ Utility functions for [_AudioBuffers_](https://github.com/audiojs/audio-buffer) 
 ### `const utils = require('audio-buffer-utils')`
 Get utils toolset.
 
-_AudioBuffer_ data layout is considered horizontal, in that sample numbers are arranged horizontally, channels vertically, and functions take sample index as the first and number of channel the second arguments.
+_AudioBuffer_ data layout is considered horizontal, in that sample numbers are arranged horizontally, channels vertically, and functions take sample index as the first and number of channel as the second arguments.
 
 Sample values range from `-1` to `1`, but not limited to it.
 
@@ -73,7 +73,7 @@ Return new buffer based on the passed one, with shortened/extended length.
 Initial data is whether sliced or filled with zeros.
 Useful to change duration: `util.resize(buffer, duration * buffer.sampleRate)`
 
-### `utils.pad(buffer, length, value?), utils.pad(length, buffer, value?)`
+### `utils.pad(buffer|length, length|buffer, value?)`
 ### `utils.padLeft(buffer, length, value?)`
 ### `utils.padRight(buffer, length, value?)`
 Right/left-pad buffer to the length, filling with value.
