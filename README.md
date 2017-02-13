@@ -97,11 +97,29 @@ Shift signal in the time domain by `offset` samples, in circular fashion.
 Modify `buffer` in-place.
 
 ### `utils.normalize(buffer, result?, start?, end?)`
-Normalize buffer by the amplitude, bring to -1..+1 range. Channel amplitudes ratio will be preserved. You may want to remove static level beforehead, because normalization preserves zero static level.
+Normalize buffer by the amplitude, bring to -1..+1 range. Channel amplitudes ratio will be preserved. You may want to remove static level beforehead, because normalization preserves zero static level. Note that it is not the same as [array-normalize](https://github.com/dfcreative/array-noramalize).
 Places data to `result` buffer, if any, otherwise modifies `buffer` in-place.
+
+```js
+const AudioBuffer = require('audio-buffer')
+const util = require('audio-buffer-utils')
+
+let buf = AudioBuffer(1, [0, 0.2, 0, -0.4]);
+util.normalize(buf);
+buf.getChannelData(0) // [0, .5, 0, -1]
+```
 
 ### `utils.removeStatic(buffer, result?, start?, end?)`
 Remove DC (Direct Current) offset from the signal, i.e. remove static level, that is bring mean to zero. DC offset will be reduced for every channel independently.
+
+```js
+var a = AudioBuffer(2, [.5,.7,.3,.5])
+
+util.removeStatic(a)
+
+a.getChannelData(0) // [-.1, .1]
+a.getChannelData(1) // [-.1, .1]
+```
 
 ### `utils.trim(buffer, threshold?)`
 ### `utils.trimLeft(buffer, threshold?)`
@@ -122,5 +140,4 @@ Useful in audio-workers to transfer buffer to output.
 ## Related
 
 > [audio-buffer](https://github.com/audio-lab/buffer) — audio data container, both for node/browser.<br/>
-> [pcm-util](https://github.com/audio-lab/pcm-util) — utils for low-level pcm buffers, like audio formats etc.<br/>
 > [scijs](https://github.com/scijs) — DSP utils, like fft, resample, scale etc.
