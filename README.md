@@ -10,18 +10,41 @@ Utility functions for [_AudioBuffers_](https://github.com/audiojs/audio-buffer) 
 Get utils toolset.
 Data layout convention is horizontal:
 
-```
-Channel             Sample
-                    ——— ——— ——— ————— ————————————
-0                  | 0 | 1 | 2 | ... | length - 1 |
-                    ——— ——— ——— ————— ————————————
-1                  | 0 | 1 | 2 | ... | length - 1 |
-                    ——— ——— ——— ————— ————————————
-...
-                    ——— ——— ——— ————— ————————————
-numberOfChannels   | 0 | 1 | 2 | ... | length - 1 |
-                    ——— ——— ——— ————— ————————————
-```
+<table>
+  <tr>
+    <th>Channel #</th>
+    <th colspan="4">Sample #</th>
+  </tr>
+  <tr>
+    <td>0</td>
+    <td>0</td>
+    <td>1</td>
+    <td>2</td>
+    <td>...</td>
+    <td>`.length`</td>
+  </tr>
+  <tr>
+    <td>1</td>
+    <td>0</td>
+    <td>1</td>
+    <td>2</td>
+    <td>...</td>
+    <td>`.length`</td>
+  </tr>
+  <tr>
+    <td colspan="5">...</td>
+  </tr>
+  <tr>
+    <td>`.numberOfChannels`</td>
+    <td>0</td>
+    <td>1</td>
+    <td>2</td>
+    <td>...</td>
+    <td>`.length`</td>
+  </tr>
+</table>
+
+
 In that, arguments convention is: first goes sample index (x-coordinate) and then number of a channel (y-coordinate).
 
 ### `utils.create(data|length, channels = 2, sampleRate?)`
