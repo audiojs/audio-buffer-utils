@@ -8,8 +8,23 @@ Utility functions for [_AudioBuffers_](https://github.com/audiojs/audio-buffer) 
 
 ### `const utils = require('audio-buffer-utils')`
 Get utils toolset.
+Data layout convention is horizontal:
 
-### `utils.create(channels?, data, sampleRate?)`
+```
+Channel             Sample
+                    ——— ——— ——— ————— ————————————
+0                  | 0 | 1 | 2 | ... | length - 1 |
+                    ——— ——— ——— ————— ————————————
+1                  | 0 | 1 | 2 | ... | length - 1 |
+                    ——— ——— ——— ————— ————————————
+...
+                    ——— ——— ——— ————— ————————————
+numberOfChannels   | 0 | 1 | 2 | ... | length - 1 |
+                    ——— ——— ——— ————— ————————————
+```
+In that, arguments convention is: first goes sample index (x-coordinate) and then number of a channel (y-coordinate).
+
+### `utils.create(data|length, channels = 2, sampleRate?)`
 Create a new buffer from any argument.
 Data can be a length, an array with channels' data, an other buffer or plain array.
 
@@ -69,9 +84,18 @@ Return new buffer based on the passed one, with shortened/extended length.
 Initial data is whether sliced or filled with zeros.
 Useful to change duration: `util.resize(buffer, duration * buffer.sampleRate)`
 
-### `utils.pad(buffer, length, value?)`
-### `utils.pad(length, buffer, value?)`
-Right/left-pad buffer to the length, filling with value
+### `utils.pad(buffer, length, value?), utils.pad(length, buffer, value?)`
+Right/left-pad buffer to the length, filling with value.
+
+```js
+let buf = util.create(1, 3)
+util.fill(buf, .2)
+
+util.pad(buf, 5) // [.2,.2,.2, 0,0]
+util.pad(5, buf) // [0,0, .2,.2,.2]
+util.pad(buf, 5, .1) // [.2,.2,.2, .1,.1]
+util.pad(5, buf, .1) // [.1,.1, .2,.2,.2]
+```
 
 ### `utils.shift(buffer, offset)`
 Shift signal in the time domain by `offset` samples, filling with zeros.

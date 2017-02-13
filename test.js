@@ -12,23 +12,28 @@ test('create', function (t) {
 
 	var buf2 = util.create([[0,1], [0,1], [1,0]]);
 	assert.deepEqual(buf2.getChannelData(2), [1, 0]);
+	assert.equal(buf2.numberOfChannels, 3)
 
 	var buf3 = util.create([new Float32Array([0,1]), new Float32Array([0,1]), new Float32Array([1,0])]);
 	assert.deepEqual(buf3.getChannelData(2), [1, 0]);
 
-	var buf4 = util.create(2, 5, 44100);
+	var buf4 = util.create(5, 2, 44100);
 	assert.deepEqual(buf4.getChannelData(0), [0,0,0,0,0]);
+	assert.equal(buf4.numberOfChannels, 2)
 
 	var buf5 = util.create(buf4);
 	assert.notEqual(buf4, buf5);
 	assert.notEqual(buf4.getChannelData(0), buf5.getChannelData(0));
 	assert.deepEqual(buf5.getChannelData(0), [0,0,0,0,0]);
+	assert.equal(buf5.numberOfChannels, 2)
 
 	var buf6 = util.create([1,0,0,1]);
 	assert.deepEqual(buf6.getChannelData(1), [0,1]);
+	assert.equal(buf5.numberOfChannels, 2)
 
-	var buf7 = util.create(1, [1,0,0,1]);
+	var buf7 = util.create([1,0,0,1], 1);
 	assert.deepEqual(buf7.getChannelData(0), [1,0,0,1]);
+	assert.equal(buf7.numberOfChannels, 1)
 	t.end()
 });
 
@@ -533,7 +538,7 @@ test('mix', function (t) {
 
 
 test('data', function (t) {
-	var b = util.create(3, [1,-1, 0.5, -1, 0, -0.5]);
+	var b = util.create([1,-1, 0.5, -1, 0, -0.5], 3);
 
 	var data = util.data(b);
 

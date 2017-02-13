@@ -40,8 +40,8 @@ module.exports = {
 /**
  * Create buffer from any argument
  */
-function create (a, b, c) {
-    return new AudioBuffer(a, b, c);
+function create (len, channels, rate) {
+    return new AudioBuffer(channels, len, rate);
 }
 
 
@@ -84,7 +84,7 @@ function shallow (buffer) {
         return AudioBuffer.context.createBuffer(buffer.numberOfChannels, buffer.length, buffer.sampleRate);
     }
 
-    return create(buffer.numberOfChannels, buffer.length, buffer.sampleRate);
+    return create(buffer.length, buffer.numberOfChannels, buffer.sampleRate);
 }
 
 
@@ -250,7 +250,7 @@ function slice (buffer, start, end) {
     for (var channel = 0; channel < buffer.numberOfChannels; channel++) {
         data.push(buffer.getChannelData(channel).slice(start, end));
     }
-    return create(buffer.numberOfChannels, data, buffer.sampleRate);
+    return create(data, buffer.numberOfChannels, buffer.sampleRate);
 }
 
 
@@ -269,7 +269,7 @@ function map (buffer, fn) {
         }));
     }
 
-    return create(buffer.numberOfChannels, data, buffer.sampleRate);
+    return create(data, buffer.numberOfChannels, buffer.sampleRate);
 }
 
 
@@ -310,7 +310,7 @@ function concat (bufferA, bufferB) {
         data.push(channelData);
     }
 
-    return create(channels, data, sampleRate);
+    return create(data, channels, sampleRate);
 }
 
 
@@ -322,7 +322,7 @@ function resize (buffer, length) {
 
     if (length < buffer.length) return slice(buffer, 0, length);
 
-    return concat(buffer, create(buffer.numberOfChannels, length - buffer.length));
+    return concat(buffer, create(length - buffer.length, buffer.numberOfChannels));
 }
 
 
@@ -349,11 +349,11 @@ function pad (a, b, value) {
 
     //left-pad
     if (buffer === b) {
-        return concat(fill(create(buffer.numberOfChannels, length - buffer.length), value), buffer);
+        return concat(fill(create(length - buffer.length, buffer.numberOfChannels), value), buffer);
     }
 
     //right-pad
-    return concat(buffer, fill(create(buffer.numberOfChannels, length - buffer.length), value));
+    return concat(buffer, fill(create(length - buffer.length, buffer.numberOfChannels), value));
 }
 
 
