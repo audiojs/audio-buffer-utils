@@ -6,23 +6,32 @@ Utility functions for [_AudioBuffers_](https://github.com/audiojs/audio-buffer) 
 
 [![npm install audio-buffer-utils](https://nodei.co/npm/audio-buffer-utils.png?mini=true)](https://npmjs.org/package/audio-buffer-utils/)
 
-### `var utils = require('audio-buffer-utils')`
-Get utils
+### `const utils = require('audio-buffer-utils')`
+Get utils toolset.
 
 ### `utils.create(channels?, data, sampleRate?)`
 Create a new buffer from any argument.
 Data can be a length, an array with channels' data, an other buffer or plain array.
 
+```js
+//mono 100-samples buffer
+let a = utils.create(1, 100)
+
+//stereo buffer with channels data
+let b = utils.create([Array(100).fill(0.5), Array(100).fill(0.4)])
+
+//minimal length buffer (1 sample)
+let c = utils.create()
+```
+
 ### `utils.shallow(buffer)`
-Create a new buffer with the same characteristics as `buffer`,
-contents are undefined.
+Create a new buffer with the same characteristics as `buffer`, contents are undefined.
 
 ### `utils.clone(buffer)`
-Create a new buffer with the same characteristics as `buffer`,
-fill it with a copy of `buffer`'s data, and return it.
+Create a new buffer with the same characteristics as `buffer`, fill it with a copy of `buffer`'s data, and return it.
 
 ### `utils.copy(fromBuffer, result, offset?)`
-Copy the data from one buffer to another, with optional offset
+Copy the data from one buffer to another, with optional offset.
 
 ### `utils.reverse(buffer, result?)`
 Reverse `buffer`. Place data to `result` buffer, if any, otherwise modify `buffer` in-place.
