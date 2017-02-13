@@ -96,12 +96,12 @@ Modify `buffer` in-place.
 Shift signal in the time domain by `offset` samples, in circular fashion.
 Modify `buffer` in-place.
 
-### `utils.reduce(buffer, (prev, curr, i, channel, channelData) => sample, startValue?)`
-Fold buffer into a single value. Useful to generate metrics, like loudness, average, etc.
-
 ### `utils.normalize(buffer, result?, start?, end?)`
-Normalize buffer by the max value, limit to the -1..+1 range.
+Normalize buffer by the max value, limit to -1..+1 range. Channels amplitudes ratio will be preserved.
 Place data to `result` buffer, if any, otherwise modify `buffer` in-place.
+
+### `utils.removeStatic(buffer, result?, start?, end?)`
+Remove DC (Direct Current) offset from the signal, i.e. remove static level, that is bring mean to zero. DC offset will be reduced for every channel independently.
 
 ### `utils.trim(buffer, threshold?)`
 ### `utils.trimLeft(buffer, threshold?)`

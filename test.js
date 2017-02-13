@@ -3,6 +3,21 @@ var assert = require('assert');
 var AudioBuffer = require('audio-buffer');
 var isBrowser = require('is-browser');
 var test = require('tape')
+var almost = require('almost-equal')
+
+
+assert.almost = function (x, y) {
+	if (x.length && y.length) return x.every(function (x, i) {
+		return assert.almost(x, y[i]);
+	});
+
+	var EPSILON = 1e-5;
+	if (!almost(x, y, EPSILON)) assert.fail(x, y,
+		`${x} ≈ ${y}`, '≈');
+
+	return true;
+};
+
 
 
 test('create', function (t) {
@@ -399,7 +414,7 @@ test('shift (-ve)', function (t) {
 });
 
 
-test('normalize', function (t) {
+test.only('normalize', function (t) {
 	var a = AudioBuffer(1, [0, 0.1, 0, -0.2]);
 
 	util.normalize(a);
@@ -419,6 +434,15 @@ test('normalize', function (t) {
 		util.normalize(new Float32Array([0, 0.1, 0.2]));
 	});
 	t.end()
+});
+
+test('removeStatic', function (t) {
+	var a = AudioBuffer([.5,.7,.3,.5])
+
+	util.removeStatic(a)
+
+	assert.almost(a.getChannelData(0), [-.1, .1])
+	assert.almost(a.getChannelData(1), [-.1, .1])
 });
 
 
