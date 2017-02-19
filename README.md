@@ -13,7 +13,7 @@ _AudioBuffer_ data layout is considered horizontal, in that samples are arranged
 
 Sample values range from `-1` to `1`, but not limited to it.
 
-### `util.create(data|length, channels = 2, sampleRate?)`
+### `util.create(data|length, channels = 2, sampleRate = 44100)`
 Create a new buffer from any argument.
 Data can be a length, an array with channels' data, an other buffer or plain array.
 
@@ -52,7 +52,7 @@ let b = util.clone(a)
 util.equal(a, b) //true
 ```
 
-### `util.copy(fromBuffer, toBuffer, offset?)`
+### `util.copy(fromBuffer, toBuffer, offset = 0)`
 Copy the data from one buffer to another, with optional offset.
 
 ### `util.reverse(buffer, target?)`
@@ -82,7 +82,7 @@ if (util.equal(a, b, c)) {
 }
 ```
 
-### `util.fill(buffer, target?, value|(sample, i, channel) => sample, start = 0, end = -0)`
+### `util.fill(buffer, target?, value|(value, i, channel) => value, start = 0, end = -0)`
 Fill `buffer` with provided function or value.
 Place data to `target` buffer, if any, otherwise modify `buffer` in-place.
 Pass optional `start` and `end` indexes.
@@ -97,7 +97,7 @@ let a = util.create(2 * rate)
 util.fill(a, (value, i, channel) => Math.sin(Math.PI * 2 * frequency * i / rate))
 ```
 
-### `util.map(buffer, (sample, i, channel) => newSample )`
+### `util.map(buffer, (value, i, channel) => newValue )`
 Create a new buffer by mapping the samples of the current one.
 
 ```js
@@ -122,9 +122,9 @@ Initial data is whether sliced or filled with zeros. Combines `util.pad` and `ut
 let b = util.resize(a, 2 * a.sampleRate)
 ```
 
-### `util.pad(buffer|length, length|buffer, value?)`
-### `util.padLeft(buffer, length, value?)`
-### `util.padRight(buffer, length, value?)`
+### `util.pad(buffer|length, length|buffer, value = 0)`
+### `util.padLeft(buffer, length, value = 0)`
+### `util.padRight(buffer, length, value = 0)`
 Right/left-pad buffer to the length, filling with value.
 
 ```js
