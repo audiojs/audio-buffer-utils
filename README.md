@@ -6,80 +6,129 @@ Utility functions for [_AudioBuffers_](https://github.com/audiojs/audio-buffer) 
 
 [![npm install audio-buffer-utils](https://nodei.co/npm/audio-buffer-utils.png?mini=true)](https://npmjs.org/package/audio-buffer-utils/)
 
-### `const utils = require('audio-buffer-utils')`
+### `const util = require('audio-buffer-utils')`
 Get utils toolset.
 
-_AudioBuffer_ data layout is considered horizontal, in that sample numbers are arranged horizontally, channels vertically, and functions take sample index as the first and number of channel as the second arguments.
+_AudioBuffer_ data layout is considered horizontal, in that samples are arranged horizontally and channels vertically. Functions arguments take sample index first and channel index second.
 
 Sample values range from `-1` to `1`, but not limited to it.
 
-### `utils.create(data|length, channels = 2, sampleRate?)`
+### `util.create(data|length, channels = 2, sampleRate?)`
 Create a new buffer from any argument.
 Data can be a length, an array with channels' data, an other buffer or plain array.
 
 ```js
 //mono buffer with 100 samples
-let a = utils.create(100, 1)
+let a = util.create(100, 1)
 
 //stereo buffer with predefined channels data
-let b = utils.create([Array(100).fill(0.5), Array(100).fill(0.4)])
+let b = util.create([Array(100).fill(0.5), Array(100).fill(0.4)])
 
 //minimal length buffer (1 sample, 2 channels)
-let c = utils.create()
+let c = util.create()
+
+//create 2 seconds buffer with reduced sample rate
+let rate = 22050
+let d = util.create(2 * rate, 2, rate)
 ```
 
-### `utils.shallow(buffer)`
+### `util.shallow(buffer)`
 Create a new buffer with the same characteristics as `buffer`, contents are undefined.
 
-### `utils.clone(buffer)`
+```js
+//create buffer with the same shape as `a`
+let b = util.shallow(a)
+
+util.equal(a, b) //false
+```
+
+### `util.clone(buffer)`
 Create a new buffer with the same characteristics as `buffer`, fill it with a copy of `buffer`'s data, and return it.
 
-### `utils.copy(fromBuffer, result, offset?)`
+```js
+//clone buffer `a`
+let b = util.clone(a)
+
+util.equal(a, b) //true
+```
+
+### `util.copy(fromBuffer, toBuffer, offset?)`
 Copy the data from one buffer to another, with optional offset.
 
-### `utils.reverse(buffer, result?)`
-Reverse `buffer`. Place data to `result` buffer, if any, otherwise modify `buffer` in-place.
+### `util.reverse(buffer, target?)`
+Reverse `buffer`. Place data to `target` buffer, if any, otherwise modify `buffer` in-place.
 
-### `utils.invert(buffer, result?)`
-Invert `buffer`. Place data to `result` buffer, if any, otherwise modify `buffer` in-place.
+### `util.invert(buffer, target?)`
+Invert `buffer`. Place data to `target` buffer, if any, otherwise modify `buffer` in-place.
 
-### `utils.zero(buffer)`
+### `util.zero(buffer)`
 Zero all of `buffer`'s channel data. `buffer` is modified in-place.
 
-### `utils.noise(buffer)`
+### `util.noise(buffer)`
 Fill `buffer` with random data. `buffer` is modified in-place.
 
-### `utils.equal(bufferA, bufferB, ...)`
+### `util.equal(bufferA, bufferB, ...)`
 Test whether the content of N buffers is the same.
 
-### `utils.fill(buffer, result?, value|(sample, i, channel) => sample, start?, end?)`
+```js
+let a = util.create(1024, 2)
+util.noise(a)
+let b = util.clone(a)
+let c = util.shallow(a)
+util.copy(a, c)
+
+if (util.equal(a, b, c)) {
+	//true
+}
+```
+
+### `util.fill(buffer, target?, value|(sample, i, channel) => sample, start?, end?)`
 Fill `buffer` with provided function or value.
-Place data to `result` buffer, if any, otherwise modify `buffer` in-place.
+Place data to `target` buffer, if any, otherwise modify `buffer` in-place.
 Pass optional `start` and `end` indexes.
 
-### `utils.map(buffer, (sample, i, channel) => newSample )`
+```js
+let frequency = 440, rate = 44100
+
+//create 2 seconds buffer
+let a = util.create(2 * rate)
+
+//populate with 440hz sine wave
+util.fill(a, (value, i, channel) => Math.sin(Math.PI * 2 * frequency * i / rate))
+```
+
+### `util.map(buffer, (sample, i, channel) => newSample )`
 Create a new buffer by mapping the samples of the current one.
 
-### `utils.slice(buffer, start?, end?)`
+```js
+//append second harmonic to buffer `a`
+let b = util.map(a, (value, i, channel) => value + Math.sin(Math.PI * 2 * (frequency * 2) * i / rate))
+```
+
+### `util.slice(buffer, start?, end?)`
 Create a new buffer by slicing the current one.
 
-### `utils.concat(buffer1, buffer2, buffer3, ...)`
+### `util.concat(buffer1, buffer2, buffer3, ...)`
 Create a new buffer by concatting passed buffers.
 Channels are extended to the buffer with maximum number.
 Sample rate is changed to the maximum within the buffers.
 
-### `utils.resize(buffer, length)`
+### `util.resize(buffer, length)`
 Return new buffer based on the passed one, with shortened/extended length.
-Initial data is whether sliced or filled with zeros.
-Useful to change duration: `util.resize(buffer, duration * buffer.sampleRate)`
+Initial data is whether sliced or filled with zeros. Combines `util.pad` and `util.slice`.
 
-### `utils.pad(buffer|length, length|buffer, value?)`
-### `utils.padLeft(buffer, length, value?)`
-### `utils.padRight(buffer, length, value?)`
+```js
+//change duration to 2s
+let b = util.resize(a, 2 * a.sampleRate)
+```
+
+### `util.pad(buffer|length, length|buffer, value?)`
+### `util.padLeft(buffer, length, value?)`
+### `util.padRight(buffer, length, value?)`
 Right/left-pad buffer to the length, filling with value.
 
 ```js
-let buf = util.create(1, 3)
+let buf = util.create(3, 1)
 util.fill(buf, .2)
 
 util.pad(buf, 5) // [.2,.2,.2, 0,0]
@@ -88,17 +137,17 @@ util.pad(buf, 5, .1) // [.2,.2,.2, .1,.1]
 util.pad(5, buf, .1) // [.1,.1, .2,.2,.2]
 ```
 
-### `utils.shift(buffer, offset)`
+### `util.shift(buffer, offset)`
 Shift signal in the time domain by `offset` samples, filling with zeros.
 Modify `buffer` in-place.
 
-### `utils.rotate(buffer, offset)`
+### `util.rotate(buffer, offset)`
 Shift signal in the time domain by `offset` samples, in circular fashion.
 Modify `buffer` in-place.
 
-### `utils.normalize(buffer, result?, start?, end?)`
+### `util.normalize(buffer, target?, start?, end?)`
 Normalize buffer by the amplitude, bring to -1..+1 range. Channel amplitudes ratio will be preserved. You may want to remove static level beforehead, because normalization preserves zero static level. Note that it is not the same as [array-normalize](https://github.com/dfcreative/array-noramalize).
-Places data to `result` buffer, if any, otherwise modifies `buffer` in-place.
+Places data to `target` buffer, if any, otherwise modifies `buffer` in-place.
 
 ```js
 const AudioBuffer = require('audio-buffer')
@@ -109,7 +158,7 @@ util.normalize(buf);
 buf.getChannelData(0) // [0, .5, 0, -1]
 ```
 
-### `utils.removeStatic(buffer, result?, start?, end?)`
+### `util.removeStatic(buffer, target?, start?, end?)`
 Remove DC (Direct Current) offset from the signal, i.e. remove static level, that is bring mean to zero. DC offset will be reduced for every channel independently.
 
 ```js
@@ -121,26 +170,30 @@ a.getChannelData(0) // [-.1, .1]
 a.getChannelData(1) // [-.1, .1]
 ```
 
-### `utils.trim(buffer, threshold?)`
-### `utils.trimLeft(buffer, threshold?)`
-### `utils.trimRight(buffer, threshold?)`
-Create buffer with trimmed zeros from the start and/or end, by the threshold.
+### `util.trim(buffer, threshold = 0)`
+### `util.trimLeft(buffer, threshold = 0)`
+### `util.trimRight(buffer, threshold = 0)`
+Create buffer with trimmed zeros from the start and/or end, by the threshold amplitude.
 
 ### `util.mix(bufferA, bufferB, ratio|(valA, valB, i, channel) => val?, offset?)`
 Mix second buffer into the first one. Pass optional weight value or mixing function.
 
-### `utils.size(buffer)`
+### `util.size(buffer)`
 Return buffer size, in bytes. Use [pretty-bytes](https://npmjs.org/package/pretty-bytes) package to format bytes to a string, if needed.
 
-### `utils.data(buffer, data?)`
+### `util.data(buffer, data?)`
 Get channels' data in array. Pass existing array to transfer the data to it.
 Useful in audio-workers to transfer buffer to output.
 
+```js
+let a = util.create(3, 2)
+
+let audioData = util.data(a) // [[0,0,0], [0,0,0]]
+```
 
 ## Related
 
 > [audio-buffer](https://github.com/audio-lab/buffer) — audio data container, both for node/browser.<br/>
-> [scijs](https://github.com/scijs) — DSP utils, like fft, resample, scale etc.
 
 ## Credits
 
