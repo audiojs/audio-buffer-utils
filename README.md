@@ -1,6 +1,6 @@
 # audio-buffer-utils [![Build Status](https://travis-ci.org/audiojs/audio-buffer-utils.svg?branch=master)](https://travis-ci.org/audiojs/audio-buffer-utils) [![unstable](http://badges.github.io/stability-badges/dist/unstable.svg)](http://github.com/badges/stability-badges)
 
-Utility functions for [_AudioBuffers_](https://github.com/audiojs/audio-buffer) in web-audio and node.
+Utility functions for [_AudioBuffers_](https://github.com/audiojs/audio-buffer) in web-audio and node. Optimized for performance.
 
 ## Usage
 
@@ -82,7 +82,7 @@ if (util.equal(a, b, c)) {
 }
 ```
 
-### `util.fill(buffer, target?, value|(sample, i, channel) => sample, start?, end?)`
+### `util.fill(buffer, target?, value|(sample, i, channel) => sample, start = 0, end = -0)`
 Fill `buffer` with provided function or value.
 Place data to `target` buffer, if any, otherwise modify `buffer` in-place.
 Pass optional `start` and `end` indexes.
@@ -105,7 +105,7 @@ Create a new buffer by mapping the samples of the current one.
 let b = util.map(a, (value, i, channel) => value + Math.sin(Math.PI * 2 * (frequency * 2) * i / rate))
 ```
 
-### `util.slice(buffer, start?, end?)`
+### `util.slice(buffer, start = 0, end = -0)`
 Create a new buffer by slicing the current one.
 
 ### `util.concat(buffer1, buffer2, buffer3, ...)`
@@ -145,7 +145,7 @@ Modify `buffer` in-place.
 Shift signal in the time domain by `offset` samples, in circular fashion.
 Modify `buffer` in-place.
 
-### `util.normalize(buffer, target?, start?, end?)`
+### `util.normalize(buffer, target?, start = 0, end = -0)`
 Normalize buffer by the amplitude, bring to -1..+1 range. Channel amplitudes ratio will be preserved. You may want to remove static level beforehead, because normalization preserves zero static level. Note that it is not the same as [array-normalize](https://github.com/dfcreative/array-noramalize).
 Places data to `target` buffer, if any, otherwise modifies `buffer` in-place.
 
@@ -158,7 +158,7 @@ util.normalize(buf);
 buf.getChannelData(0) // [0, .5, 0, -1]
 ```
 
-### `util.removeStatic(buffer, target?, start?, end?)`
+### `util.removeStatic(buffer, target?, start = 0, end = -0)`
 Remove DC (Direct Current) offset from the signal, i.e. remove static level, that is bring mean to zero. DC offset will be reduced for every channel independently.
 
 ```js
@@ -175,7 +175,7 @@ a.getChannelData(1) // [-.1, .1]
 ### `util.trimRight(buffer, threshold = 0)`
 Create buffer with trimmed zeros from the start and/or end, by the threshold amplitude.
 
-### `util.mix(bufferA, bufferB, ratio|(valA, valB, i, channel) => val?, offset?)`
+### `util.mix(bufferA, bufferB, ratio|(valA, valB, i, channel) => val?, offset = 0)`
 Mix second buffer into the first one. Pass optional weight value or mixing function.
 
 ### `util.size(buffer)`
