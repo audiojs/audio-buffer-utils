@@ -1,4 +1,4 @@
-var util = require('./');
+var util = require('./src/');
 var assert = require('assert');
 var AudioBuffer = require('audio-buffer');
 var isBrowser = require('is-browser');
