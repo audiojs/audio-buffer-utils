@@ -9,7 +9,8 @@
     "prepublish": "babel src -d dist"
   },
   "files": [
-    "index.js"
+    "src/",
+    "dist/"
   ],
   "repository": {
     "type": "git",
