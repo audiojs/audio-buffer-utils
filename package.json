@@ -2,10 +2,11 @@
   "name": "audio-buffer-utils",
   "version": "4.0.2",
   "description": "Utility functions for AudioBuffers",
-  "main": "index.js",
+  "main": "dist/index.js",
   "scripts": {
     "test": "node test.js",
-    "test:browser": "budo test.js"
+    "test:browser": "budo test.js",
+    "prepublish": "babel src -d dist"
   },
   "files": [
     "index.js"
@@ -33,6 +34,8 @@
   "homepage": "https://github.com/audiojs/audio-buffer-utils",
   "devDependencies": {
     "almost-equal": "^1.1.0",
+    "babel-cli": "^6.24.0",
+    "babel-preset-env": "^1.2.1",
     "is-browser": "^2.0.1",
     "tape": "^4.6.3"
   },
