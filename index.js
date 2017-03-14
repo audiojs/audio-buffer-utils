@@ -5,11 +5,11 @@
 'use strict'
 
 require('typedarray-methods')
-const AudioBuffer = require('audio-buffer')
-const isAudioBuffer = require('is-audio-buffer')
-const isBrowser = require('is-browser')
-const nidx = require('negative-index')
-const clamp = require('clamp')
+var AudioBuffer = require('audio-buffer')
+var isAudioBuffer = require('is-audio-buffer')
+var isBrowser = require('is-browser')
+var nidx = require('negative-index')
+var clamp = require('clamp')
 
 module.exports = {
 	create: create,
@@ -59,7 +59,7 @@ function copy (from, to, offset) {
 
 	offset = offset || 0;
 
-	for (let channel = 0, l = Math.min(from.numberOfChannels, to.numberOfChannels); channel < l; channel++) {
+	for (var channel = 0, l = Math.min(from.numberOfChannels, to.numberOfChannels); channel < l; channel++) {
 		to.getChannelData(channel).set(from.getChannelData(channel), offset);
 	}
 
@@ -115,7 +115,7 @@ function reverse (buffer, target) {
 		target = buffer;
 	}
 
-	for (let i = 0, c = target.numberOfChannels; i < c; ++i) {
+	for (var i = 0, c = target.numberOfChannels; i < c; ++i) {
 		target.getChannelData(i).reverse();
 	}
 
@@ -153,7 +153,7 @@ function noise (buffer, target, start, end) {
 function equal (bufferA, bufferB) {
 	//walk by all the arguments
 	if (arguments.length > 2) {
-		for (let i = 0, l = arguments.length - 1; i < l; i++) {
+		for (var i = 0, l = arguments.length - 1; i < l; i++) {
 			if (!equal(arguments[i], arguments[i + 1])) return false;
 		}
 		return true;
@@ -164,11 +164,11 @@ function equal (bufferA, bufferB) {
 
 	if (bufferA.length !== bufferB.length || bufferA.numberOfChannels !== bufferB.numberOfChannels) return false;
 
-	for (let channel = 0; channel < bufferA.numberOfChannels; channel++) {
-		let dataA = bufferA.getChannelData(channel);
-		let dataB = bufferB.getChannelData(channel);
+	for (var channel = 0; channel < bufferA.numberOfChannels; channel++) {
+		var dataA = bufferA.getChannelData(channel);
+		var dataB = bufferB.getChannelData(channel);
 
-		for (let i = 0; i < dataA.length; i++) {
+		for (var i = 0; i < dataA.length; i++) {
 			if (dataA[i] !== dataB[i]) return false;
 		}
 	}
@@ -211,18 +211,18 @@ function fill (buffer, target, value, start, end) {
 
 	//resolve type of value
 	if (!(value instanceof Function)) {
-		for (let channel = 0, c = buffer.numberOfChannels; channel < c; channel++) {
-			let targetData = target.getChannelData(channel);
-			for (let i = start; i < end; i++) {
+		for (var channel = 0, c = buffer.numberOfChannels; channel < c; channel++) {
+			var targetData = target.getChannelData(channel);
+			for (var i = start; i < end; i++) {
 				targetData[i] = value
 			}
 		}
 	}
 	else {
-		for (let channel = 0, c = buffer.numberOfChannels; channel < c; channel++) {
-			let data = buffer.getChannelData(channel),
+		for (var channel = 0, c = buffer.numberOfChannels; channel < c; channel++) {
+			var data = buffer.getChannelData(channel),
 				targetData = target.getChannelData(channel);
-			for (let i = start; i < end; i++) {
+			for (var i = start; i < end; i++) {
 				targetData[i] = value.call(buffer, data[i], i, channel, data);
 			}
 		}
@@ -242,8 +242,8 @@ function slice (buffer, start, end) {
 	start = start == null ? 0 : nidx(start, buffer.length);
 	end = end == null ? buffer.length : nidx(end, buffer.length);
 
-	let data = [];
-	for (let channel = 0; channel < buffer.numberOfChannels; channel++) {
+	var data = [];
+	for (var channel = 0; channel < buffer.numberOfChannels; channel++) {
 		data.push(buffer.getChannelData(channel).slice(start, end));
 	}
 	return create(data, buffer.numberOfChannels, buffer.sampleRate);
@@ -257,12 +257,14 @@ function slice (buffer, start, end) {
 function map (buffer, fn) {
 	validate(buffer);
 
-	let data = [];
+	var data = [];
 
-	for (let channel = 0; channel < buffer.numberOfChannels; channel++) {
-		data.push(buffer.getChannelData(channel).map(function (value, idx) {
-			return fn.call(buffer, value, idx, channel, data);
-		}));
+	for (var channel = 0; channel < buffer.numberOfChannels; channel++) {
+		data.push(buffer.getChannelData(channel).map(_map));
+	}
+
+	function _map (value, idx) {
+		return fn.call(buffer, value, idx, channel, data);
 	}
 
 	return create(data, buffer.numberOfChannels, buffer.sampleRate);
@@ -275,8 +277,8 @@ function map (buffer, fn) {
 function concat (bufferA, bufferB) {
 	//walk by all the arguments
 	if (arguments.length > 2) {
-		let result = bufferA;
-		for (let i = 1, l = arguments.length; i < l; i++) {
+		var result = bufferA;
+		for (var i = 1, l = arguments.length; i < l; i++) {
 			result = concat(result, arguments[i]);
 		}
 		return result;
@@ -285,15 +287,15 @@ function concat (bufferA, bufferB) {
 	validate(bufferA);
 	validate(bufferB);
 
-	let data = [];
-	let channels = Math.max(bufferA.numberOfChannels, bufferB.numberOfChannels);
-	let length = bufferA.length + bufferB.length;
+	var data = [];
+	var channels = Math.max(bufferA.numberOfChannels, bufferB.numberOfChannels);
+	var length = bufferA.length + bufferB.length;
 
 	//FIXME: there might be required more thoughtful resampling, but now I'm lazy sry :(
-	let sampleRate = Math.max(bufferA.sampleRate, bufferB.sampleRate);
+	var sampleRate = Math.max(bufferA.sampleRate, bufferB.sampleRate);
 
-	for (let channel = 0; channel < channels; channel++) {
-		let channelData = new Float32Array(length);
+	for (var channel = 0; channel < channels; channel++) {
+		var channelData = new Float32Array(length);
 
 		if (channel < bufferA.numberOfChannels) {
 			channelData.set(bufferA.getChannelData(channel));
@@ -326,7 +328,7 @@ function resize (buffer, length) {
  * Pad buffer to required size
  */
 function pad (a, b, value) {
-	let buffer, length;
+	var buffer, length;
 
 	if (typeof a === 'number') {
 		buffer = b;
@@ -366,10 +368,10 @@ function padRight (data, len, value) {
 function rotate (buffer, offset) {
 	validate(buffer);
 
-	for (let channel = 0; channel < buffer.numberOfChannels; channel++) {
-		let cData = buffer.getChannelData(channel);
-		let srcData = cData.slice();
-		for (let i = 0, l = cData.length, idx; i < l; i++) {
+	for (var channel = 0; channel < buffer.numberOfChannels; channel++) {
+		var cData = buffer.getChannelData(channel);
+		var srcData = cData.slice();
+		for (var i = 0, l = cData.length, idx; i < l; i++) {
 			idx = (offset + (offset + i < 0 ? l + i : i )) % l;
 			cData[idx] = srcData[i];
 		}
@@ -385,15 +387,15 @@ function rotate (buffer, offset) {
 function shift (buffer, offset) {
 	validate(buffer);
 
-	for (let channel = 0; channel < buffer.numberOfChannels; channel++) {
-		let cData = buffer.getChannelData(channel);
+	for (var channel = 0; channel < buffer.numberOfChannels; channel++) {
+		var cData = buffer.getChannelData(channel);
 		if (offset > 0) {
-			for (let i = cData.length - offset; i--;) {
+			for (var i = cData.length - offset; i--;) {
 				cData[i + offset] = cData[i];
 			}
 		}
 		else {
-			for (let i = -offset, l = cData.length - offset; i < l; i++) {
+			for (var i = -offset, l = cData.length - offset; i < l; i++) {
 				cData[i + offset] = cData[i] || 0;
 			}
 		}
@@ -419,16 +421,16 @@ function normalize (buffer, target, start, end) {
 	end = end == null ? buffer.length : nidx(end, buffer.length);
 
 	//for every channel bring it to max-min amplitude range
-	let max = 0
+	var max = 0
 
-	for (let c = 0; c < buffer.numberOfChannels; c++) {
-		let data = buffer.getChannelData(c)
-		for (let i = start; i < end; i++) {
+	for (var c = 0; c < buffer.numberOfChannels; c++) {
+		var data = buffer.getChannelData(c)
+		for (var i = start; i < end; i++) {
 			max = Math.max(Math.abs(data[i]), max)
 		}
 	}
 
-	let amp = Math.max(1 / max, 1)
+	var amp = Math.max(1 / max, 1)
 
 	return fill(buffer, target, function (value, i, ch) {
 		return clamp(value * amp, -1, 1)
@@ -439,7 +441,7 @@ function normalize (buffer, target, start, end) {
  * remove DC offset
  */
 function removeStatic (buffer, target, start, end) {
-	let means = mean(buffer, start, end)
+	var means = mean(buffer, start, end)
 
 	return fill(buffer, target, function (value, i, ch) {
 		return value - means[ch];
@@ -457,12 +459,12 @@ function mean (buffer, start, end) {
 
 	if (end - start < 1) return []
 
-	let result = []
+	var result = []
 
-	for (let c = 0; c < buffer.numberOfChannels; c++) {
-		let sum = 0
-		let data = buffer.getChannelData(c)
-		for (let i = start; i < end; i++) {
+	for (var c = 0; c < buffer.numberOfChannels; c++) {
+		var sum = 0
+		var data = buffer.getChannelData(c)
+		for (var i = start; i < end; i++) {
 			sum += data[i]
 		}
 		result.push(sum / (end - start))
@@ -492,14 +494,14 @@ function trimInternal(buffer, level, trimLeft, trimRight) {
 
 	level = (level == null) ? 0 : Math.abs(level);
 
-	let start, end;
+	var start, end;
 
 	if (trimLeft) {
 		start = buffer.length;
 		//FIXME: replace with indexOF
-		for (let channel = 0, c = buffer.numberOfChannels; channel < c; channel++) {
-			let data = buffer.getChannelData(channel);
-			for (let i = 0; i < data.length; i++) {
+		for (var channel = 0, c = buffer.numberOfChannels; channel < c; channel++) {
+			var data = buffer.getChannelData(channel);
+			for (var i = 0; i < data.length; i++) {
 				if (i > start) break;
 				if (Math.abs(data[i]) > level) {
 					start = i;
@@ -514,9 +516,9 @@ function trimInternal(buffer, level, trimLeft, trimRight) {
 	if (trimRight) {
 		end = 0;
 		//FIXME: replace with lastIndexOf
-		for (let channel = 0, c = buffer.numberOfChannels; channel < c; channel++) {
-			let data = buffer.getChannelData(channel);
-			for (let i = data.length - 1; i >= 0; i--) {
+		for (var channel = 0, c = buffer.numberOfChannels; channel < c; channel++) {
+			var data = buffer.getChannelData(channel);
+			for (var i = data.length - 1; i >= 0; i--) {
 				if (i < end) break;
 				if (Math.abs(data[i]) > level) {
 					end = i + 1;
@@ -543,18 +545,18 @@ function mix (bufferA, bufferB, ratio, offset) {
 	validate(bufferB);
 
 	if (ratio == null) ratio = 0.5;
-	let fn = ratio instanceof Function ? ratio : function (a, b) {
+	var fn = ratio instanceof Function ? ratio : function (a, b) {
 		return a * (1 - ratio) + b * ratio;
 	};
 
 	if (offset == null) offset = 0;
 	else if (offset < 0) offset += bufferA.length;
 
-	for (let channel = 0; channel < bufferA.numberOfChannels; channel++) {
-		let aData = bufferA.getChannelData(channel);
-		let bData = bufferB.getChannelData(channel);
+	for (var channel = 0; channel < bufferA.numberOfChannels; channel++) {
+		var aData = bufferA.getChannelData(channel);
+		var bData = bufferB.getChannelData(channel);
 
-		for (let i = offset, j = 0; i < bufferA.length && j < bufferB.length; i++, j++) {
+		for (var i = offset, j = 0; i < bufferA.length && j < bufferB.length; i++, j++) {
 			aData[i] = fn.call(bufferA, aData[i], bData[j], j, channel);
 		}
 	}
@@ -583,7 +585,7 @@ function data (buffer, data) {
 	data = data || [];
 
 	//transfer data per-channel
-	for (let channel = 0; channel < buffer.numberOfChannels; channel++) {
+	for (var channel = 0; channel < buffer.numberOfChannels; channel++) {
 		if (ArrayBuffer.isView(data[channel])) {
 			data[channel].set(buffer.getChannelData(channel));
 		}
