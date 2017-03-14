@@ -7,9 +7,6 @@
     "test": "node test.js",
     "test:browser": "budo test.js"
   },
-  "files": [
-    "index.js"
-  ],
   "repository": {
     "type": "git",
     "url": "git://github.com/audiojs/audio-buffer-utils.git"
