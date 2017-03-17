@@ -23,7 +23,6 @@ module.exports = {
 	equal: equal,
 	fill: fill,
 	slice: slice,
-	map: map,
 	concat: concat,
 	resize: resize,
 	pad: pad,
@@ -246,27 +245,6 @@ function slice (buffer, start, end) {
 	for (var channel = 0; channel < buffer.numberOfChannels; channel++) {
 		data.push(buffer.getChannelData(channel).slice(start, end));
 	}
-	return create(data, buffer.numberOfChannels, buffer.sampleRate);
-}
-
-
-/**
- * Return new buffer, mapped by a function.
- * Similar to transform, but keeps initial buffer untouched
- */
-function map (buffer, fn) {
-	validate(buffer);
-
-	var data = [];
-
-	for (var channel = 0; channel < buffer.numberOfChannels; channel++) {
-		data.push(buffer.getChannelData(channel).map(_map));
-	}
-
-	function _map (value, idx) {
-		return fn.call(buffer, value, idx, channel, data);
-	}
-
 	return create(data, buffer.numberOfChannels, buffer.sampleRate);
 }
 

@@ -84,7 +84,7 @@ if (util.equal(a, b, c)) {
 
 ### `util.fill(buffer, target?, value|(value, i, channel) => value, start = 0, end = -0)`
 Fill `buffer` with provided function or value.
-Place data to `target` buffer, if any, otherwise modify `buffer` in-place.
+Place data to `target` buffer, if any, otherwise modify `buffer` in-place (that covers _map_ functionality).
 Pass optional `start` and `end` indexes.
 
 ```js
@@ -95,14 +95,6 @@ let a = util.create(2 * rate)
 
 //populate with 440hz sine wave
 util.fill(a, (value, i, channel) => Math.sin(Math.PI * 2 * frequency * i / rate))
-```
-
-### `util.map(buffer, (value, i, channel) => newValue )`
-Create a new buffer by mapping the samples of the current one.
-
-```js
-//append second harmonic to buffer `a`
-let b = util.map(a, (value, i, channel) => value + Math.sin(Math.PI * 2 * (frequency * 2) * i / rate))
 ```
 
 ### `util.slice(buffer, start = 0, end = -0)`

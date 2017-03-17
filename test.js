@@ -302,8 +302,9 @@ test.skip('subbuffer', function () {
 
 test('map', function (t) {
 	var a = AudioBuffer(3, [1, 1, 1, 1, 1, 1]);
+	var b = util.shallow(a)
 
-	var b = util.map(a, function (sample, channel, offset) {
+	var b = util.fill(a, b, function (sample, channel, offset) {
 		return sample + channel + offset
 	});
 
@@ -318,7 +319,7 @@ test('map', function (t) {
 	assert.deepEqual(b.getChannelData(0), [0,2]);
 
 	assert.throws(function () {
-		util.map([1,2,3,4], function () {});
+		util.fill([1,2,3,4], function () {});
 	});
 	t.end()
 });
