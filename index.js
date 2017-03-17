@@ -227,7 +227,6 @@ function fill (buffer, target, value, start, end) {
 		}
 	}
 
-
 	return target;
 }
 

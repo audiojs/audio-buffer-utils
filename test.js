@@ -254,6 +254,18 @@ test('fill callback argument', function (t) {
 	t.end()
 });
 
+test('fill negative offsets', function (t) {
+	var a = util.create(10, 1)
+
+	util.fill(a, .1, -2)
+	assert.deepEqual(a.getChannelData(0), [0,0,0,0,0,0,0,0,.1,.1])
+
+	util.fill(a, .2, 0, -7)
+	assert.deepEqual(a.getChannelData(0), [.2,.2,.2,0,0,0,0,0,.1,.1])
+
+	t.end()
+})
+
 test('slice', function (t) {
 	var a = new AudioBuffer(3, [1,2,3,4,5,6,7,8,9]);
 
@@ -461,6 +473,11 @@ test('removeStatic', function (t) {
 
 
 test('trim', function (t) {
+	//trim single
+	var a = util.create([0,0,1,0,0], 1)
+	var b = util.trim(a)
+	assert.deepEqual(b.getChannelData(0), [1])
+
 	//trim both
 	var a = AudioBuffer([0,0,1,0,0,2,3,0]);
 	var b = util.trim(a);

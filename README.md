@@ -165,6 +165,7 @@ a.getChannelData(1) // [-.1, .1]
 ### `util.trim(buffer, threshold = 0)`
 ### `util.trimLeft(buffer, threshold = 0)`
 ### `util.trimRight(buffer, threshold = 0)`
+
 Create buffer with trimmed zeros from the start and/or end, by the threshold amplitude.
 
 ### `util.mix(bufferA, bufferB, ratio|(valA, valB, i, channel) => val?, offset = 0)`
