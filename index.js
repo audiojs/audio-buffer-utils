@@ -136,6 +136,13 @@ function reverse (buffer, target, start, end) {
  * Invert amplitude of samples in each channel
  */
 function invert (buffer, target, start, end) {
+	//if target buffer is passed
+	if (!isAudioBuffer(target) && target != null) {
+		end = start;
+		start = target;
+		target = null;
+	}
+
 	return fill(buffer, target, function (sample) { return -sample; }, start, end);
 }
 
@@ -217,7 +224,6 @@ function fill (buffer, target, value, start, end) {
 	//resolve optional start/end args
 	start = start == null ? 0 : nidx(start, buffer.length);
 	end = end == null ? buffer.length : nidx(end, buffer.length);
-
 	//resolve type of value
 	if (!(value instanceof Function)) {
 		for (var channel = 0, c = buffer.numberOfChannels; channel < c; channel++) {

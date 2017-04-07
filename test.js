@@ -176,6 +176,12 @@ test('invert', function (t) {
 	util.invert(buf1, buf2);
 
 	assert.deepEqual(buf2.getChannelData(1), [-1, 0]);
+
+
+	var buf3 = new AudioBuffer(1, [0,.1,.2,.3,.4,.5])
+	util.invert(buf3, 1,3)
+	assert.deepEqual(buf3.getChannelData(0), [0,-.1,-.2,.3,.4,.5])
+
 	t.end()
 });
 
