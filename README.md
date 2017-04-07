@@ -53,12 +53,12 @@ util.equal(a, b) //true
 ```
 
 ### `util.copy(fromBuffer, toBuffer, offset = 0)`
-Copy the data from one buffer to another, with optional offset.
+Copy the data from one buffer to another, with optional offset. If length of `fromBuffer` exceeds `offset + toBuffer.length`, an error will be thrown.
 
-### `util.reverse(buffer, target?)`
+### `util.reverse(buffer, target?, start=0, end=-0)`
 Reverse `buffer`. Place data to `target` buffer, if any, otherwise modify `buffer` in-place.
 
-### `util.invert(buffer, target?)`
+### `util.invert(buffer, target?, start=0, end=-0)`
 Invert `buffer`. Place data to `target` buffer, if any, otherwise modify `buffer` in-place.
 
 ### `util.zero(buffer)`

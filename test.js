@@ -152,6 +152,11 @@ test('reverse', function (t) {
 	util.reverse(buf1, buf2);
 
 	assert.deepEqual(buf2.getChannelData(1), [-1, 0]);
+
+	var buf3 = new AudioBuffer(1, [0,.1,.2,.3,.4,.5])
+	util.reverse(buf3, 1,3)
+	assert.deepEqual(buf3.getChannelData(0), [0,.2,.1,.3,.4,.5])
+
 	t.end()
 });
 

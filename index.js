@@ -103,8 +103,15 @@ function clone (buffer) {
 /**
  * Reverse samples in each channel
  */
-function reverse (buffer, target) {
+function reverse (buffer, target, start, end) {
 	validate(buffer);
+
+	//if target buffer is passed
+	if (!isAudioBuffer(target) && target != null) {
+		end = start;
+		start = target;
+		target = null;
+	}
 
 	if (target) {
 		validate(target);
@@ -114,8 +121,11 @@ function reverse (buffer, target) {
 		target = buffer;
 	}
 
+	start = start == null ? 0 : nidx(start, buffer.length);
+	end = end == null ? buffer.length : nidx(end, buffer.length);
+
 	for (var i = 0, c = target.numberOfChannels; i < c; ++i) {
-		target.getChannelData(i).reverse();
+		target.getChannelData(i).subarray(start, end).reverse();
 	}
 
 	return target;
