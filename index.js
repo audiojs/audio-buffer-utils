@@ -10,6 +10,7 @@ var isAudioBuffer = require('is-audio-buffer')
 var isBrowser = require('is-browser')
 var nidx = require('negative-index')
 var clamp = require('clamp')
+var context = require('audio-context')
 
 module.exports = {
 	create: create,
@@ -37,7 +38,8 @@ module.exports = {
 	trimRight: trimRight,
 	mix: mix,
 	size: size,
-	data: data
+	data: data,
+	subbuffer: subbuffer
 }
 
 
@@ -85,7 +87,7 @@ function shallow (buffer) {
 	//workaround for faster browser creation
 	//avoid extra checks & copying inside of AudioBuffer class
 	if (isBrowser) {
-		return AudioBuffer.context.createBuffer(buffer.numberOfChannels, buffer.length, buffer.sampleRate);
+		return context.createBuffer(buffer.numberOfChannels, buffer.length, buffer.sampleRate);
 	}
 
 	return create(buffer.length, buffer.numberOfChannels, buffer.sampleRate);
@@ -258,11 +260,28 @@ function slice (buffer, start, end) {
 
 	var data = [];
 	for (var channel = 0; channel < buffer.numberOfChannels; channel++) {
-		data.push(buffer.getChannelData(channel).slice(start, end));
+		var channelData = buffer.getChannelData(channel)
+		data.push(channelData.slice(start, end));
 	}
 	return create(data, buffer.numberOfChannels, buffer.sampleRate);
 }
 
+/**
+ * Create handle for a buffer from subarrays
+ */
+function subbuffer (buffer, start, end) {
+	validate(buffer);
+
+	start = start == null ? 0 : nidx(start, buffer.length);
+	end = end == null ? buffer.length : nidx(end, buffer.length);
+
+	var data = [];
+	for (var channel = 0; channel < buffer.numberOfChannels; channel++) {
+		var channelData = buffer.getChannelData(channel)
+		data.push(channelData.subarray(start, end));
+	}
+	return create(data, buffer.numberOfChannels, buffer.sampleRate);
+}
 
 /**
  * Concat buffer with other buffer(s)

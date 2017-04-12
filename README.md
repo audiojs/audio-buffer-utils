@@ -100,6 +100,9 @@ util.fill(a, (value, i, channel) => Math.sin(Math.PI * 2 * frequency * i / rate)
 ### `util.slice(buffer, start = 0, end = -0)`
 Create a new buffer by slicing the current one.
 
+### `util.subbuffer(buffer, start = 0, end = -0)`
+Create a new buffer by subreferencing the current one. The new buffer represents a handle for the source buffer, working on it's data.
+
 ### `util.concat(buffer1, buffer2, buffer3, ...)`
 Create a new buffer by concatting passed buffers.
 Channels are extended to the buffer with maximum number.

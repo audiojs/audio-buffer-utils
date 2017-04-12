@@ -155,7 +155,7 @@ test('reverse', function (t) {
 
 	var buf3 = new AudioBuffer(1, [0,.1,.2,.3,.4,.5])
 	util.reverse(buf3, 1,3)
-	assert.deepEqual(buf3.getChannelData(0), [0,.2,.1,.3,.4,.5])
+	assert.deepEqual(buf3.getChannelData(0), new Float32Array([0,.2,.1,.3,.4,.5]))
 
 	t.end()
 });
@@ -178,7 +178,7 @@ test('invert', function (t) {
 	assert.deepEqual(buf2.getChannelData(1), [-1, 0]);
 
 
-	var buf3 = new AudioBuffer(1, [0,.1,.2,.3,.4,.5])
+	var buf3 = new AudioBuffer(1, [0,.1,.2,.3,.4,.5], {isWAA: false, floatArray: Float64Array})
 	util.invert(buf3, 1,3)
 	assert.deepEqual(buf3.getChannelData(0), [0,-.1,-.2,.3,.4,.5])
 
@@ -269,10 +269,10 @@ test('fill negative offsets', function (t) {
 	var a = util.create(10, 1)
 
 	util.fill(a, .1, -2)
-	assert.deepEqual(a.getChannelData(0), [0,0,0,0,0,0,0,0,.1,.1])
+	assert.deepEqual(a.getChannelData(0), new Float32Array([0,0,0,0,0,0,0,0,.1,.1]))
 
 	util.fill(a, .2, 0, -7)
-	assert.deepEqual(a.getChannelData(0), [.2,.2,.2,0,0,0,0,0,.1,.1])
+	assert.deepEqual(a.getChannelData(0), new Float32Array([.2,.2,.2,0,0,0,0,0,.1,.1]))
 
 	t.end()
 })
@@ -299,29 +299,32 @@ test('slice', function (t) {
 	t.end()
 });
 
-/*
-test.skip('subbuffer', function () {
-	//NOTE: in web-audio-API two audiobuffers cannot share the same memory
-	//as far `.buffer` property of typedarrays cannot be overridden
-	//and typedarrays are created by WebAudioBuffer innerly
 
+test('subbuffer', function (t) {
 	var a = new AudioBuffer(3, [1,2,3,4,5,6,7,8,9]);
 
 	var b = util.subbuffer(a, 1);
-	assert.deepEqual(b.getChannelData(0), [2,3]);
+	b.getChannelData(0)[0] += .5
+	assert.deepEqual(a.getChannelData(0), [1,2.5,3]);
+	assert.deepEqual(b.getChannelData(0), [2.5,3]);
 	assert.deepEqual(b.getChannelData(1), [5,6]);
 
 	var c = util.subbuffer(a, 1, 2);
-	assert.deepEqual(c.getChannelData(0), [2]);
-	assert.deepEqual(c.getChannelData(1), [5]);
+	c.getChannelData(1)[0] += .5
+	assert.deepEqual(a.getChannelData(0), [1,2.5,3]);
+	assert.deepEqual(a.getChannelData(1), [4,5.5,6]);
+	assert.deepEqual(c.getChannelData(0), [2.5]);
+	assert.deepEqual(c.getChannelData(1), [5.5]);
 	assert.deepEqual(c.numberOfChannels, 3);
 
-	b.getChannelData(0)[0] = 1;
-	assert.deepEqual(b.getChannelData(0), [1,3]);
-	assert.deepEqual(a.getChannelData(0), [1, 1, 3]);
-	assert.deepEqual(c.getChannelData(0), [1]);
+	b.getChannelData(2)[0] = 1;
+	assert.deepEqual(b.getChannelData(2), [1, 9]);
+	assert.deepEqual(a.getChannelData(2), [7, 1, 9]);
+	assert.deepEqual(c.getChannelData(2), [1]);
+
+	t.end()
 });
-*/
+
 
 test('map', function (t) {
 	var a = AudioBuffer(3, [1, 1, 1, 1, 1, 1]);
@@ -548,8 +551,7 @@ test('pad', function (t) {
 test('size', function (t) {
 	if (!isBrowser) {
 		if (typeof Float64Array !== 'undefined') {
-			AudioBuffer.FloatArray = Float64Array;
-			var b = AudioBuffer(3, 200, 5000);
+			var b = AudioBuffer(3, 200, 5000, {isWAA: false, floatArray: Float64Array});
 			assert.equal(util.size(b), 3 * 200 * 8 );
 		}
 		AudioBuffer.FloatArray = Float32Array;
