@@ -286,35 +286,44 @@ function subbuffer (buffer, start, end) {
 /**
  * Concat buffer with other buffer(s)
  */
-function concat (bufferA, bufferB) {
-	//walk by all the arguments
-	if (arguments.length > 2) {
-		var result = bufferA;
-		for (var i = 1, l = arguments.length; i < l; i++) {
-			result = concat(result, arguments[i]);
+function concat () {
+	var list = []
+
+	for (var i = 0, l = arguments.length; i < l; i++) {
+		var arg = arguments[i]
+		if (Array.isArray(arg)) {
+			for (var j = 0; j < arg.length; j++) {
+				list.push(arg[j])
+			}
 		}
-		return result;
+		else {
+			list.push(arg)
+		}
 	}
 
-	validate(bufferA);
-	validate(bufferB);
+	var channels = 1;
+	var length = 0;
+	//FIXME: there might be required more thoughtful resampling, but now I'm lazy sry :(
+	var sampleRate = 0;
+
+	for (var i = 0; i < list.length; i++) {
+		var buf = list[i]
+		validate(buf)
+		length += buf.length
+		channels = Math.max(buf.numberOfChannels, channels)
+		sampleRate = Math.max(buf.sampleRate, sampleRate)
+	}
 
 	var data = [];
-	var channels = Math.max(bufferA.numberOfChannels, bufferB.numberOfChannels);
-	var length = bufferA.length + bufferB.length;
-
-	//FIXME: there might be required more thoughtful resampling, but now I'm lazy sry :(
-	var sampleRate = Math.max(bufferA.sampleRate, bufferB.sampleRate);
-
 	for (var channel = 0; channel < channels; channel++) {
-		var channelData = new Float32Array(length);
+		var channelData = new Float32Array(length), offset = 0
 
-		if (channel < bufferA.numberOfChannels) {
-			channelData.set(bufferA.getChannelData(channel));
-		}
-
-		if (channel < bufferB.numberOfChannels) {
-			channelData.set(bufferB.getChannelData(channel), bufferA.length);
+		for (var i = 0; i < list.length; i++) {
+			var buf = list[i]
+			if (channel < buf.numberOfChannels) {
+				channelData.set(buf.getChannelData(channel), offset);
+			}
+			offset += buf.length
 		}
 
 		data.push(channelData);

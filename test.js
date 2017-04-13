@@ -370,9 +370,16 @@ test('concat', function (t) {
 	assert.deepEqual(d.getChannelData(1), [1,1,0,0,0,0]);
 	assert.deepEqual(d.getChannelData(2), [0,0,0,0,0,0]);
 
+	var d = util.concat([a, b, c]);
+
+	assert.deepEqual(d.getChannelData(0), [1,1,0,0,-1,-1]);
+	assert.deepEqual(d.getChannelData(1), [1,1,0,0,0,0]);
+	assert.deepEqual(d.getChannelData(2), [0,0,0,0,0,0]);
+
 	assert.throws(function () {
 		util.concat([1,2,3,4], [5,6]);
 	});
+
 	t.end()
 });
 
