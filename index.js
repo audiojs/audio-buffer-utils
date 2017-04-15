@@ -46,8 +46,10 @@ module.exports = {
 /**
  * Create buffer from any argument
  */
-function create (len, channels, rate) {
-	return new AudioBuffer(channels, len, rate);
+function create (len, channels, rate, options) {
+	if (!options) options = {}
+	if (!options.context) options.context = context
+	return new AudioBuffer(channels, len, rate, options);
 }
 
 
@@ -280,7 +282,7 @@ function subbuffer (buffer, start, end) {
 		var channelData = buffer.getChannelData(channel)
 		data.push(channelData.subarray(start, end));
 	}
-	return create(data, buffer.numberOfChannels, buffer.sampleRate);
+	return create(data, buffer.numberOfChannels, buffer.sampleRate, {isWAA: false});
 }
 
 /**
