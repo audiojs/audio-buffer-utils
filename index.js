@@ -48,7 +48,6 @@ module.exports = {
  */
 function create (len, channels, rate, options) {
 	if (!options) options = {}
-	if (!options.context) options.context = context
 	return new AudioBuffer(channels, len, rate, options);
 }
 
@@ -89,7 +88,7 @@ function shallow (buffer) {
 	//workaround for faster browser creation
 	//avoid extra checks & copying inside of AudioBuffer class
 	if (isBrowser) {
-		return context.createBuffer(buffer.numberOfChannels, buffer.length, buffer.sampleRate);
+		return context().createBuffer(buffer.numberOfChannels, buffer.length, buffer.sampleRate);
 	}
 
 	return create(buffer.length, buffer.numberOfChannels, buffer.sampleRate);

@@ -1,6 +1,4 @@
-# audio-buffer-utils [![Build Status](https://travis-ci.org/audiojs/audio-buffer-utils.svg?branch=master)](https://travis-ci.org/audiojs/audio-buffer-utils) [![unstable](http://badges.github.io/stability-badges/dist/unstable.svg)](http://github.com/badges/stability-badges)
-
-[![Greenkeeper badge](https://badges.greenkeeper.io/audiojs/audio-buffer-utils.svg)](https://greenkeeper.io/)
+# audio-buffer-utils [![Build Status](https://travis-ci.org/audiojs/audio-buffer-utils.svg?branch=master)](https://travis-ci.org/audiojs/audio-buffer-utils) [![unstable](https://img.shields.io/badge/stability-unstable-green.svg)](http://github.com/badges/stability-badges) [![Greenkeeper badge](https://badges.greenkeeper.io/audiojs/audio-buffer-utils.svg)](https://greenkeeper.io/)
 
 Utility functions for [_AudioBuffers_](https://github.com/audiojs/audio-buffer) in web-audio and node. Optimized for performance.
 
