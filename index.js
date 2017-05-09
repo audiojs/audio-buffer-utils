@@ -281,7 +281,7 @@ function subbuffer (buffer, start, end) {
 		var channelData = buffer.getChannelData(channel)
 		data.push(channelData.subarray(start, end));
 	}
-	return create(data, buffer.numberOfChannels, buffer.sampleRate, {isWAA: false});
+	return create(data, buffer.numberOfChannels, buffer.sampleRate);
 }
 
 /**
