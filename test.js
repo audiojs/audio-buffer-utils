@@ -607,6 +607,30 @@ test('mix', function (t) {
 	t.throws(function () {
 		util.mix([1,2,3], [4,5,6], 0.1);
 	});
+
+	// Offset mix
+	// Starting with normal mix to see normal result
+	var a = AudioBuffer(2, [1,1,1,1]);
+	var b = AudioBuffer(2, [0,0,0,0]);
+	util.mix(a, b, null);
+	t.deepEqual(a.getChannelData(0), [0.5,0.5])
+	t.deepEqual(a.getChannelData(1), [0.5,0.5])
+
+	// Mix in at offset one, i.e. keep a's data until index 2
+	var a = AudioBuffer(2, [1,1,1,1]);
+	var b = AudioBuffer(2, [0,0,0,0]);
+	util.mix(a, b, null,1);
+	t.deepEqual(a.getChannelData(0), [1,0.5])
+	t.deepEqual(a.getChannelData(1), [1,0.5])
+
+	// Mix with longest setting. Will keep b's data after
+	// a finishes with respect to offset
+	var a = AudioBuffer(2, [1,1,1,1]);
+	var b = AudioBuffer(2, [0,0,0,0,1,1,1,1]);
+	var newBuf = util.mix(a, b, null, 1, true);
+	t.deepEqual(newBuf.getChannelData(0), [1,1,0,0,0])
+	t.deepEqual(newBuf.getChannelData(1), [1,1,1,1,1])
+
 	t.end()
 });
 
