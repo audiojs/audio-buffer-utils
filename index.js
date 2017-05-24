@@ -362,14 +362,32 @@ function slice (buffer, start, end) {
 /**
  * Create handle for a buffer from subarrays
  */
-function subbuffer (buffer, start, end) {
+function subbuffer (buffer, start, end, channels) {
 	validate(buffer);
+
+	if (Array.isArray(start)) {
+		channels = start
+		start = 0;
+		end = -0;
+	}
+	else if (Array.isArray(end)) {
+		channels = end
+		end = -0;
+	}
+
+	if (!Array.isArray(channels)) {
+		channels = Array(buffer.numberOfChannels)
+		for (var c = 0; c < buffer.numberOfChannels; c++) {
+			channels[c] = c
+		}
+	}
 
 	start = start == null ? 0 : nidx(start, buffer.length);
 	end = end == null ? buffer.length : nidx(end, buffer.length);
 
 	var data = [];
-	for (var channel = 0; channel < buffer.numberOfChannels; channel++) {
+	for (var i = 0; i < channels.length; i++) {
+		var channel = channels[i]
 		var channelData = buffer.getChannelData(channel)
 		data.push(channelData.subarray(start, end));
 	}

@@ -76,8 +76,10 @@ Copy the data from one buffer to another, with optional offset. If length of `fr
 ### `util.slice(buffer, start=0, end=-0)`
 Create a new buffer by slicing the current one.
 
-### `util.subbuffer(buffer, start=0, end=-0)`
+### `util.subbuffer(buffer, start=0, end=-0, channels?)`
 Create a new buffer by subreferencing the current one. The new buffer represents a handle for the source buffer, working on it's data. Note that it is null-context buffer, meaning that it is not bound to web audio API. To convert it to real _AudioBuffer_, use `util.slice` or `util.create`.
+
+`channels` array may apply channels mapping to pick only indicated channels from the initial buffer. See also [audio-buffer-remix](https://github.com/audiojs/audio-buffer-remix).
 
 ```js
 var a = util.create(100, 2)
@@ -89,6 +91,9 @@ a.getChannelData(0)[10] // 1
 
 //convert b to web-audio-api buffer
 b = util.slice(b)
+
+//create mono-buffer from a
+var c = util.subbuffer(a, [1])
 ```
 
 ### `util.concat(buffer1, [buffer2, buffer3], bufferN, ...)`

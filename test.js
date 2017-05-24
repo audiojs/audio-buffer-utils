@@ -482,7 +482,6 @@ test('repeat', function (t) {
 	t.end()
 })
 
-
 test('subbuffer', function (t) {
 	// var a = util.create([0, .1, .2, .3])
 	// var b = util.create([a.getChannelData(0).subarray(1,2)])
@@ -517,6 +516,10 @@ test('subbuffer', function (t) {
 		})
 		s.buffer = util.slice(c)
 	}
+
+	var d = util.subbuffer(a, [1,2])
+	t.deepEqual(d.getChannelData(0), [4,5.5,6])
+	t.deepEqual(d.getChannelData(1), [7,1,9])
 
 	t.end()
 });
