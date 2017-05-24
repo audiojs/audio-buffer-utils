@@ -226,7 +226,9 @@ let audioData = util.data(a) // [[0,0,0], [0,0,0]]
 
 ## Related
 
-> [audio-buffer](https://github.com/audio-lab/buffer) — audio data container, both for node/browser.<br/>
+> [audio-buffer](https://github.com/audiojs/audio-buffer) — audio data container, both for node/browser.<br/>
+> [audio-buffer-list](https://github.com/audiojs/audio-buffer-list) — linked audio buffers sequence structure<br/>
+> [audio](https://github.com/audiojs/audio) — class for high-level audio manipulations, comprising the functionality of above mentioned.
 
 ## Credits
 
