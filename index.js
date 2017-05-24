@@ -41,7 +41,8 @@ module.exports = {
 	mix: mix,
 	size: size,
 	data: data,
-	subbuffer: subbuffer
+	subbuffer: subbuffer,
+	repeat: repeat
 }
 
 var defaultRate = context && context.sampleRate || 44100
@@ -323,6 +324,23 @@ function fill (buffer, target, value, start, end) {
 	return target;
 }
 
+/**
+ * Repeat buffer
+ */
+function repeat (buffer, times) {
+	validate(buffer);
+
+	if (!times || times < 0) return new AudioBuffer(null, {length: 0, numberOfChannels: buffer.numberOfChannels, sampleRate: buffer.sampleRate})
+
+	if (times === 1) return buffer
+
+	var bufs = []
+	for (var i = 0; i < times; i++) {
+		bufs.push(buffer)
+	}
+
+	return concat(bufs)
+}
 
 /**
  * Return sliced buffer

@@ -463,6 +463,25 @@ test('slice', function (t) {
 	t.end()
 });
 
+test('repeat', function (t) {
+	var a = util.create([0,.5,1])
+
+	var a0 = util.repeat(a, 0)
+	t.equal(a0.length, 0)
+
+	var a1 = util.repeat(a, 1)
+	t.equal(a1.length, 3)
+	t.deepEqual(a1, a)
+
+	var a2 = util.repeat(a, 2)
+	t.deepEqual(a2.getChannelData(0), [0,.5,1,0,.5,1])
+
+	var a3 = util.repeat(a, 3)
+	t.deepEqual(a3.getChannelData(0), [0,.5,1,0,.5,1,0,.5,1])
+
+	t.end()
+})
+
 
 test('subbuffer', function (t) {
 	// var a = util.create([0, .1, .2, .3])

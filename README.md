@@ -6,15 +6,16 @@ Utility functions for [_AudioBuffers_](https://github.com/audiojs/audio-buffer) 
 * [util.shallow(buf)](#utilshallowbuffer)
 * [util.clone(buf)](#utilclonebuffer)
 * [util.copy(buf, dst, start?)](#utilcopyfrombuffer-tobuffer-offset0)
+* [util.slice(buf, start?, end?)](#utilslicebuffer-start0-end-0)
+* [util.subbuffer(buf, start?, end?)](#utilsubbufferbuffer-start0-end-0)
+* [util.concat(a, b, ...)](#utilconcatbuffer1-buffer2-buffer3-buffern-)
+* [util.repeat(buf, n)](#util)
 * [util.reverse(src, dst?, start?, end?)](#utilreversebuffer-target-start0-end-0)
 * [util.invert(src, dst?, start?, end?)](#utilinvertbuffer-target-start0-end-0)
 * [util.zero(buf)](#utilzerobuffer)
 * [util.noise(buf)](#utilnoisebuffer)
 * [util.equal(a, b, ...)](#utilequalbuffera-bufferb-)
 * [util.fill(buf, dst?, val, start?, end?)](#utilfillbuffer-target-valuevalue-i-channelvalue-start0-end-0)
-* [util.slice(buf, start?, end?)](#utilslicebuffer-start0-end-0)
-* [util.subbuffer(buf, start?, end?)](#utilsubbufferbuffer-start0-end-0)
-* [util.concat(a, b, ...)](#utilconcatbuffer1-buffer2-buffer3-buffern-)
 * [util.resize(buf, len)](#utilresizebuffer-length)
 * [util.pad(buf, len, val?)](#utilpadbufferlength-lengthbuffer-value0)
 * [util.shift(buf, off)](#utilshiftbuffer-offset)
@@ -72,6 +73,31 @@ util.equal(a, b) //true
 ### `util.copy(fromBuffer, toBuffer, offset=0)`
 Copy the data from one buffer to another, with optional offset. If length of `fromBuffer` exceeds `offset + toBuffer.length`, an error will be thrown.
 
+### `util.slice(buffer, start=0, end=-0)`
+Create a new buffer by slicing the current one.
+
+### `util.subbuffer(buffer, start=0, end=-0)`
+Create a new buffer by subreferencing the current one. The new buffer represents a handle for the source buffer, working on it's data. Note that it is null-context buffer, meaning that it is not bound to web audio API. To convert it to real _AudioBuffer_, use `util.slice` or `util.create`.
+
+```js
+var a = util.create(100, 2)
+var b = util.subbuffer(10, 90)
+
+//b references a
+b.getChannelData(0)[0] = 1
+a.getChannelData(0)[10] // 1
+
+//convert b to web-audio-api buffer
+b = util.slice(b)
+```
+
+### `util.concat(buffer1, [buffer2, buffer3], bufferN, ...)`
+Create a new buffer by concatting buffers or list.
+Channels are extended to the buffer with maximum number.
+
+### `util.repeat(buffer, times)`
+Return a new buffer with contents of the initial one repeated defined number of times.
+
 ### `util.reverse(buffer, target?, start=0, end=-0)`
 Reverse `buffer`. Place data to `target` buffer, if any, otherwise modify `buffer` in-place.
 
@@ -113,28 +139,6 @@ let a = util.create(2 * rate)
 //populate with 440hz sine wave
 util.fill(a, (value, i, channel)=>Math.sin(Math.PI * 2 * frequency * i / rate))
 ```
-
-### `util.slice(buffer, start=0, end=-0)`
-Create a new buffer by slicing the current one.
-
-### `util.subbuffer(buffer, start=0, end=-0)`
-Create a new buffer by subreferencing the current one. The new buffer represents a handle for the source buffer, working on it's data. Note that it is null-context buffer, meaning that it is not bound to web audio API. To convert it to real _AudioBuffer_, use `util.create`.
-
-```js
-var a = util.create(100, 2)
-var b = util.subbuffer(10, 90)
-
-//b references a
-b.getChannelData(0)[0] = 1
-a.getChannelData(0)[10] // 1
-
-//convert b to web-audio-api buffer
-b = util.slice(b)
-```
-
-### `util.concat(buffer1, [buffer2, buffer3], bufferN, ...)`
-Create a new buffer by concatting buffers or list.
-Channels are extended to the buffer with maximum number.
 
 ### `util.resize(buffer, length)`
 Return new buffer based on the passed one, with shortened/extended length.
