@@ -3,6 +3,7 @@ var AudioBuffer = require('audio-buffer');
 var isBrowser = require('is-browser');
 var test = require('tape')
 var almost = require('almost-equal')
+var NDArray = require('ndarray')
 
 
 function almostEqual (x, y) {
@@ -17,12 +18,176 @@ function almostEqual (x, y) {
 	return true;
 };
 
+test('zero constructor', function (t) {
+	var buffer = util.create()
+
+	t.equal(buffer.length, 1)
+	t.equal(buffer.numberOfChannels, 1)
+
+	t.end()
+});
+
+test('from Array', function (t) {
+	var buffer = util.create([
+		0, 1, 0, 1, 0, 1
+	], 2);
+
+	t.deepEqual(buffer.getChannelData(0), [0, 1, 0]);
+	t.deepEqual(buffer.getChannelData(1), [1, 0, 1]);
+	t.end()
+});
+
+test('from Number', function (t) {
+	var buffer = util.create(2, 2)
+
+	t.equal(buffer.length, 2)
+
+	t.end()
+})
+
+test('from Float32Array', function (t) {
+	var buffer = util.create(new Float32Array([
+		0, 1, 0, 1, 0, 1, 0, 1, 0
+	]), 3);
+
+	t.deepEqual(buffer.getChannelData(0), [0, 1, 0]);
+	t.deepEqual(buffer.getChannelData(1), [1, 0, 1]);
+	t.deepEqual(buffer.getChannelData(2), [0, 1, 0]);
+	t.end()
+});
+
+test('from Buffer', function (t) {
+	var data = new Buffer(8*3);
+	data.writeFloatLE(1.0, 0);
+	data.writeFloatLE(-1.0, 4);
+	data.writeFloatLE(0.5, 8);
+	data.writeFloatLE(-0.5, 12);
+	data.writeFloatLE(-1, 16);
+	data.writeFloatLE(0.5, 20);
+
+	var buffer = util.create(data, 3)
+
+	t.deepEqual(buffer.getChannelData(0), [1, -1.0]);
+	t.deepEqual(buffer.getChannelData(1), [0.5, -0.5]);
+	t.deepEqual(buffer.getChannelData(2), [-1, 0.5]);
+	t.end()
+});
+
+test('from AudioBuffer', function (t) {
+	var a1 = util.create([1,-1,0.5,-0.5], 2);
+	var a2 = util.create(a1);
+	var a3 = util.create(a1);
+
+	t.notEqual(a1, a2);
+	t.notEqual(a1, a3);
+	t.deepEqual(a3.getChannelData(1), [0.5,-0.5]);
+
+	a1.getChannelData(0)[0] = 0;
+	t.deepEqual(a1.getChannelData(0), [0,-1]);
+	t.deepEqual(a2.getChannelData(0), [1,-1]);
+	t.end()
+});
+
+test('from ArrayBuffer', function (t) {
+	var a = util.create( (new Float32Array([1,-1,0.5,-0.5])).buffer, 2 );
+	t.deepEqual(a.getChannelData(1), [0.5,-0.5]);
+	t.deepEqual(a.getChannelData(0), [1,-1]);
+	t.end()
+});
+
+test('from NDArray', function (t) {
+	var a = util.create( new NDArray(new Float32Array([1,-1,0.5,-0.5]), [2,2]));
+	t.deepEqual(a.getChannelData(1), [0.5,-0.5]);
+	t.deepEqual(a.getChannelData(0), [1,-1]);
+
+	//FIXME: there might need more tests, like detection of ndarray dimensions etc
+	t.end()
+});
+
+test('from Array of Arrays', function (t) {
+	var a = util.create([ [1, -1], [0.5,-0.5], [-1, 0.5] ]);
+	t.deepEqual(a.getChannelData(1), [0.5,-0.5]);
+	t.deepEqual(a.getChannelData(0), [1,-1]);
+
+	var a = util.create([ [1, -1], [0.5,-0.5], [-1, 0.5] ] );
+	t.deepEqual(a.getChannelData(1), [0.5,-0.5]);
+	t.deepEqual(a.getChannelData(0), [1,-1]);
+	t.deepEqual(a.getChannelData(2), [-1,0.5]);
+
+	t.notEqual(Array.isArray(a.getChannelData(0)))
+
+	t.end()
+});
+
+if (isBrowser) test('from WAABuffer', function (t) {
+	var buf = util.context.createBuffer(3, 2, 44100);
+	buf.getChannelData(0).fill(1);
+	buf.getChannelData(1).fill(-1);
+	buf.getChannelData(2).fill(0);
+
+	var a = util.create( buf, 3 );
+	t.deepEqual(a.getChannelData(2), [0,0]);
+	t.deepEqual(a.getChannelData(1), [-1,-1]);
+	t.deepEqual(a.getChannelData(0), [1,1]);
+
+	t.throws(function () {
+		util.create(0, 2)
+	})
+	//test that data is bound
+	//NOTE: it seems that is shouldn’t - we can gracefully clone the buffer
+	// buf.getChannelData(2).fill(0.5);
+	// t.deepEqual(a.getChannelData(2), buf.getChannelData(2));
+
+	t.end()
+});
+
+test('length', function (t) {
+	var buffer = util.create(Array(12), 1);
+	t.equal(buffer.length, 12);
+	var buffer = util.create(Array(12), 2);
+	t.equal(buffer.length, 6);
+	var buffer = util.create(Array(12), 3);
+	t.equal(buffer.length, 4);
+	var buffer = util.create(Array(12), 4);
+	t.equal(buffer.length, 3);
+	var buffer = util.create(Array(12), 6);
+	t.equal(buffer.length, 2);
+	t.end()
+});
+
+
+test('clone', function (t) {
+	var a = util.create(10, 3, 3000);
+	var b = util.create(a);
+	var c = util.create(a, 2, 4000);
+
+	t.notEqual(a, b);
+	t.deepEqual(a.getChannelData(0), b.getChannelData(0));
+	t.deepEqual(a.getChannelData(2), b.getChannelData(2));
+	t.equal(b.numberOfChannels, 3);
+	t.equal(b.sampleRate, 3000);
+	t.equal(c.sampleRate, 4000);
+	t.equal(c.numberOfChannels, 2);
+	t.deepEqual(a.getChannelData(0), c.getChannelData(0));
+	t.deepEqual(a.getChannelData(1), c.getChannelData(1));
+
+	if (isBrowser) {
+		var a = util.context.createBuffer(2,10,44100);
+		var b = util.create(a);
+
+		t.notEqual(a, b);
+		t.notEqual(a.getChannelData(0), b.getChannelData(0));
+		t.deepEqual(a.getChannelData(0), b.getChannelData(0));
+	}
+	t.end()
+});
+
 
 
 test('create', function (t) {
 	var buf1 = util.create();
 	t.equal(buf1.length, 1);
-	t.equal(buf1.numberOfChannels, 2);
+	t.equal(buf1.numberOfChannels, 1);
 
 	var buf2 = util.create([[0,1], [0,1], [1,0]]);
 	t.deepEqual(buf2.getChannelData(2), [1, 0]);
@@ -41,7 +206,7 @@ test('create', function (t) {
 	t.deepEqual(buf5.getChannelData(0), [0,0,0,0,0]);
 	t.equal(buf5.numberOfChannels, 2)
 
-	var buf6 = util.create([1,0,0,1]);
+	var buf6 = util.create([1,0,0,1], 2);
 	t.deepEqual(buf6.getChannelData(1), [0,1]);
 	t.equal(buf5.numberOfChannels, 2)
 
@@ -52,11 +217,11 @@ test('create', function (t) {
 });
 
 test('equal', function (t) {
-	var buf1 = new AudioBuffer([1, 0, -1, 0]);
-	var buf2 = new AudioBuffer([1, 0, -1, 0]);
-	var buf3 = new AudioBuffer([1, 0, 1, 0]);
-	var buf4 = new AudioBuffer([1, 0, 1, 0, 1]); //the last sample is lost
-	var buf5 = new AudioBuffer([1, 0, 1, 0]);
+	var buf1 = util.create([1, 0, -1, 0], 2);
+	var buf2 = util.create([1, 0, -1, 0], 2);
+	var buf3 = util.create([1, 0, 1, 0], 2);
+	var buf4 = util.create([1, 0, 1, 0, 1], 2); //the last sample is lost
+	var buf5 = util.create([1, 0, 1, 0], 2);
 
 	t.ok(util.equal(buf1, buf2));
 	t.ok(!util.equal(buf1, buf3));
@@ -72,7 +237,7 @@ test('equal', function (t) {
 });
 
 test('shallow', function (t) {
-	var buf1 = new AudioBuffer([0, 1, 2, 3]);
+	var buf1 = util.create([0, 1, 2, 3]);
 	var buf2 = util.shallow(buf1);
 
 	t.equal(buf1.length, buf2.length);
@@ -87,7 +252,7 @@ test('shallow', function (t) {
 
 
 test('clone', function (t) {
-	var buf1 = new AudioBuffer([1, 0, -1, 0]);
+	var buf1 = util.create([1, 0, -1, 0], 2);
 	var buf2 = util.clone(buf1);
 
 	t.ok(util.equal(buf1, buf2));
@@ -105,7 +270,7 @@ test('clone', function (t) {
 
 
 test('copy', function (t) {
-	var buf1 = new AudioBuffer([1, 0, -1, 0]);
+	var buf1 = util.create([1, 0, -1, 0], 2);
 	var buf2 = util.shallow(buf1);
 
 	util.copy(buf1, buf2);
@@ -117,7 +282,7 @@ test('copy', function (t) {
 	t.deepEqual(buf1.getChannelData(0), [1, 0]);
 	t.deepEqual(buf2.getChannelData(0), [1, 0.5]);
 
-	var buf3 = new AudioBuffer(8);
+	var buf3 = util.create(8);
 	util.copy(buf2, buf3, 4);
 	t.deepEqual(buf3.getChannelData(0), [0,0,0,0, 1, 0.5, 0, 0]);
 
@@ -127,7 +292,7 @@ test('copy', function (t) {
 
 
 test('clone - backing arrays are not shared between buffers', function (t) {
-	var buf1 = new AudioBuffer([0, 1, 2, 3, 4]);
+	var buf1 = util.create([0, 1, 2, 3, 4]);
 	var buf2 = util.clone(buf1);
 
 	buf2.getChannelData(0)[0] = 100;
@@ -137,7 +302,7 @@ test('clone - backing arrays are not shared between buffers', function (t) {
 
 
 test('reverse', function (t) {
-	var buf1 = new AudioBuffer([1, 0, -1, 0]);
+	var buf1 = util.create([1, 0, -1, 0], 2);
 	util.reverse(buf1);
 
 	t.deepEqual(buf1.getChannelData(0), [0, 1]);
@@ -152,7 +317,7 @@ test('reverse', function (t) {
 
 	t.deepEqual(buf2.getChannelData(1), [-1, 0]);
 
-	var buf3 = new AudioBuffer(1, [0,.1,.2,.3,.4,.5])
+	var buf3 = util.create([0,.1,.2,.3,.4,.5])
 	util.reverse(buf3, 1,3)
 	t.deepEqual(buf3.getChannelData(0), new Float32Array([0,.2,.1,.3,.4,.5]))
 
@@ -161,7 +326,7 @@ test('reverse', function (t) {
 
 
 test('invert', function (t) {
-	var buf1 = new AudioBuffer([1, 0.5, -1, 0]);
+	var buf1 = util.create([1, 0.5, -1, 0], 2);
 	util.invert(buf1);
 
 	t.deepEqual(buf1.getChannelData(0), [-1, -0.5]);
@@ -177,16 +342,16 @@ test('invert', function (t) {
 	t.deepEqual(buf2.getChannelData(1), [-1, 0]);
 
 
-	var buf3 = new AudioBuffer(1, [0,.1,.2,.3,.4,.5], {isWAA: false, floatArray: Float64Array})
+	var buf3 = util.create([0,.1,.2,.3,.4,.5], 1)
 	util.invert(buf3, 1,3)
-	t.deepEqual(buf3.getChannelData(0), [0,-.1,-.2,.3,.4,.5])
+	t.deepEqual(buf3.getChannelData(0), new Float32Array([0,-.1,-.2,.3,.4,.5]))
 
 	t.end()
 });
 
 
 test('zero', function (t) {
-	var buf1 = new AudioBuffer([1, 0.5, -1, 0]);
+	var buf1 = util.create([1, 0.5, -1, 0], 2);
 	util.zero(buf1);
 
 	t.deepEqual(buf1.getChannelData(0), [0, 0]);
@@ -200,7 +365,7 @@ test('zero', function (t) {
 
 
 test('noise', function (t) {
-	var buf1 = new AudioBuffer(4);
+	var buf1 = util.create(4, 2);
 	util.noise(buf1);
 
 	t.notDeepEqual(buf1.getChannelData(0), [0, 0]);
@@ -214,7 +379,7 @@ test('noise', function (t) {
 
 
 test('fill with function', function (t) {
-	var a = new AudioBuffer([1,2,3,4]);
+	var a = util.create([1,2,3,4], 2);
 	util.fill(a, function (sample, channel, offset) { return channel + offset });
 
 	t.deepEqual(a.getChannelData(0), [0,1]);
@@ -228,7 +393,7 @@ test('fill with function', function (t) {
 
 
 test('fill with value', function (t) {
-	var a = new AudioBuffer([1,2,3,4]);
+	var a = util.create([1,2,3,4], 2);
 	util.fill(a, 1, 1, 3);
 
 	t.deepEqual(a.getChannelData(0), [1,1]);
@@ -241,7 +406,7 @@ test('fill with value', function (t) {
 });
 
 test('fill to another buffer', function (t) {
-	var a = new AudioBuffer([1,2,3,4]);
+	var a = util.create([1,2,3,4], 2);
 	var b = util.shallow(a);
 	util.fill(a, b, 1, 1, 3);
 
@@ -254,7 +419,7 @@ test('fill to another buffer', function (t) {
 });
 
 test('fill callback argument', function (t) {
-	var a = new AudioBuffer([1,2,3,4]);
+	var a = util.create([1,2,3,4], 2);
 
 	//NOTE: such arguments are possible in case of `Through(util.noise)` etc.
 	util.fill(a, function () {}, function () { return 1; });
@@ -265,7 +430,7 @@ test('fill callback argument', function (t) {
 });
 
 test('fill negative offsets', function (t) {
-	var a = util.create(10, 1)
+	var a = util.create(10)
 
 	util.fill(a, .1, -2)
 	t.deepEqual(a.getChannelData(0), new Float32Array([0,0,0,0,0,0,0,0,.1,.1]))
@@ -277,7 +442,7 @@ test('fill negative offsets', function (t) {
 })
 
 test('slice', function (t) {
-	var a = new AudioBuffer(3, [1,2,3,4,5,6,7,8,9]);
+	var a = util.create([1,2,3,4,5,6,7,8,9], 3);
 
 	var b = util.slice(a, 1);
 	t.deepEqual(b.getChannelData(0), [2,3]);
@@ -300,7 +465,12 @@ test('slice', function (t) {
 
 
 test('subbuffer', function (t) {
-	var a = new AudioBuffer(3, [1,2,3,4,5,6,7,8,9]);
+	// var a = util.create([0, .1, .2, .3])
+	// var b = util.create([a.getChannelData(0).subarray(1,2)])
+	// b.getChannelData(0)[0] = .4
+	// t.deepEqual(a.getChannelData(0), new Float32Array([0, .4, .2, .3]))
+
+	var a = util.create([1,2,3,4,5,6,7,8,9], 3);
 
 	var b = util.subbuffer(a, 1);
 	b.getChannelData(0)[0] += .5
@@ -321,12 +491,20 @@ test('subbuffer', function (t) {
 	t.deepEqual(a.getChannelData(2), [7, 1, 9]);
 	t.deepEqual(c.getChannelData(2), [1]);
 
+	if (isBrowser) {
+		var s = util.context.createBufferSource()
+		t.throws(function () {
+			s.buffer = c
+		})
+		s.buffer = util.slice(c)
+	}
+
 	t.end()
 });
 
 
 test('map', function (t) {
-	var a = AudioBuffer(3, [1, 1, 1, 1, 1, 1]);
+	var a = util.create([1, 1, 1, 1, 1, 1], 3);
 	var b = util.shallow(a)
 
 	var b = util.fill(a, b, function (sample, channel, offset) {
@@ -351,9 +529,9 @@ test('map', function (t) {
 
 
 test('concat', function (t) {
-	var a = AudioBuffer([1,1,1,1]);
-	var b = AudioBuffer(3, 2);
-	var c = AudioBuffer(1, [-1, -1], 22050); //handle this!
+	var a = util.create([1,1,1,1], 2);
+	var b = util.create(2, 3);
+	var c = util.create([-1, -1], 1, 22050); //handle this!
 
 	var d = util.concat(a, c);
 	t.deepEqual(d.getChannelData(0), [1,1,-1,-1]);
@@ -384,7 +562,7 @@ test('concat', function (t) {
 
 
 test('resize', function (t) {
-	var a = AudioBuffer(1, [1,1,1,1,1], 44100);
+	var a = util.create([1,1,1,1,1], 1, 44100);
 
 	//set too big
 	a = util.resize(a, 10);
@@ -402,7 +580,7 @@ test('resize', function (t) {
 
 
 test('rotate (+ve)', function (t) {
-	var a = AudioBuffer(1, [0,0,1,1,0,0,-1,-1]);
+	var a = util.create([0,0,1,1,0,0,-1,-1]);
 	util.rotate(a, 2);
 	t.deepEqual(a.getChannelData(0), [-1,-1,0,0,1,1,0,0]);
 
@@ -413,7 +591,7 @@ test('rotate (+ve)', function (t) {
 });
 
 test('rotate (-ve)', function(t) {
-	var a = AudioBuffer(1, [0,0,1,1,0,0,-1,-1]);
+	var a = util.create([0,0,1,1,0,0,-1,-1]);
 	util.rotate(a, -3);
 	t.deepEqual(a.getChannelData(0), [1,0,0,-1,-1,0,0,1]);
 
@@ -425,7 +603,7 @@ test('rotate (-ve)', function(t) {
 
 
 test('shift (+ve)', function (t) {
-	var a = AudioBuffer(1, [0,0,1,1,0,0,-1,-1]);
+	var a = util.create([0,0,1,1,0,0,-1,-1]);
 	util.shift(a, 2);
 	t.deepEqual(a.getChannelData(0), [0,0,0,0,1,1,0,0]);
 
@@ -436,7 +614,7 @@ test('shift (+ve)', function (t) {
 });
 
 test('shift (-ve)', function (t) {
-	var a = AudioBuffer(1, [0,0,1,1,0,0,-1,-1]);
+	var a = util.create([0,0,1,1,0,0,-1,-1]);
 	util.shift(a, -3);
 	t.deepEqual(a.getChannelData(0), [1,0,0,-1,-1,0,0,0]);
 
@@ -448,20 +626,20 @@ test('shift (-ve)', function (t) {
 
 
 test('normalize', function (t) {
-	var a = AudioBuffer(1, [0, 0.2, 0, -0.4]);
+	var a = util.create([0, 0.2, 0, -0.4]);
 	util.normalize(a);
 	t.deepEqual(a.getChannelData(0), [0, .5, 0, -1]);
 
-	var b = AudioBuffer(1, [0, 1, 0, -1]);
+	var b = util.create([0, 1, 0, -1]);
 	util.normalize(b);
 	t.deepEqual(b.getChannelData(0), [0, 1, 0, -1]);
 
-	var c = AudioBuffer(1, [0, 5, 0, -5]);
+	var c = util.create([0, 5, 0, -5]);
 	util.normalize(c);
 	t.deepEqual(c.getChannelData(0), [0, 1, 0, -1]);
 
 	//channels static
-	var c = AudioBuffer(2, [0, .25, 0, -.5]);
+	var c = util.create([0, .25, 0, -.5], 2);
 	util.normalize(c);
 	t.deepEqual(c.getChannelData(0), [0, .5]);
 	t.deepEqual(c.getChannelData(1), [0, -1]);
@@ -469,7 +647,7 @@ test('normalize', function (t) {
 	//too big value
 	//FIXME: too large values are interpreted as 1, but maybe we need deamplifying instead
 	//for example, biquad-filters may return values > 1, then we do not want to clip values
-	var a = AudioBuffer(2, [0, 0.1, 0, -0.5, 999, 2]);
+	var a = util.create([0, 0.1, 0, -0.5, 999, 2], 2);
 
 	util.normalize(a);
 
@@ -482,7 +660,7 @@ test('normalize', function (t) {
 });
 
 test('removeStatic', function (t) {
-	var a = AudioBuffer([.5,.7,.3,.5])
+	var a = util.create([.5,.7,.3,.5], 2)
 
 	util.removeStatic(a)
 
@@ -499,14 +677,14 @@ test('trim', function (t) {
 	t.deepEqual(b.getChannelData(0), [1])
 
 	//trim both
-	var a = AudioBuffer([0,0,1,0,0,2,3,0]);
+	var a = util.create([0,0,1,0,0,2,3,0], 2);
 	var b = util.trim(a);
 
 	t.deepEqual(b.getChannelData(0), [0,1]);
 	t.deepEqual(b.getChannelData(1), [2,3]);
 
 	//no trim
-	var a = AudioBuffer([1,0,1,0,0,2,3,1]);
+	var a = util.create([1,0,1,0,0,2,3,1], 2);
 	var b = util.trim(a);
 
 	t.deepEqual(b.getChannelData(0), [1,0,1,0]);
@@ -521,21 +699,21 @@ test('trim', function (t) {
 
 test('pad', function (t) {
 	//pad right
-	var a = AudioBuffer([0,1,2,3,4,5]);
+	var a = util.create([0,1,2,3,4,5], 2);
 	var b = util.padRight(a, 4);
 
 	t.deepEqual(b.getChannelData(0), [0,1,2,0]);
 	t.deepEqual(b.getChannelData(1), [3,4,5,0]);
 
 	//pad left
-	var a = AudioBuffer([0,1,2,3,4,5]);
+	var a = util.create([0,1,2,3,4,5], 2);
 	var b = util.padLeft(a, 4);
 
 	t.deepEqual(b.getChannelData(0), [0,0,1,2]);
 	t.deepEqual(b.getChannelData(1), [0,3,4,5]);
 
 	//pad value
-	var a = AudioBuffer([0,1,2,3,4,5]);
+	var a = util.create([0,1,2,3,4,5], 2);
 	var b = util.pad(4, a, 0.5);
 
 	t.deepEqual(b.getChannelData(0), [0.5,0,1,2]);
@@ -555,17 +733,8 @@ test('pad', function (t) {
 
 
 test('size', function (t) {
-	if (!isBrowser) {
-		if (typeof Float64Array !== 'undefined') {
-			var b = AudioBuffer(3, 200, 5000, {isWAA: false, floatArray: Float64Array});
-			t.equal(util.size(b), 3 * 200 * 8 );
-		}
-		AudioBuffer.FloatArray = Float32Array;
-	}
-	else {
-		var a = AudioBuffer(200);
-		t.equal(util.size(a), 200 * 2 * 4);
-	}
+	var a = util.create(200, 2);
+	t.equal(util.size(a), 200 * 2 * 4);
 
 	t.throws(function () {
 		util.size();
@@ -573,21 +742,10 @@ test('size', function (t) {
 	t.end()
 });
 
-/*
-test.skip('resample', function () {
-	//NOTE: for resampling use https://github.com/scijs/ndarray-resample
-	//or similar.
-
-	var a = AudioBuffer(1, [0, 0.5, 1, 0.5, 0, -0.5, -1, -0.5, 0], 44100);
-	var b = util.resample(a, 3000);
-
-	t.deepEqual(b.getChannelData(0), []);
-});
-*/
 
 test('mix', function (t) {
-	var a = AudioBuffer(2, [0,1,0,1]);
-	var b = AudioBuffer(2, [0.5, 0.5, -0.5, -0.5]);
+	var a = util.create([0,1,0,1], 2);
+	var b = util.create([0.5, 0.5, -0.5, -0.5], 2);
 
 	//simple mix
 	util.mix(a, b);
@@ -595,8 +753,8 @@ test('mix', function (t) {
 	t.deepEqual(a.getChannelData(1), [-0.25, 0.25]);
 
 	//fn mix
-	var a = AudioBuffer(2, [0, 1, 0, 1, 0, 1]);
-	var b = AudioBuffer(2, [1, 1, 1, 1]);
+	var a = util.create([0, 1, 0, 1, 0, 1], 2);
+	var b = util.create([1, 1, 1, 1], 2);
 	util.mix(a, b, function (v1, v2) {
 		return v1 + v2;
 	}, 1);

@@ -30,25 +30,18 @@ Utility functions for [_AudioBuffers_](https://github.com/audiojs/audio-buffer) 
 
 [![npm install audio-buffer-utils](https://nodei.co/npm/audio-buffer-utils.png?mini=true)](https://npmjs.org/package/audio-buffer-utils/)
 
-### `const util = require('audio-buffer-utils')`
-Get utils toolset.
-
-_AudioBuffer_ data layout is considered horizontal, in that samples are arranged horizontally and channels vertically. Functions arguments take sample index first and channel index second.
-
-Sample values range from `-1` to `1`, but not limited to it.
-
 ### `util.create(data|length, channels=2, sampleRate=44100)`
 Create a new buffer from any argument.
 Data can be a length, an array with channels' data, an other buffer or plain array.
 
 ```js
 //mono buffer with 100 samples
-let a = util.create(100, 1)
+let a = util.create(100)
 
 //stereo buffer with predefined channels data
 let b = util.create([Array(100).fill(0.5), Array(100).fill(0.4)])
 
-//minimal length buffer (1 sample, 2 channels)
+//minimal length buffer (1 sample, 1 channel)
 let c = util.create()
 
 //create 2 seconds buffer with reduced sample rate
@@ -125,7 +118,19 @@ util.fill(a, (value, i, channel)=>Math.sin(Math.PI * 2 * frequency * i / rate))
 Create a new buffer by slicing the current one.
 
 ### `util.subbuffer(buffer, start=0, end=-0)`
-Create a new buffer by subreferencing the current one. The new buffer represents a handle for the source buffer, working on it's data.
+Create a new buffer by subreferencing the current one. The new buffer represents a handle for the source buffer, working on it's data. Note that it is null-context buffer, meaning that it is not bound to web audio API. To convert it to real _AudioBuffer_, use `util.create`.
+
+```js
+var a = util.create(100, 2)
+var b = util.subbuffer(10, 90)
+
+//b references a
+b.getChannelData(0)[0] = 1
+a.getChannelData(0)[10] // 1
+
+//convert b to web-audio-api buffer
+b = util.slice(b)
+```
 
 ### `util.concat(buffer1, [buffer2, buffer3], bufferN, ...)`
 Create a new buffer by concatting buffers or list.
