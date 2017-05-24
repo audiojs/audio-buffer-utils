@@ -2,7 +2,7 @@
 
 Utility functions for [_AudioBuffers_](https://github.com/audiojs/audio-buffer) in web-audio and node. Optimized for performance.
 
-* [util.create(src, ch?, rate?)](#utilcreatedatalength-channels2-samplerate44100)
+* [util.create(src, ch?, rate?)](#utilcreatedatalength-channels1-samplerate44100)
 * [util.shallow(buf)](#utilshallowbuffer)
 * [util.clone(buf)](#utilclonebuffer)
 * [util.copy(buf, dst, start?)](#utilcopyfrombuffer-tobuffer-offset0)
@@ -31,7 +31,7 @@ Utility functions for [_AudioBuffers_](https://github.com/audiojs/audio-buffer) 
 
 [![npm install audio-buffer-utils](https://nodei.co/npm/audio-buffer-utils.png?mini=true)](https://npmjs.org/package/audio-buffer-utils/)
 
-### `util.create(data|length, channels=2, sampleRate=44100)`
+### `util.create(data|length, channels=1, sampleRate=44100)`
 Create a new buffer from any argument.
 Data can be a length, an array with channels' data, an other buffer or plain array.
 
