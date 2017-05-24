@@ -152,6 +152,7 @@ test('length', function (t) {
 	t.equal(buffer.length, 3);
 	var buffer = util.create(Array(12), 6);
 	t.equal(buffer.length, 2);
+
 	t.end()
 });
 

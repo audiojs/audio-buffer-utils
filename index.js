@@ -11,7 +11,6 @@ var nidx = require('negative-index')
 var clamp = require('clamp')
 var context = require('audio-context')()
 var isBuffer = require('is-buffer')
-var b2ab = require('buffer-to-arraybuffer')
 
 module.exports = {
 	context: context,
@@ -81,7 +80,7 @@ function create (src, channels, sampleRate) {
 	//NOTE: node 4.x+ detects Buffer as ArrayBuffer view
 	else if (ArrayBuffer.isView(src) || src instanceof ArrayBuffer || isBuffer(src) || (Array.isArray(src) && !(src[0] instanceof Object))) {
 		if (isBuffer(src)) {
-			src = b2ab(src);
+			src = src.buffer.slice(src.byteOffset, src.byteOffset + src.byteLength)
 		}
 		//convert non-float array to floatArray
 		if (!(src instanceof Float32Array) && !(src instanceof Float64Array)) {
