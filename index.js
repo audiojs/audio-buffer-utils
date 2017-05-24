@@ -109,7 +109,7 @@ function create (src, channels, sampleRate) {
 	}
 
 	//create buffer of proper length
-	let audioBuffer = new AudioBuffer(context, {
+	var audioBuffer = new AudioBuffer(context, {
 		length: length,
 		numberOfChannels: channels,
 		sampleRate: sampleRate
