@@ -2,7 +2,7 @@
 
 Utility functions for [_AudioBuffers_](https://github.com/audiojs/audio-buffer) in web-audio and node. Optimized for performance.
 
-* [util.create(src, ch|opts?)](https://github.com/audiojs/audio-buffer-utils#utilcreatedatalength-channels1-samplerate44100)
+* [util.create(src, ch|opts?)](https://github.com/audiojs/audio-buffer-utils#utilcreatedatalength-optionschannels1-samplerate44100)
 * [util.shallow(buf)](#utilshallowbuffer)
 * [util.clone(buf)](#utilclonebuffer)
 * [util.copy(buf, dst, start?)](#utilcopyfrombuffer-tobuffer-offset0)
