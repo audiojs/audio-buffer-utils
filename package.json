@@ -37,6 +37,7 @@
   },
   "dependencies": {
     "audio-buffer": "^4.0.0",
+    "audio-buffer-from": "^1.0.0",
     "audio-context": "^1.0.0",
     "clamp": "^1.0.1",
     "is-audio-buffer": "^1.0.8",

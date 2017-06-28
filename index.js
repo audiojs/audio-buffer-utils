@@ -11,6 +11,7 @@ var nidx = require('negative-index')
 var clamp = require('clamp')
 var context = require('audio-context')()
 var isBuffer = require('is-buffer')
+var createBuffer = require('audio-buffer-from')
 
 module.exports = {
 	context: context,
@@ -51,78 +52,24 @@ var defaultRate = context && context.sampleRate || 44100
  * Create buffer from any argument.
  * Better constructor than audio-buffer.
  */
-function create (src, channels, sampleRate) {
+function create (src, options, sampleRate) {
 	var length, data
 
-	if (channels == null) channels = src && src.numberOfChannels || 1
-	if (sampleRate == null) sampleRate = src && src.sampleRate || defaultRate;
-
-	//if audio buffer passed - create fast clone of it
-	if (isAudioBuffer(src)) {
-		length = src.length;
-
-		data = []
-
-		//take channel's data
-		for (var c = 0, l = channels; c < l; c++) {
-			data[c] = src.getChannelData(c)
-		}
+	if (typeof options === 'number') {
+		options = {channels: options}
 	}
-
-	//if create(number, channels? rate?) = create new array
-	//this is the default WAA-compatible case
-	else if (typeof src === 'number') {
-		length = src
-		data = null
+	else if (typeof options === 'string') {
+		options = {format: options}
 	}
-
-	//TypedArray, Buffer, DataView etc, ArrayBuffer or plain array
-	//NOTE: node 4.x+ detects Buffer as ArrayBuffer view
-	else if (ArrayBuffer.isView(src) || src instanceof ArrayBuffer || isBuffer(src) || (Array.isArray(src) && !(src[0] instanceof Object))) {
-		if (isBuffer(src)) {
-			src = src.buffer.slice(src.byteOffset, src.byteOffset + src.byteLength)
-		}
-		//convert non-float array to floatArray
-		if (!(src instanceof Float32Array) && !(src instanceof Float64Array)) {
-			src = new Float32Array(src.buffer || src);
-		}
-		length = Math.floor(src.length / channels);
-		data = []
-		for (var c = 0; c < channels; c++) {
-			data[c] = src.subarray(c * length, (c + 1) * length);
-		}
+	else if (!options) {
+		options = {}
 	}
-	//if array - parse channeled data
-	else if (Array.isArray(src)) {
-		//if separated src passed already - send sub-arrays to channels
-		length = src[0].length;
-		data = []
-		channels = src.length
-		for (var c = 0; c < channels; c++ ) {
-			data[c] = ((src[c] instanceof Float32Array) || (src[c] instanceof Float64Array)) ? src[c] : new Float32Array(src[c])
-		}
+	if (sampleRate) {
+		options.sampleRate = sampleRate
 	}
-	//if ndarray, typedarray or other data-holder passed - redirect plain databuffer
-	else if (src && (src.data || src.buffer)) {
-		if (src.shape) channels = src.shape[1]
-		return create(src.data || src.buffer, channels, sampleRate);
-	}
+	options.context = context
 
-	//create buffer of proper length
-	var audioBuffer = new AudioBuffer(context, {
-		length: length,
-		numberOfChannels: channels,
-		sampleRate: sampleRate
-	})
-
-	//fill channels
-	if (data) {
-		for (var c = 0; c < channels; c++) {
-			audioBuffer.getChannelData(c).set(data[c]);
-		}
-	}
-
-	return audioBuffer
+	return createBuffer(src, options)
 }
 
 

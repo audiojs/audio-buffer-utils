@@ -65,7 +65,7 @@ test('from Buffer', function (t) {
 	data.writeFloatLE(-1, 16);
 	data.writeFloatLE(0.5, 20);
 
-	var buffer = util.create(data, 3)
+	var buffer = util.create(data, 'float32 3-channel')
 
 	t.deepEqual(buffer.getChannelData(0), [1, -1.0]);
 	t.deepEqual(buffer.getChannelData(1), [0.5, -0.5]);
@@ -89,7 +89,7 @@ test('from AudioBuffer', function (t) {
 });
 
 test('from ArrayBuffer', function (t) {
-	var a = util.create( (new Float32Array([1,-1,0.5,-0.5])).buffer, 2 );
+	var a = util.create( (new Float32Array([1,-1,0.5,-0.5])).buffer, 'float32 stereo');
 	t.deepEqual(a.getChannelData(1), [0.5,-0.5]);
 	t.deepEqual(a.getChannelData(0), [1,-1]);
 	t.end()
