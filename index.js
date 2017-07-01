@@ -345,6 +345,7 @@ function subbuffer (buffer, start, end, channels) {
 	buf.length = data[0].length
 	buf._data = null
 	buf._channelData = data
+	buf.duration = buf.length / buf.sampleRate
 
 	return buf
 }

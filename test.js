@@ -521,6 +521,7 @@ test('subbuffer', function (t) {
 	var d = util.subbuffer(a, [1,2])
 	t.deepEqual(d.getChannelData(0), [4,5.5,6])
 	t.deepEqual(d.getChannelData(1), [7,1,9])
+	t.ok(d.duration)
 
 	t.end()
 });
@@ -579,6 +580,9 @@ test('concat', function (t) {
 	t.throws(function () {
 		util.concat([1,2,3,4], [5,6]);
 	});
+
+	var e = util.concat(util.create(4), util.create(1),util.create(1),util.create(1),util.create(1),util.create(1),util.create(1))
+	t.equal(e.length, 10)
 
 	t.end()
 });
