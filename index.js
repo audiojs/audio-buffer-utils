@@ -7,11 +7,18 @@
 var AudioBuffer = require('audio-buffer')
 var isAudioBuffer = require('is-audio-buffer')
 var isBrowser = require('is-browser')
-var nidx = require('negative-index')
 var clamp = require('clamp')
 var context = require('audio-context')()
 var isBuffer = require('is-buffer')
 var createBuffer = require('audio-buffer-from')
+
+var isNeg = function (number) {
+	return number === 0 && (1 / number) === -Infinity;
+};
+
+var nidx = function negIdx (idx, length) {
+	return idx == null ? 0 : isNeg(idx) ? length : idx <= -length ? 0 : idx < 0 ? (length + (idx % length)) : Math.min(length, idx);
+}
 
 module.exports = {
 	context: context,
