@@ -179,7 +179,7 @@ Shift signal in the time domain by `offset` samples, in circular fashion.
 Modify `buffer` in-place.
 
 ### `util.normalize(buffer, target?, start=0, end=-0)`
-Normalize buffer by the amplitude, bring to -1..+1 range. Channel amplitudes ratio will be preserved. You may want to remove static level beforehead, because normalization preserves zero static level. Note that it is not the same as [array-normalize](https://github.com/dfcreative/array-noramalize).
+Normalize buffer by the amplitude, bring to -1..+1 range. Channel amplitudes ratio will be preserved. You may want to remove static level beforehead, because normalization preserves zero static level. Note that it is not the same as [array-normalize](https://github.com/dy/array-noramalize).
 Places data to `target` buffer, if any, otherwise modifies `buffer` in-place.
 
 ```js
@@ -230,6 +230,7 @@ let audioData = util.data(a) // [[0,0,0], [0,0,0]]
 > [audio-buffer](https://github.com/audiojs/audio-buffer) — audio data container, both for node/browser.<br/>
 > [audio-buffer-list](https://github.com/audiojs/audio-buffer-list) — linked audio buffers sequence structure<br/>
 > [audio](https://github.com/audiojs/audio) — class for high-level audio manipulations, comprising the functionality of above mentioned.
+> [ciseaux](https://github.com/mohayonao/ciseaux)
 
 ## Credits
 
