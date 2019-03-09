@@ -8,7 +8,7 @@ var AudioBuffer = require('audio-buffer')
 var isAudioBuffer = require('is-audio-buffer')
 var isBrowser = require('is-browser')
 var clamp = require('clamp')
-var context = require('audio-context')()
+var AudioContext = require('audio-context')
 var isBuffer = require('is-buffer')
 var createBuffer = require('audio-buffer-from')
 
@@ -20,8 +20,9 @@ var nidx = function negIdx (idx, length) {
 	return idx == null ? 0 : isNeg(idx) ? length : idx <= -length ? 0 : idx < 0 ? (length + (idx % length)) : Math.min(length, idx);
 }
 
-module.exports = {
-	context: context,
+var context
+
+var utils = {
 	create: create,
 	copy: copy,
 	shallow: shallow,
@@ -52,8 +53,14 @@ module.exports = {
 	repeat: repeat
 }
 
-var defaultRate = context && context.sampleRate || 44100
+Object.defineProperty(utils, 'context', {
+	get: function () {
+		if (!context) context = AudioContext()
+		return context
+	}
+})
 
+module.exports = utils
 
 /**
  * Create buffer from any argument.
@@ -74,7 +81,7 @@ function create (src, options, sampleRate) {
 	if (sampleRate) {
 		options.sampleRate = sampleRate
 	}
-	options.context = context
+	options.context = utils.context
 
 	return createBuffer(src, options)
 }
@@ -116,7 +123,7 @@ function shallow (buffer) {
 	//workaround for faster browser creation
 	//avoid extra checks & copying inside of AudioBuffer class
 	if (isBrowser) {
-		return context.createBuffer(buffer.numberOfChannels, buffer.length, buffer.sampleRate);
+		return utils.context.createBuffer(buffer.numberOfChannels, buffer.length, buffer.sampleRate);
 	}
 
 	return create(buffer.length, buffer.numberOfChannels, buffer.sampleRate);
