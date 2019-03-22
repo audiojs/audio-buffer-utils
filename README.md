@@ -23,7 +23,7 @@ Utility functions for [_AudioBuffers_](https://github.com/audiojs/audio-buffer) 
 * [util.normalize(buf, dst?, start?, end?)](#utilnormalizebuffer-target-start0-end-0)
 * [util.removeStatic(buf, dst?, start?, end?)](#utilremovestaticbuffer-target-start0-end-0)
 * [util.trim(buf, lvl)](#utiltrimbuffer-threshold0)
-* [util.mix(a, b, amt?, off?)](#utilmixbuffera-bufferb-ratiovala-valb-i-channelval-offset0)
+* [util.mix(a, b, amt?, off?, longest?)](#utilmixbuffera-bufferb-ratiovala-valb-i-channelval-offset0)
 * [util.size(buf)](#utilsizebuffer)
 * [util.data(buf, dst?)](#utildatabuffer-data)
 
@@ -209,8 +209,8 @@ a.getChannelData(1) // [-.1, .1]
 
 Create buffer with trimmed zeros from the start and/or end, by the threshold amplitude.
 
-### `util.mix(bufferA, bufferB, ratio|(valA, valB, i, channel)=>val?, offset=0)`
-Mix second buffer into the first one. Pass optional weight value or mixing function.
+### `util.mix(bufferA, bufferB, ratio|(valA, valB, i, channel)=>val?, offset=0, longest=false)`
+Mix second buffer into the first one. Pass optional weight value or mixing function. If longest parameter is passed, function will keep mixing until the longest of either `(bufferA)` or `(offset + bufferB)` has finished. For example, if `bufferA.length = 10`, `offset = 5` and `bufferB.length = 7`, then the total length will be `12` since `(offset + bufferB.length)` overruns `bufferA.length` by `2`.
 
 ### `util.size(buffer)`
 Return buffer size, in bytes. Use [pretty-bytes](https://npmjs.org/package/pretty-bytes) package to format bytes to a string, if needed.

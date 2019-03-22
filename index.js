@@ -642,9 +642,10 @@ function trimInternal(buffer, level, trimLeft, trimRight) {
  * is reduced amount of calculations and flexibility.
  * If required, the cloning can be done before mixing, which will be the same.
  */
-function mix (bufferA, bufferB, ratio, offset) {
+function mix (bufferA, bufferB, ratio, offset, longest) {
 	validate(bufferA);
 	validate(bufferB);
+
 
 	if (ratio == null) ratio = 0.5;
 	var fn = ratio instanceof Function ? ratio : function (a, b) {
@@ -653,17 +654,55 @@ function mix (bufferA, bufferB, ratio, offset) {
 
 	if (offset == null) offset = 0;
 	else if (offset < 0) offset += bufferA.length;
+	
+	if (longest) {
+		return mixLongest(bufferA, bufferB, fn, offset);
+	} else {
+		for (var channel = 0; channel < bufferA.numberOfChannels; channel++) {
+			var aData = bufferA.getChannelData(channel);
+			var bData = bufferB.getChannelData(channel);
+
+			for (var i = offset, j = 0; i < bufferA.length && j < bufferB.length; i++, j++) {
+				aData[i] = fn.call(bufferA, aData[i], bData[j], j, channel);
+			}
+		}
+
+		return bufferA;	
+	}
+}
+
+/**
+ * Mix as far as possible. This means to make the resulting buffer as large as
+ * the max of (offset + bufferB) or bufferA. So if offset + bufferB finishes
+ * after bufferA, keep mixing in bufferB after bufferA has finished. 
+ */
+function mixLongest(bufferA, bufferB, fn, offset) {
+	const newLen = Math.max(offset + bufferB.length, bufferA.length); 
+	var newBuf = create(newLen, bufferA.numberOfChannels, bufferA.sampleRate);
+
+	// Copy bufferA so we can start mixing at the offset later
+	copy(bufferA, newBuf);
 
 	for (var channel = 0; channel < bufferA.numberOfChannels; channel++) {
+		var newData = newBuf.getChannelData(channel);
 		var aData = bufferA.getChannelData(channel);
 		var bData = bufferB.getChannelData(channel);
 
-		for (var i = offset, j = 0; i < bufferA.length && j < bufferB.length; i++, j++) {
-			aData[i] = fn.call(bufferA, aData[i], bData[j], j, channel);
+		for (var i = 0; i < newLen; i++) {
+			var a = aData[i+offset] === undefined ? 0 : aData[i+offset];
+			var b = bData[i] === undefined ? 0 : bData[i];
+
+			if(a === 0) {
+				newData[i+offset] = b;
+			} else if (b === 0) {
+				newData[i+offset] = a;
+			} else {
+				newData[i+offset] = fn.call(bufferA, a, b, i, channel);
+			}
 		}
 	}
 
-	return bufferA;
+	return newBuf;
 }
 
 
